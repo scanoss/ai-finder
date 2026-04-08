@@ -25,17 +25,33 @@ from .discovery import FileDiscovery
 from .license import LicenseDetector
 from .manifests import (
     CargoManifestParser,
+    CocoaPodsManifestParser,
     ComposerManifestParser,
     GemfileManifestParser,
     GoModManifestParser,
     GradleManifestParser,
     MavenManifestParser,
     NpmManifestParser,
+    NuGetManifestParser,
     PythonManifestParser,
+    SwiftPMManifestParser,
 )
 from .manifests.base import BaseManifestParser
 from .models import Finding, LicenseInfo, ScanResult
-from .parsers import GGUFParser, ONNXParser, PyTorchParser, SafeTensorsParser
+from .parsers import (
+    CoreMLParser,
+    GGUFParser,
+    JAXParser,
+    KerasParser,
+    MXNetParser,
+    ONNXParser,
+    PaddleParser,
+    PickleParser,
+    PyTorchParser,
+    SafeTensorsParser,
+    TensorFlowParser,
+    TFLiteParser,
+)
 from .parsers.base import BaseModelParser
 
 logger = logging.getLogger(__name__)
@@ -69,7 +85,7 @@ class Scanner:
             ScalaDetector(),
         ]
 
-        # Manifest parsers by filename
+        # Manifest parsers by filename (11 formats)
         self._manifest_parsers: list[BaseManifestParser] = [
             PythonManifestParser(),  # requirements.txt, pyproject.toml, setup.py
             NpmManifestParser(),  # package.json
@@ -79,6 +95,9 @@ class Scanner:
             MavenManifestParser(),  # pom.xml
             GradleManifestParser(),  # build.gradle, build.gradle.kts
             ComposerManifestParser(),  # composer.json
+            NuGetManifestParser(),  # packages.config, *.csproj
+            SwiftPMManifestParser(),  # Package.swift
+            CocoaPodsManifestParser(),  # Podfile
         ]
 
         # Build extension -> detector mapping
@@ -93,12 +112,20 @@ class Scanner:
             for name in parser.manifest_names:
                 self._name_to_parser[name] = parser
 
-        # Model file parsers
+        # Model file parsers (12 formats)
         self._model_parsers: list[BaseModelParser] = [
             GGUFParser(),
             SafeTensorsParser(),
             ONNXParser(),
             PyTorchParser(),
+            TensorFlowParser(),
+            TFLiteParser(),
+            CoreMLParser(),
+            KerasParser(),
+            JAXParser(),
+            MXNetParser(),
+            PaddleParser(),
+            PickleParser(),
         ]
 
         # Build extension -> model parser mapping

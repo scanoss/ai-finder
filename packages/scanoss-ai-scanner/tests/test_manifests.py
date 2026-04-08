@@ -6,13 +6,16 @@ from pathlib import Path
 
 import pytest
 from scanoss_ai_scanner.manifests.cargo import CargoManifestParser
+from scanoss_ai_scanner.manifests.cocoapods import CocoaPodsManifestParser
 from scanoss_ai_scanner.manifests.composer import ComposerManifestParser
 from scanoss_ai_scanner.manifests.gemfile import GemfileManifestParser
 from scanoss_ai_scanner.manifests.gomod import GoModManifestParser
 from scanoss_ai_scanner.manifests.gradle import GradleManifestParser
 from scanoss_ai_scanner.manifests.maven import MavenManifestParser
 from scanoss_ai_scanner.manifests.npm import NpmManifestParser
+from scanoss_ai_scanner.manifests.nuget import NuGetManifestParser
 from scanoss_ai_scanner.manifests.python import PythonManifestParser
+from scanoss_ai_scanner.manifests.swiftpm import SwiftPMManifestParser
 from scanoss_ai_scanner.models import FindingType
 
 
@@ -438,5 +441,122 @@ class TestComposerManifestParser:
     def test_invalid_json_returns_empty(self, composer_parser: ComposerManifestParser) -> None:
         content = "not valid json"
         findings = list(composer_parser.parse(content, Path("composer.json")))
+
+        assert len(findings) == 0
+
+
+# ============ ADDITIONAL MANIFEST PARSER TESTS ============
+
+
+@pytest.fixture
+def nuget_parser() -> NuGetManifestParser:
+    return NuGetManifestParser()
+
+
+class TestNuGetManifestParser:
+    def test_supported_files(self, nuget_parser: NuGetManifestParser) -> None:
+        assert "packages.config" in nuget_parser.manifest_names
+
+    def test_parse_openai(self, nuget_parser: NuGetManifestParser) -> None:
+        content = """<Project>
+    <ItemGroup>
+        <PackageReference Include="OpenAI" Version="1.0.0" />
+    </ItemGroup>
+</Project>"""
+        findings = list(nuget_parser.parse(content, Path("test.csproj")))
+
+        assert len(findings) == 1
+        assert findings[0].manifest_dep.name == "OpenAI"
+
+    def test_parse_azure_openai(self, nuget_parser: NuGetManifestParser) -> None:
+        content = """<Project>
+    <ItemGroup>
+        <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.5" />
+    </ItemGroup>
+</Project>"""
+        findings = list(nuget_parser.parse(content, Path("test.csproj")))
+
+        assert len(findings) == 1
+        assert findings[0].manifest_dep.name == "Azure.AI.OpenAI"
+
+    def test_ignores_non_ai_packages(self, nuget_parser: NuGetManifestParser) -> None:
+        content = """<Project>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.0" />
+    </ItemGroup>
+</Project>"""
+        findings = list(nuget_parser.parse(content, Path("test.csproj")))
+
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def swiftpm_parser() -> SwiftPMManifestParser:
+    return SwiftPMManifestParser()
+
+
+class TestSwiftPMManifestParser:
+    def test_supported_files(self, swiftpm_parser: SwiftPMManifestParser) -> None:
+        assert "Package.swift" in swiftpm_parser.manifest_names
+
+    def test_parse_openai(self, swiftpm_parser: SwiftPMManifestParser) -> None:
+        content = """
+let package = Package(
+    dependencies: [
+        .package(url: "https://github.com/MacPaw/OpenAI", from: "0.2.0"),
+    ]
+)
+"""
+        findings = list(swiftpm_parser.parse(content, Path("Package.swift")))
+
+        assert len(findings) == 1
+        assert findings[0].manifest_dep.name == "OpenAI"
+
+    def test_ignores_non_ai_packages(self, swiftpm_parser: SwiftPMManifestParser) -> None:
+        content = """
+let package = Package(
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.0"),
+    ]
+)
+"""
+        findings = list(swiftpm_parser.parse(content, Path("Package.swift")))
+
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def cocoapods_parser() -> CocoaPodsManifestParser:
+    return CocoaPodsManifestParser()
+
+
+class TestCocoaPodsManifestParser:
+    def test_supported_files(self, cocoapods_parser: CocoaPodsManifestParser) -> None:
+        assert "Podfile" in cocoapods_parser.manifest_names
+
+    def test_parse_tflite(self, cocoapods_parser: CocoaPodsManifestParser) -> None:
+        content = """platform :ios, '12.0'
+
+target 'MyApp' do
+    pod 'TensorFlowLiteSwift', '~> 2.10'
+end
+"""
+        findings = list(cocoapods_parser.parse(content, Path("Podfile")))
+
+        assert len(findings) == 1
+        assert findings[0].manifest_dep.name == "TensorFlowLiteSwift"
+
+    def test_parse_mlkit(self, cocoapods_parser: CocoaPodsManifestParser) -> None:
+        content = """pod 'GoogleMLKit/TextRecognition'
+"""
+        findings = list(cocoapods_parser.parse(content, Path("Podfile")))
+
+        assert len(findings) == 1
+
+    def test_ignores_non_ai_packages(self, cocoapods_parser: CocoaPodsManifestParser) -> None:
+        content = """pod 'Alamofire'
+pod 'SwiftyJSON'
+"""
+        findings = list(cocoapods_parser.parse(content, Path("Podfile")))
 
         assert len(findings) == 0

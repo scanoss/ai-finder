@@ -8,10 +8,18 @@ from pathlib import Path
 import pytest
 from scanoss_ai_scanner.models import FindingType
 from scanoss_ai_scanner.parsers.base import BaseModelParser
+from scanoss_ai_scanner.parsers.coreml import CoreMLParser
 from scanoss_ai_scanner.parsers.gguf import GGUFParser
+from scanoss_ai_scanner.parsers.jax import JAXParser
+from scanoss_ai_scanner.parsers.keras import KerasParser
+from scanoss_ai_scanner.parsers.mxnet import MXNetParser
 from scanoss_ai_scanner.parsers.onnx import ONNXParser
+from scanoss_ai_scanner.parsers.paddle import PaddleParser
+from scanoss_ai_scanner.parsers.pickle import PickleParser
 from scanoss_ai_scanner.parsers.pytorch import PyTorchParser
 from scanoss_ai_scanner.parsers.safetensors import SafeTensorsParser
+from scanoss_ai_scanner.parsers.tensorflow import TensorFlowParser
+from scanoss_ai_scanner.parsers.tflite import TFLiteParser
 
 
 class TestBaseModelParser:
@@ -165,4 +173,236 @@ class TestPyTorchParser:
         small_file.write_bytes(b"\x80")
 
         finding = parser.parse(small_file, Path("small.pt"))
+        assert finding is None
+
+
+# ============ NEW MODEL PARSER TESTS ============
+
+
+class TestTensorFlowParser:
+    @pytest.fixture
+    def parser(self) -> TensorFlowParser:
+        return TensorFlowParser()
+
+    def test_supported_extensions(self, parser: TensorFlowParser) -> None:
+        assert ".pb" in parser.extensions
+
+    def test_parse_protobuf_format(self, parser: TensorFlowParser, tmp_path: Path) -> None:
+        # Protobuf starts with varint field tag
+        pb_file = tmp_path / "saved_model.pb"
+        pb_file.write_bytes(b"\x08\x01" + b"\x00" * 100)
+
+        finding = parser.parse(pb_file, Path("saved_model.pb"))
+
+        assert finding is not None
+        assert finding.model_info.format == "tensorflow"
+
+    def test_parse_invalid_format(self, parser: TensorFlowParser, tmp_path: Path) -> None:
+        bad_file = tmp_path / "bad.pb"
+        bad_file.write_bytes(b"\x00\x00" + b"\x00" * 100)
+
+        finding = parser.parse(bad_file, Path("bad.pb"))
+        assert finding is None
+
+
+class TestTFLiteParser:
+    @pytest.fixture
+    def parser(self) -> TFLiteParser:
+        return TFLiteParser()
+
+    def test_supported_extensions(self, parser: TFLiteParser) -> None:
+        assert ".tflite" in parser.extensions
+
+    def test_parse_tflite_format(self, parser: TFLiteParser, tmp_path: Path) -> None:
+        # TFLite has identifier at offset 4
+        tflite_file = tmp_path / "model.tflite"
+        tflite_file.write_bytes(b"\x00\x00\x00\x00TFL3" + b"\x00" * 100)
+
+        finding = parser.parse(tflite_file, Path("model.tflite"))
+
+        assert finding is not None
+        assert finding.model_info.format == "tflite"
+
+    def test_parse_invalid_format(self, parser: TFLiteParser, tmp_path: Path) -> None:
+        bad_file = tmp_path / "bad.tflite"
+        bad_file.write_bytes(b"\x00\x00\x00\x00XXXX" + b"\x00" * 100)
+
+        finding = parser.parse(bad_file, Path("bad.tflite"))
+        assert finding is None
+
+
+class TestCoreMLParser:
+    @pytest.fixture
+    def parser(self) -> CoreMLParser:
+        return CoreMLParser()
+
+    def test_supported_extensions(self, parser: CoreMLParser) -> None:
+        assert ".mlmodel" in parser.extensions
+        assert ".mlpackage" in parser.extensions
+
+    def test_parse_mlmodel_format(self, parser: CoreMLParser, tmp_path: Path) -> None:
+        # CoreML uses protobuf
+        mlmodel_file = tmp_path / "model.mlmodel"
+        mlmodel_file.write_bytes(b"\x08\x01" + b"\x00" * 100)
+
+        finding = parser.parse(mlmodel_file, Path("model.mlmodel"))
+
+        assert finding is not None
+        assert finding.model_info.format == "coreml"
+
+    def test_parse_invalid_format(self, parser: CoreMLParser, tmp_path: Path) -> None:
+        bad_file = tmp_path / "bad.mlmodel"
+        bad_file.write_bytes(b"\x00\x00" + b"\x00" * 100)
+
+        finding = parser.parse(bad_file, Path("bad.mlmodel"))
+        assert finding is None
+
+
+class TestKerasParser:
+    @pytest.fixture
+    def parser(self) -> KerasParser:
+        return KerasParser()
+
+    def test_supported_extensions(self, parser: KerasParser) -> None:
+        assert ".h5" in parser.extensions
+        assert ".keras" in parser.extensions
+
+    def test_parse_h5_format(self, parser: KerasParser, tmp_path: Path) -> None:
+        # HDF5 magic bytes
+        h5_file = tmp_path / "model.h5"
+        h5_file.write_bytes(b"\x89HDF\r\n\x1a\n" + b"\x00" * 100)
+
+        finding = parser.parse(h5_file, Path("model.h5"))
+
+        assert finding is not None
+        assert finding.model_info.format == "keras-h5"
+
+    def test_parse_keras_zip_format(self, parser: KerasParser, tmp_path: Path) -> None:
+        # ZIP magic bytes (Keras v3)
+        keras_file = tmp_path / "model.keras"
+        keras_file.write_bytes(b"PK\x03\x04" + b"\x00" * 100)
+
+        finding = parser.parse(keras_file, Path("model.keras"))
+
+        assert finding is not None
+        assert finding.model_info.format == "keras"
+
+    def test_parse_invalid_format(self, parser: KerasParser, tmp_path: Path) -> None:
+        bad_file = tmp_path / "bad.h5"
+        bad_file.write_bytes(b"\x00\x00" + b"\x00" * 100)
+
+        finding = parser.parse(bad_file, Path("bad.h5"))
+        assert finding is None
+
+
+class TestJAXParser:
+    @pytest.fixture
+    def parser(self) -> JAXParser:
+        return JAXParser()
+
+    def test_supported_extensions(self, parser: JAXParser) -> None:
+        assert ".msgpack" in parser.extensions
+
+    def test_parse_msgpack_format(self, parser: JAXParser, tmp_path: Path) -> None:
+        # MessagePack fixmap format
+        msgpack_file = tmp_path / "params.msgpack"
+        msgpack_file.write_bytes(b"\x80" + b"\x00" * 100)
+
+        finding = parser.parse(msgpack_file, Path("params.msgpack"))
+
+        assert finding is not None
+        assert finding.model_info.format == "jax"
+
+    def test_parse_invalid_format(self, parser: JAXParser, tmp_path: Path) -> None:
+        bad_file = tmp_path / "bad.msgpack"
+        bad_file.write_bytes(b"\x00\x00" + b"\x00" * 100)
+
+        finding = parser.parse(bad_file, Path("bad.msgpack"))
+        assert finding is None
+
+
+class TestMXNetParser:
+    @pytest.fixture
+    def parser(self) -> MXNetParser:
+        return MXNetParser()
+
+    def test_supported_extensions(self, parser: MXNetParser) -> None:
+        assert ".params" in parser.extensions
+
+    def test_parse_params_format(self, parser: MXNetParser, tmp_path: Path) -> None:
+        # MXNet params file (needs to be large enough)
+        params_file = tmp_path / "model.params"
+        params_file.write_bytes(b"\x00" * 1000)
+
+        finding = parser.parse(params_file, Path("model.params"))
+
+        assert finding is not None
+        assert finding.model_info.format == "mxnet"
+
+    def test_parse_file_too_small(self, parser: MXNetParser, tmp_path: Path) -> None:
+        small_file = tmp_path / "small.params"
+        small_file.write_bytes(b"\x00" * 10)
+
+        finding = parser.parse(small_file, Path("small.params"))
+        assert finding is None
+
+
+class TestPaddleParser:
+    @pytest.fixture
+    def parser(self) -> PaddleParser:
+        return PaddleParser()
+
+    def test_supported_extensions(self, parser: PaddleParser) -> None:
+        assert ".pdparams" in parser.extensions
+        assert ".pdmodel" in parser.extensions
+
+    def test_parse_pdparams_format(self, parser: PaddleParser, tmp_path: Path) -> None:
+        # Pickle format
+        pdparams_file = tmp_path / "model.pdparams"
+        pdparams_file.write_bytes(b"\x80\x04" + b"\x00" * 100)
+
+        finding = parser.parse(pdparams_file, Path("model.pdparams"))
+
+        assert finding is not None
+        assert finding.model_info.format == "paddle"
+
+    def test_parse_invalid_format(self, parser: PaddleParser, tmp_path: Path) -> None:
+        bad_file = tmp_path / "bad.pdparams"
+        bad_file.write_bytes(b"\x00\x00" + b"\x00" * 100)
+
+        finding = parser.parse(bad_file, Path("bad.pdparams"))
+        assert finding is None
+
+
+class TestPickleParser:
+    @pytest.fixture
+    def parser(self) -> PickleParser:
+        return PickleParser()
+
+    def test_supported_extensions(self, parser: PickleParser) -> None:
+        assert ".pkl" in parser.extensions
+        assert ".pickle" in parser.extensions
+
+    def test_parse_pickle_format(self, parser: PickleParser, tmp_path: Path) -> None:
+        # Pickle protocol 4
+        pkl_file = tmp_path / "model.pkl"
+        pkl_file.write_bytes(b"\x80\x04" + b"\x00" * 2000)
+
+        finding = parser.parse(pkl_file, Path("model.pkl"))
+
+        assert finding is not None
+        assert finding.model_info.format == "pickle"
+
+    def test_parse_file_too_small(self, parser: PickleParser, tmp_path: Path) -> None:
+        small_file = tmp_path / "small.pkl"
+        small_file.write_bytes(b"\x80\x04" + b"\x00" * 10)
+
+        finding = parser.parse(small_file, Path("small.pkl"))
+        assert finding is None
+
+    def test_parse_invalid_format(self, parser: PickleParser, tmp_path: Path) -> None:
+        bad_file = tmp_path / "bad.pkl"
+        bad_file.write_bytes(b"\x00\x00" + b"\x00" * 2000)
+
+        finding = parser.parse(bad_file, Path("bad.pkl"))
         assert finding is None
