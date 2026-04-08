@@ -54,13 +54,20 @@ Download the pre-built binary for your platform from [GitHub Releases](https://g
 | Windows | `scanoss-ai-windows-x64.exe` |
 
 ```bash
-# macOS/Linux
-chmod +x scanoss-ai-*
+# macOS - remove quarantine attribute first
+xattr -d com.apple.quarantine scanoss-ai-macos-arm64
+chmod +x scanoss-ai-macos-arm64
 ./scanoss-ai-macos-arm64 --version
+
+# Linux
+chmod +x scanoss-ai-linux-x64
+./scanoss-ai-linux-x64 --version
 
 # Windows
 scanoss-ai-windows-x64.exe --version
 ```
+
+> **Note (macOS):** The binary is not yet Apple-signed. macOS Gatekeeper will show a warning on first run. Use the `xattr` command above to remove the quarantine flag, or right-click the file and select "Open" to bypass.
 
 No Python installation required - all dependencies are bundled.
 
