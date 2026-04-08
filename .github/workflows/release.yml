@@ -91,6 +91,8 @@ jobs:
 
   provenance:
     needs: build
+    # Skip provenance on private repos (transparency log exposes repo name)
+    if: github.event.repository.visibility == 'public'
     permissions:
       actions: read
       id-token: write
@@ -101,7 +103,9 @@ jobs:
       upload-assets: true
 
   publish-pypi:
-    needs: [build, provenance]
+    needs: build
+    # Don't wait for provenance on private repos
+    if: always() && needs.build.result == 'success'
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
@@ -121,7 +125,9 @@ jobs:
           skip-existing: true
 
   publish-github:
-    needs: [build, provenance]
+    needs: build
+    # Don't wait for provenance on private repos
+    if: always() && needs.build.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -160,6 +166,7 @@ jobs:
 
   sign-packages:
     needs: publish-pypi
+    if: always() && needs.publish-pypi.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
