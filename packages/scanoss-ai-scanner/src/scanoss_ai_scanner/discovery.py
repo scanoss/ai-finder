@@ -52,6 +52,9 @@ SOURCE_EXTENSIONS = frozenset(
         # Kotlin
         ".kt",
         ".kts",
+        # Scala
+        ".scala",
+        ".sc",
         # C/C++
         ".c",
         ".cpp",
@@ -59,6 +62,7 @@ SOURCE_EXTENSIONS = frozenset(
         ".cxx",
         ".h",
         ".hpp",
+        ".hxx",
         # C#
         ".cs",
         # Ruby

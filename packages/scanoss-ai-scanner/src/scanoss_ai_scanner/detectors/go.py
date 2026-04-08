@@ -5,12 +5,13 @@ from __future__ import annotations
 import re
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from ..models import Finding, FindingType, SDKUsage
 from .base import BaseDetector
 
-# AI/ML SDK import paths to detect
-AI_SDK_IMPORTS = frozenset(
+# Fallback AI/ML SDK import paths (used when no KB matcher provided)
+AI_SDK_IMPORTS_FALLBACK = frozenset(
     {
         "github.com/sashabaranov/go-openai",
         "github.com/anthropics/anthropic-sdk-go",
@@ -46,20 +47,23 @@ class GoDetector(BaseDetector):
     def extensions(self) -> frozenset[str]:
         return frozenset({".go"})
 
-    def _is_ai_sdk(self, import_path: str) -> bool:
-        """Check if import path is an AI SDK."""
-        return import_path in AI_SDK_IMPORTS
+    def _is_ai_sdk_fallback(self, import_path: str) -> bool:
+        """Check if import path is an AI SDK using fallback patterns."""
+        return import_path in AI_SDK_IMPORTS_FALLBACK
 
     def _find_line_number(self, content: str, match_start: int) -> int:
         """Find line number for a match position."""
         return content[:match_start].count("\n") + 1
 
-    def detect(self, content: str, path: Path) -> Iterator[Finding]:
+    def detect(
+        self, content: str, path: Path, matcher: Any | None = None
+    ) -> Iterator[Finding]:
         """Detect SDK usage in Go file content.
 
         Args:
             content: Go source code.
             path: File path (relative to scan root).
+            matcher: Optional KB Matcher for pattern lookup.
 
         Yields:
             Finding for each SDK usage detected.
@@ -70,7 +74,25 @@ class GoDetector(BaseDetector):
         for match in SINGLE_IMPORT_RE.finditer(content):
             import_path = match.group("path")
 
-            if self._is_ai_sdk(import_path) and import_path not in seen_imports:
+            if import_path in seen_imports:
+                continue
+
+            # Try KB matcher first, fallback to hardcoded patterns
+            if matcher:
+                sdk_match = matcher.match_sdk(import_path)
+                if sdk_match:
+                    seen_imports.add(import_path)
+                    yield Finding(
+                        type=FindingType.SDK_USAGE,
+                        file_path=str(path),
+                        line=self._find_line_number(content, match.start()),
+                        confidence=sdk_match.confidence,
+                        sdk_usage=SDKUsage(
+                            sdk=sdk_match.id,
+                            import_statement=match.group(0).strip(),
+                        ),
+                    )
+            elif self._is_ai_sdk_fallback(import_path):
                 seen_imports.add(import_path)
                 yield Finding(
                     type=FindingType.SDK_USAGE,
@@ -91,10 +113,29 @@ class GoDetector(BaseDetector):
             for import_match in BLOCK_IMPORT_RE.finditer(block_content):
                 import_path = import_match.group("path")
 
-                if self._is_ai_sdk(import_path) and import_path not in seen_imports:
+                if import_path in seen_imports:
+                    continue
+
+                # Calculate line number within block
+                line = self._find_line_number(content, block_start + import_match.start())
+
+                # Try KB matcher first, fallback to hardcoded patterns
+                if matcher:
+                    sdk_match = matcher.match_sdk(import_path)
+                    if sdk_match:
+                        seen_imports.add(import_path)
+                        yield Finding(
+                            type=FindingType.SDK_USAGE,
+                            file_path=str(path),
+                            line=line,
+                            confidence=sdk_match.confidence,
+                            sdk_usage=SDKUsage(
+                                sdk=sdk_match.id,
+                                import_statement=f'import "{import_path}"',
+                            ),
+                        )
+                elif self._is_ai_sdk_fallback(import_path):
                     seen_imports.add(import_path)
-                    # Calculate line number within block
-                    line = self._find_line_number(content, block_start + import_match.start())
                     yield Finding(
                         type=FindingType.SDK_USAGE,
                         file_path=str(path),

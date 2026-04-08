@@ -5,12 +5,13 @@ from __future__ import annotations
 import re
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from ..models import Finding, FindingType, SDKUsage
 from .base import BaseDetector
 
-# AI/ML SDK packages to detect
-AI_SDK_PACKAGES = frozenset(
+# Fallback AI/ML SDK packages (used when no KB matcher provided)
+AI_SDK_PACKAGES_FALLBACK = frozenset(
     {
         "com.openai",
         "com.anthropic",
@@ -50,20 +51,23 @@ class KotlinDetector(BaseDetector):
             return f"{parts[0]}.{parts[1]}"
         return parts[0]
 
-    def _is_ai_sdk(self, package: str) -> bool:
-        """Check if package is an AI SDK."""
-        return any(package.startswith(sdk_pkg) for sdk_pkg in AI_SDK_PACKAGES)
+    def _is_ai_sdk_fallback(self, package: str) -> bool:
+        """Check if package is an AI SDK using fallback patterns."""
+        return any(package.startswith(sdk_pkg) for sdk_pkg in AI_SDK_PACKAGES_FALLBACK)
 
     def _find_line_number(self, content: str, match_start: int) -> int:
         """Find line number for a match position."""
         return content[:match_start].count("\n") + 1
 
-    def detect(self, content: str, path: Path) -> Iterator[Finding]:
+    def detect(
+        self, content: str, path: Path, matcher: Any | None = None
+    ) -> Iterator[Finding]:
         """Detect SDK usage in Kotlin file content.
 
         Args:
             content: Kotlin source code.
             path: File path (relative to scan root).
+            matcher: Optional KB Matcher for pattern lookup.
 
         Yields:
             Finding for each SDK usage detected.
@@ -74,7 +78,25 @@ class KotlinDetector(BaseDetector):
             package = match.group("package")
             base_package = self._get_base_package(package)
 
-            if self._is_ai_sdk(package) and base_package not in seen_packages:
+            if base_package in seen_packages:
+                continue
+
+            # Try KB matcher first, fallback to hardcoded patterns
+            if matcher:
+                sdk_match = matcher.match_sdk(package)
+                if sdk_match:
+                    seen_packages.add(base_package)
+                    yield Finding(
+                        type=FindingType.SDK_USAGE,
+                        file_path=str(path),
+                        line=self._find_line_number(content, match.start()),
+                        confidence=sdk_match.confidence,
+                        sdk_usage=SDKUsage(
+                            sdk=sdk_match.id,
+                            import_statement=match.group("statement").strip(),
+                        ),
+                    )
+            elif self._is_ai_sdk_fallback(package):
                 seen_packages.add(base_package)
                 # Extract a friendly SDK name from the package
                 sdk_name = base_package

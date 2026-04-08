@@ -5,12 +5,13 @@ from __future__ import annotations
 import re
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from ..models import Finding, FindingType, SDKUsage
 from .base import BaseDetector
 
-# AI/ML SDK package names to detect
-AI_SDK_PACKAGES = frozenset(
+# Fallback AI/ML SDK package names (used when no KB matcher provided)
+AI_SDK_PACKAGES_FALLBACK = frozenset(
     {
         "openai",
         "@anthropic-ai/sdk",
@@ -68,21 +69,24 @@ class JavaScriptDetector(BaseDetector):
             # Regular package: pkg or pkg/subpath
             return package.split("/")[0]
 
-    def _is_ai_sdk(self, package: str) -> bool:
-        """Check if package is an AI SDK."""
+    def _is_ai_sdk_fallback(self, package: str) -> bool:
+        """Check if package is an AI SDK using fallback patterns."""
         base = self._get_base_package(package)
-        return base in AI_SDK_PACKAGES or package in AI_SDK_PACKAGES
+        return base in AI_SDK_PACKAGES_FALLBACK or package in AI_SDK_PACKAGES_FALLBACK
 
     def _find_line_number(self, content: str, match_start: int) -> int:
         """Find line number for a match position."""
         return content[:match_start].count("\n") + 1
 
-    def detect(self, content: str, path: Path) -> Iterator[Finding]:
+    def detect(
+        self, content: str, path: Path, matcher: Any | None = None
+    ) -> Iterator[Finding]:
         """Detect SDK usage in JavaScript/TypeScript file content.
 
         Args:
             content: JS/TS source code.
             path: File path (relative to scan root).
+            matcher: Optional KB Matcher for pattern lookup.
 
         Yields:
             Finding for each SDK usage detected.
@@ -94,7 +98,25 @@ class JavaScriptDetector(BaseDetector):
             package = match.group("package")
             base_package = self._get_base_package(package)
 
-            if self._is_ai_sdk(package) and base_package not in seen_packages:
+            if base_package in seen_packages:
+                continue
+
+            # Try KB matcher first, fallback to hardcoded patterns
+            if matcher:
+                sdk_match = matcher.match_sdk(package)
+                if sdk_match:
+                    seen_packages.add(base_package)
+                    yield Finding(
+                        type=FindingType.SDK_USAGE,
+                        file_path=str(path),
+                        line=self._find_line_number(content, match.start()),
+                        confidence=sdk_match.confidence,
+                        sdk_usage=SDKUsage(
+                            sdk=sdk_match.id,
+                            import_statement=match.group("statement").strip(),
+                        ),
+                    )
+            elif self._is_ai_sdk_fallback(package):
                 seen_packages.add(base_package)
                 yield Finding(
                     type=FindingType.SDK_USAGE,
@@ -112,7 +134,25 @@ class JavaScriptDetector(BaseDetector):
             package = match.group("package")
             base_package = self._get_base_package(package)
 
-            if self._is_ai_sdk(package) and base_package not in seen_packages:
+            if base_package in seen_packages:
+                continue
+
+            # Try KB matcher first, fallback to hardcoded patterns
+            if matcher:
+                sdk_match = matcher.match_sdk(package)
+                if sdk_match:
+                    seen_packages.add(base_package)
+                    yield Finding(
+                        type=FindingType.SDK_USAGE,
+                        file_path=str(path),
+                        line=self._find_line_number(content, match.start()),
+                        confidence=sdk_match.confidence,
+                        sdk_usage=SDKUsage(
+                            sdk=sdk_match.id,
+                            import_statement=match.group("statement").strip(),
+                        ),
+                    )
+            elif self._is_ai_sdk_fallback(package):
                 seen_packages.add(base_package)
                 yield Finding(
                     type=FindingType.SDK_USAGE,
