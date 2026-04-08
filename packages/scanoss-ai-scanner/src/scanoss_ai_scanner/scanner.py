@@ -17,6 +17,7 @@ from .detectors import (
     PythonDetector,
     RubyDetector,
     RustDetector,
+    ScalaDetector,
     SwiftDetector,
 )
 from .detectors.base import BaseDetector
@@ -52,7 +53,7 @@ class Scanner:
         # License detector
         self._license_detector = LicenseDetector() if detect_licenses else None
 
-        # SDK detectors by extension
+        # SDK detectors by extension (12 languages)
         self._detectors: list[BaseDetector] = [
             PythonDetector(),
             JavaScriptDetector(),  # Also handles TypeScript (.ts, .tsx)
@@ -65,6 +66,7 @@ class Scanner:
             CppDetector(),
             SwiftDetector(),
             KotlinDetector(),
+            ScalaDetector(),
         ]
 
         # Manifest parsers by filename

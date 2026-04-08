@@ -5,12 +5,18 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from scanoss_ai_scanner.detectors.cpp import CppDetector
+from scanoss_ai_scanner.detectors.csharp import CSharpDetector
 from scanoss_ai_scanner.detectors.go import GoDetector
 from scanoss_ai_scanner.detectors.java import JavaDetector
 from scanoss_ai_scanner.detectors.javascript import JavaScriptDetector
+from scanoss_ai_scanner.detectors.kotlin import KotlinDetector
+from scanoss_ai_scanner.detectors.php import PHPDetector
 from scanoss_ai_scanner.detectors.python import PythonDetector
 from scanoss_ai_scanner.detectors.ruby import RubyDetector
 from scanoss_ai_scanner.detectors.rust import RustDetector
+from scanoss_ai_scanner.detectors.scala import ScalaDetector
+from scanoss_ai_scanner.detectors.swift import SwiftDetector
 from scanoss_ai_scanner.models import FindingType
 
 
@@ -323,4 +329,238 @@ class TestRubyDetector:
 require 'net/http'
 """
         findings = list(ruby_detector.detect(code, Path("app.rb")))
+        assert len(findings) == 0
+
+
+# ============ NEW DETECTOR TESTS ============
+
+
+@pytest.fixture
+def php_detector() -> PHPDetector:
+    return PHPDetector()
+
+
+class TestPHPDetector:
+    def test_supported_extensions(self, php_detector: PHPDetector) -> None:
+        assert ".php" in php_detector.extensions
+
+    def test_detect_openai_namespace(self, php_detector: PHPDetector) -> None:
+        code = "use OpenAI\\Client;"
+        findings = list(php_detector.detect(code, Path("app.php")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "openai"
+
+    def test_detect_anthropic(self, php_detector: PHPDetector) -> None:
+        code = "use Anthropic\\Anthropic;"
+        findings = list(php_detector.detect(code, Path("chat.php")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "anthropic"
+
+    def test_no_detection_for_unrelated_uses(self, php_detector: PHPDetector) -> None:
+        code = """use Illuminate\\Support\\Facades\\Auth;
+use App\\Models\\User;
+"""
+        findings = list(php_detector.detect(code, Path("app.php")))
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def csharp_detector() -> CSharpDetector:
+    return CSharpDetector()
+
+
+class TestCSharpDetector:
+    def test_supported_extensions(self, csharp_detector: CSharpDetector) -> None:
+        assert ".cs" in csharp_detector.extensions
+
+    def test_detect_azure_openai(self, csharp_detector: CSharpDetector) -> None:
+        code = "using Azure.AI.OpenAI;"
+        findings = list(csharp_detector.detect(code, Path("Program.cs")))
+
+        assert len(findings) == 1
+        assert "azure" in findings[0].sdk_usage.sdk.lower()
+
+    def test_detect_openai(self, csharp_detector: CSharpDetector) -> None:
+        code = "using OpenAI;"
+        findings = list(csharp_detector.detect(code, Path("Chat.cs")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "openai"
+
+    def test_detect_semantic_kernel(self, csharp_detector: CSharpDetector) -> None:
+        code = "using Microsoft.SemanticKernel;"
+        findings = list(csharp_detector.detect(code, Path("Agent.cs")))
+
+        assert len(findings) == 1
+
+    def test_no_detection_for_unrelated_usings(self, csharp_detector: CSharpDetector) -> None:
+        code = """using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+"""
+        findings = list(csharp_detector.detect(code, Path("Program.cs")))
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def cpp_detector() -> CppDetector:
+    return CppDetector()
+
+
+class TestCppDetector:
+    def test_supported_extensions(self, cpp_detector: CppDetector) -> None:
+        assert ".cpp" in cpp_detector.extensions
+        assert ".h" in cpp_detector.extensions
+
+    def test_detect_onnxruntime(self, cpp_detector: CppDetector) -> None:
+        code = "#include <onnxruntime/core/session/onnxruntime_cxx_api.h>"
+        findings = list(cpp_detector.detect(code, Path("inference.cpp")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "onnxruntime"
+
+    def test_detect_torch(self, cpp_detector: CppDetector) -> None:
+        code = "#include <torch/torch.h>"
+        findings = list(cpp_detector.detect(code, Path("model.cpp")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "torch"
+
+    def test_detect_tensorflow(self, cpp_detector: CppDetector) -> None:
+        code = '#include "tensorflow/core/framework/tensor.h"'
+        findings = list(cpp_detector.detect(code, Path("model.cpp")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "tensorflow"
+
+    def test_no_detection_for_unrelated_includes(self, cpp_detector: CppDetector) -> None:
+        code = """#include <iostream>
+#include <vector>
+#include "myapp/utils.h"
+"""
+        findings = list(cpp_detector.detect(code, Path("main.cpp")))
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def swift_detector() -> SwiftDetector:
+    return SwiftDetector()
+
+
+class TestSwiftDetector:
+    def test_supported_extensions(self, swift_detector: SwiftDetector) -> None:
+        assert ".swift" in swift_detector.extensions
+
+    def test_detect_coreml(self, swift_detector: SwiftDetector) -> None:
+        code = "import CoreML"
+        findings = list(swift_detector.detect(code, Path("Model.swift")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "coreml"
+
+    def test_detect_vision(self, swift_detector: SwiftDetector) -> None:
+        code = "import Vision"
+        findings = list(swift_detector.detect(code, Path("ImageAnalysis.swift")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "vision"
+
+    def test_detect_naturallanguage(self, swift_detector: SwiftDetector) -> None:
+        code = "import NaturalLanguage"
+        findings = list(swift_detector.detect(code, Path("NLP.swift")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "naturallanguage"
+
+    def test_no_detection_for_unrelated_imports(self, swift_detector: SwiftDetector) -> None:
+        code = """import Foundation
+import UIKit
+import SwiftUI
+"""
+        findings = list(swift_detector.detect(code, Path("App.swift")))
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def kotlin_detector() -> KotlinDetector:
+    return KotlinDetector()
+
+
+class TestKotlinDetector:
+    def test_supported_extensions(self, kotlin_detector: KotlinDetector) -> None:
+        assert ".kt" in kotlin_detector.extensions
+        assert ".kts" in kotlin_detector.extensions
+
+    def test_detect_openai(self, kotlin_detector: KotlinDetector) -> None:
+        code = "import com.aallam.openai.api.chat.ChatCompletion"
+        findings = list(kotlin_detector.detect(code, Path("Chat.kt")))
+
+        assert len(findings) == 1
+
+    def test_detect_langchain4j(self, kotlin_detector: KotlinDetector) -> None:
+        code = "import dev.langchain4j.model.openai.OpenAiChatModel"
+        findings = list(kotlin_detector.detect(code, Path("Agent.kt")))
+
+        assert len(findings) == 1
+
+    def test_detect_onnxruntime(self, kotlin_detector: KotlinDetector) -> None:
+        code = "import ai.onnxruntime.OrtEnvironment"
+        findings = list(kotlin_detector.detect(code, Path("Model.kt")))
+
+        assert len(findings) == 1
+
+    def test_no_detection_for_unrelated_imports(self, kotlin_detector: KotlinDetector) -> None:
+        code = """import kotlin.coroutines.*
+import kotlinx.serialization.json.Json
+import io.ktor.client.HttpClient
+"""
+        findings = list(kotlin_detector.detect(code, Path("App.kt")))
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def scala_detector() -> ScalaDetector:
+    return ScalaDetector()
+
+
+class TestScalaDetector:
+    def test_supported_extensions(self, scala_detector: ScalaDetector) -> None:
+        assert ".scala" in scala_detector.extensions
+        assert ".sc" in scala_detector.extensions
+
+    def test_detect_spark_ml(self, scala_detector: ScalaDetector) -> None:
+        code = "import org.apache.spark.ml.Pipeline"
+        findings = list(scala_detector.detect(code, Path("Model.scala")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "spark"
+
+    def test_detect_spark_mllib(self, scala_detector: ScalaDetector) -> None:
+        code = "import org.apache.spark.mllib.linalg.Vectors"
+        findings = list(scala_detector.detect(code, Path("Vectors.scala")))
+
+        assert len(findings) == 1
+
+    def test_detect_djl(self, scala_detector: ScalaDetector) -> None:
+        code = "import ai.djl.inference.Predictor"
+        findings = list(scala_detector.detect(code, Path("Inference.scala")))
+
+        assert len(findings) == 1
+        # SDK name is extracted from base package (ai.djl.inference -> inference)
+        assert "djl" in findings[0].sdk_usage.import_statement
+
+    def test_detect_tensorflow_scala(self, scala_detector: ScalaDetector) -> None:
+        code = "import org.tensorflow.Tensor"
+        findings = list(scala_detector.detect(code, Path("TF.scala")))
+
+        assert len(findings) == 1
+
+    def test_no_detection_for_unrelated_imports(self, scala_detector: ScalaDetector) -> None:
+        code = """import scala.collection.mutable
+import akka.actor.ActorSystem
+import cats.effect.IO
+"""
+        findings = list(scala_detector.detect(code, Path("App.scala")))
         assert len(findings) == 0

@@ -13,6 +13,7 @@ from .php import PHPDetector
 from .python import PythonDetector
 from .ruby import RubyDetector
 from .rust import RustDetector
+from .scala import ScalaDetector
 from .swift import SwiftDetector
 
 __all__ = [
@@ -27,5 +28,6 @@ __all__ = [
     "PythonDetector",
     "RubyDetector",
     "RustDetector",
+    "ScalaDetector",
     "SwiftDetector",
 ]
