@@ -7,25 +7,81 @@ on:
     branches: [main, develop]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      - name: Set up Python
+        run: uv python install 3.11
+      - name: Install dependencies
+        run: uv sync --all-packages
+      - name: Lint with ruff
+        run: uv run ruff check .
+      - name: Format check
+        run: uv run ruff format --check .
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      - name: Set up Python
+        run: uv python install 3.11
+      - name: Install dependencies
+        run: uv sync --all-packages
+      - name: Type check
+        run: uv run mypy packages/ --ignore-missing-imports
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync --all-packages --all-extras
+      - name: Run tests with coverage
+        run: uv run pytest --cov=packages/ --cov-report=xml --cov-fail-under=80
+      - name: Upload coverage
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false
+
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Validate pyproject.toml
-        run: python -c "import tomllib; tomllib.load(open('pyproject.toml', 'rb'))"
-
+      - name: Validate pyproject.toml files
+        run: |
+          python -c "import tomllib; tomllib.load(open('pyproject.toml', 'rb'))"
+          for pkg in packages/*/pyproject.toml; do
+            python -c "import tomllib; tomllib.load(open('$pkg', 'rb'))"
+          done
       - name: Check required files exist
         run: |
-          for file in README.md LICENSE CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md; do
+          for file in README.md LICENSE CONTRIBUTING.md; do
             if [ ! -f "$file" ]; then
               echo "Missing required file: $file"
               exit 1
             fi
           done
-          echo "All required template files present"

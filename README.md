@@ -1,102 +1,93 @@
-# [Project Name]
+# scanoss-ai
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![PyPI version](https://img.shields.io/pypi/v/[project-name].svg)](https://pypi.org/project/[project-name]/)
-[![GitHub Issues](https://img.shields.io/github/issues/semclone/[project-name].svg)](https://github.com/semclone/[project-name]/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/semclone/[project-name].svg)](https://github.com/semclone/[project-name]/pulls)
 
-> A brief description of what this project does and who it's for
-
-## Table of Contents
-
-- [About](#about)
-- [Features](#features)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Usage](#usage)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [Support](#support)
-- [Security](#security)
-- [License](#license)
-- [Authors](#authors)
+> AI artifact scanner for supply chain security and compliance
 
 ## About
 
-[Provide a more detailed description of your project. Explain what problem it solves, why it exists, and what makes it unique.]
+**scanoss-ai** detects AI/ML artifacts in codebases for:
 
-**Part of the SEMCL.ONE Ecosystem** - This project is part of the [SEMCL.ONE](https://semcl.one) ecosystem for comprehensive OSS compliance and code analysis.
+- **Supply Chain Security** - Identify AI models, SDKs, and dependencies
+- **EU AI Act Compliance** - Generate SBOM reports for regulatory requirements
+- **Risk Assessment** - Detect API keys, model provenance, and usage patterns
 
 ## Features
 
-- Feature 1: Description
-- Feature 2: Description
-- Feature 3: Description
+### SDK Detection (12 languages)
 
-## Getting Started
+| Language | SDKs Detected |
+|----------|---------------|
+| Python | OpenAI, Anthropic, HuggingFace, LangChain, LlamaIndex |
+| JavaScript/TypeScript | OpenAI, Anthropic, LangChain, Vercel AI SDK |
+| Go | go-openai, go-anthropic |
+| Rust | async-openai, anthropic-rs |
+| Java | openai-java, LangChain4j, Spring AI |
+| And more... | Ruby, PHP, C#, C++, Swift, Scala |
 
-### Prerequisites
+### Model File Detection (12 formats)
 
-List the dependencies and requirements needed to use this project:
+GGUF, SafeTensors, ONNX, PyTorch, TensorFlow, TFLite, CoreML, JAX, Keras, MXNet, PaddlePaddle
+
+### Manifest Parsing (11 formats)
+
+requirements.txt, pyproject.toml, package.json, go.mod, Cargo.toml, pom.xml, build.gradle, Gemfile, composer.json, *.csproj, Package.swift
+
+### Output Formats
+
+- **JSON** - Machine-readable findings
+- **CycloneDX** - OWASP SBOM format
+- **SPDX** - Linux Foundation SBOM format
+
+## Installation
 
 ```bash
-# Example
-node >= 18.0.0
-npm >= 9.0.0
-```
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/semclone/[project-name].git
-
-# Navigate to the project directory
-cd [project-name]
-
-# Install dependencies
-npm install
+pip install scanoss-ai
 ```
 
 ## Usage
 
-Provide examples of how to use your project:
-
 ```bash
-# Example command
-npm start
+# Scan a directory
+scanoss-ai scan /path/to/project
+
+# Generate SBOM (CycloneDX)
+scanoss-ai scan /path/to/project -f cyclonedx -o sbom.json
+
+# Generate SBOM (SPDX)
+scanoss-ai scan /path/to/project -f spdx -o sbom.spdx.json
+
+# Identify a model file
+scanoss-ai identify model.gguf
+
+# Initialize local KB
+scanoss-ai kb init
+
+# Lookup model by PURL
+scanoss-ai kb lookup pkg:huggingface/TinyLlama/TinyLlama-1.1B-Chat-v1.0
 ```
 
-For more examples and usage details, please refer to the [Documentation](#documentation).
+## Development
 
-## Documentation
+```bash
+# Clone repository
+git clone https://github.com/scanoss/scanoss-ai.git
+cd scanoss-ai
 
-- [API Documentation](docs/API.md)
-- [User Guide](docs/USER_GUIDE.md)
-- [Developer Guide](docs/DEVELOPER_GUIDE.md)
+# Install with uv
+uv sync --all-packages --all-extras
 
-## Integration with SEMCL.ONE
+# Run tests
+uv run pytest
 
-This project integrates with other SEMCL.ONE ecosystem components:
-
-- Works with **purl2src** for repository URL discovery from Package URLs
-- Integrates with **purl2notices** for complete legal compliance workflows
-- Supports **SBOM** analysis from CycloneDX and SPDX formats
-- Complements **osslili** for license analysis and compliance checking
+# Lint
+uv run ruff check .
+```
 
 ## Contributing
 
-We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
-
-## Support
-
-For support and questions:
-
-- [GitHub Issues](https://github.com/semclone/[project-name]/issues) - Bug reports and feature requests
-- [Documentation](https://github.com/semclone/[project-name]#readme) - Complete project documentation
-- [SEMCL.ONE Community](https://semcl.one) - Ecosystem support and discussions
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
 
 ## Security
 
@@ -104,14 +95,6 @@ If you discover a security vulnerability, please follow our [Security Policy](SE
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see [LICENSE](LICENSE) for details.
 
-Copyright (c) 2025-2026 SEMCL.ONE. All Rights Reserved.
-
-## Authors
-
-See [AUTHORS.md](AUTHORS.md) for a list of contributors.
-
----
-
-_Part of the [SEMCL.ONE](https://semcl.one) ecosystem for comprehensive OSS compliance and code analysis._
+Copyright (c) 2025-2026 SCANOSS. All Rights Reserved.

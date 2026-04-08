@@ -51,3 +51,25 @@ Thumbs.db
 *.tmp
 *.cache
 .cache/
+
+# Internal development files (not for distribution)
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+VID.md
+docs/specs/
+docs/plans/
+.claude/
+.superpowers/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Type checking
+.mypy_cache/
+.ruff_cache/
+
+# Seed database (will be generated/downloaded)
+!packages/scanoss-ai-kb/src/scanoss_ai_kb/data/seed.db
