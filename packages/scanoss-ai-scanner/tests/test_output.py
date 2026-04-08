@@ -14,6 +14,7 @@ from scanoss_ai_scanner.models import (
 )
 from scanoss_ai_scanner.output.cyclonedx import CycloneDXFormatter
 from scanoss_ai_scanner.output.json_output import JSONFormatter
+from scanoss_ai_scanner.output.spdx import SPDXFormatter
 
 
 @pytest.fixture
@@ -162,3 +163,65 @@ class TestCycloneDXFormatter:
         data = json.loads(output)
 
         assert data["components"] == []
+
+
+class TestSPDXFormatter:
+    def test_format_returns_valid_json(self, sample_result: ScanResult) -> None:
+        formatter = SPDXFormatter()
+        output = formatter.format(sample_result)
+
+        data = json.loads(output)
+        assert isinstance(data, dict)
+
+    def test_format_has_spdx_structure(self, sample_result: ScanResult) -> None:
+        formatter = SPDXFormatter()
+        output = formatter.format(sample_result)
+        data = json.loads(output)
+
+        # SPDX required fields
+        assert "spdxVersion" in data
+        assert data["spdxVersion"] == "SPDX-2.3"
+        assert "SPDXID" in data
+        assert "packages" in data
+        assert "relationships" in data
+
+    def test_format_includes_packages(self, sample_result: ScanResult) -> None:
+        formatter = SPDXFormatter()
+        output = formatter.format(sample_result)
+        data = json.loads(output)
+
+        # Should have packages from findings
+        assert len(data["packages"]) >= 1
+
+        # Check package structure
+        package = data["packages"][0]
+        assert "SPDXID" in package
+        assert "name" in package
+
+    def test_format_includes_purl_in_external_refs(self, sample_result: ScanResult) -> None:
+        formatter = SPDXFormatter()
+        output = formatter.format(sample_result)
+        data = json.loads(output)
+
+        # Check that packages have external refs with PURLs
+        packages_with_purl = [
+            p
+            for p in data["packages"]
+            if "externalRefs" in p
+            and any(r.get("referenceType") == "purl" for r in p["externalRefs"])
+        ]
+        assert len(packages_with_purl) >= 1
+
+    def test_format_empty_result(self) -> None:
+        result = ScanResult(
+            root_path="/empty",
+            findings=[],
+            files_scanned=0,
+            duration_ms=0,
+        )
+        formatter = SPDXFormatter()
+        output = formatter.format(result)
+        data = json.loads(output)
+
+        assert data["packages"] == []
+        assert data["relationships"] == []

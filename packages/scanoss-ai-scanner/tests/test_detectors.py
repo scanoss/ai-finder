@@ -6,8 +6,10 @@ from pathlib import Path
 
 import pytest
 from scanoss_ai_scanner.detectors.go import GoDetector
+from scanoss_ai_scanner.detectors.java import JavaDetector
 from scanoss_ai_scanner.detectors.javascript import JavaScriptDetector
 from scanoss_ai_scanner.detectors.python import PythonDetector
+from scanoss_ai_scanner.detectors.ruby import RubyDetector
 from scanoss_ai_scanner.detectors.rust import RustDetector
 from scanoss_ai_scanner.models import FindingType
 
@@ -258,4 +260,67 @@ use serde::Serialize;
 use tokio::main;
 """
         findings = list(rust_detector.detect(code, Path("main.rs")))
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def java_detector() -> JavaDetector:
+    return JavaDetector()
+
+
+class TestJavaDetector:
+    def test_supported_extensions(self, java_detector: JavaDetector) -> None:
+        assert ".java" in java_detector.extensions
+        assert ".kt" in java_detector.extensions
+
+    def test_detect_langchain4j(self, java_detector: JavaDetector) -> None:
+        code = "import dev.langchain4j.model.openai.OpenAiChatModel;"
+        findings = list(java_detector.detect(code, Path("Main.java")))
+
+        assert len(findings) == 1
+        assert "dev.langchain4j" in findings[0].sdk_usage.sdk
+
+    def test_detect_tensorflow(self, java_detector: JavaDetector) -> None:
+        code = "import org.tensorflow.Tensor;"
+        findings = list(java_detector.detect(code, Path("Model.java")))
+
+        assert len(findings) == 1
+        assert "org.tensorflow" in findings[0].sdk_usage.sdk
+
+    def test_no_detection_for_unrelated_imports(self, java_detector: JavaDetector) -> None:
+        code = """import java.util.List;
+import com.google.gson.Gson;
+"""
+        findings = list(java_detector.detect(code, Path("Main.java")))
+        assert len(findings) == 0
+
+
+@pytest.fixture
+def ruby_detector() -> RubyDetector:
+    return RubyDetector()
+
+
+class TestRubyDetector:
+    def test_supported_extensions(self, ruby_detector: RubyDetector) -> None:
+        assert ".rb" in ruby_detector.extensions
+
+    def test_detect_ruby_openai(self, ruby_detector: RubyDetector) -> None:
+        code = "require 'ruby-openai'"
+        findings = list(ruby_detector.detect(code, Path("app.rb")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "ruby-openai"
+
+    def test_detect_openai_path(self, ruby_detector: RubyDetector) -> None:
+        code = 'require "openai/client"'
+        findings = list(ruby_detector.detect(code, Path("app.rb")))
+
+        assert len(findings) == 1
+        assert findings[0].sdk_usage.sdk == "openai"
+
+    def test_no_detection_for_unrelated_requires(self, ruby_detector: RubyDetector) -> None:
+        code = """require 'json'
+require 'net/http'
+"""
+        findings = list(ruby_detector.detect(code, Path("app.rb")))
         assert len(findings) == 0

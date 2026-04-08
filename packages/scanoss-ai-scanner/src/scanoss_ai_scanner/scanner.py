@@ -6,12 +6,21 @@ import logging
 import time
 from pathlib import Path
 
-from .detectors import GoDetector, JavaScriptDetector, PythonDetector, RustDetector
+from .detectors import (
+    GoDetector,
+    JavaDetector,
+    JavaScriptDetector,
+    PythonDetector,
+    RubyDetector,
+    RustDetector,
+)
 from .detectors.base import BaseDetector
 from .discovery import FileDiscovery
 from .manifests import NpmManifestParser, PythonManifestParser
 from .manifests.base import BaseManifestParser
 from .models import Finding, ScanResult
+from .parsers import GGUFParser, ONNXParser, PyTorchParser, SafeTensorsParser
+from .parsers.base import BaseModelParser
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +36,8 @@ class Scanner:
             JavaScriptDetector(),
             GoDetector(),
             RustDetector(),
+            JavaDetector(),
+            RubyDetector(),
         ]
 
         # Manifest parsers by filename
@@ -46,6 +57,20 @@ class Scanner:
         for parser in self._manifest_parsers:
             for name in parser.manifest_names:
                 self._name_to_parser[name] = parser
+
+        # Model file parsers
+        self._model_parsers: list[BaseModelParser] = [
+            GGUFParser(),
+            SafeTensorsParser(),
+            ONNXParser(),
+            PyTorchParser(),
+        ]
+
+        # Build extension -> model parser mapping
+        self._ext_to_model_parser: dict[str, BaseModelParser] = {}
+        for model_parser in self._model_parsers:
+            for ext in model_parser.extensions:
+                self._ext_to_model_parser[ext] = model_parser
 
     def scan(self, path: Path, kb: object | None = None) -> ScanResult:
         """Scan a directory for AI artifacts.
@@ -100,12 +125,21 @@ class Scanner:
                 except OSError as e:
                     logger.warning("Failed to read %s: %s", file_path, e)
 
-        # Scan config and model files (count only for now)
+        # Scan config files (count only for now)
         for _ in discovery.config_files():
             files_scanned += 1
 
-        for _ in discovery.model_files():
+        # Scan model files
+        for file_path in discovery.model_files():
             files_scanned += 1
+            full_path = path / file_path
+            ext = file_path.suffix.lower()
+
+            model_parser = self._ext_to_model_parser.get(ext)
+            if model_parser:
+                model_finding = model_parser.parse(full_path, file_path)
+                if model_finding:
+                    findings.append(model_finding)
 
         duration_ms = int((time.monotonic() - start_time) * 1000)
 
