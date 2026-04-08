@@ -17,7 +17,7 @@
 - KB-driven patterns with hardcoded fallback
 - Extensible via KB updates (seed.db)
 
-**Test Coverage:** 93% (296 tests)
+**Test Coverage:** 91% (320 tests)
 
 ---
 
@@ -28,14 +28,18 @@
 **Completed:**
 - Tree-sitter integration for Python AST parsing
 - PythonAnalyzer: detects AI SDK instantiations and method calls
+- JavaScriptAnalyzer: JS/TS/JSX/TSX SDK detection
+- GoAnalyzer: package.Function() and method call detection
+- RustAnalyzer: scoped calls and method detection
 - Function call graph extraction
 - Component usage context tracking
+- ComponentGraph with nodes (sdk/function/file) and edges (dependsOn/contains)
+- RelationshipAnalyzer orchestrating all language analyzers
+- CycloneDX dependencies array from graph
+- SPDX DEPENDS_ON/CONTAINS relationships
 
 **Pending:**
-- Tree-sitter analyzers for other languages (JS, Go, Rust, etc.)
 - Data flow tracking
-- Component relationship graph builder
-- Enhanced SBOM with `dependsOn`, `contains` relationships
 - Model provenance detection (fine-tuned, merged, derived)
 
 **Architecture:**
