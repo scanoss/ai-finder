@@ -53,6 +53,15 @@ class AIComponent:
 
 
 @dataclass
+class LicenseInfo:
+    """Detected license information."""
+
+    spdx_id: str
+    file_path: str
+    confidence: float = 1.0
+
+
+@dataclass
 class Finding:
     """A single finding from the scanner."""
 
@@ -72,5 +81,6 @@ class ScanResult:
 
     root_path: str
     findings: list[Finding] = field(default_factory=list)
+    licenses: list[LicenseInfo] = field(default_factory=list)
     files_scanned: int = 0
     duration_ms: int = 0

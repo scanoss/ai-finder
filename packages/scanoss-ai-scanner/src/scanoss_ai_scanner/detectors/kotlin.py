@@ -1,0 +1,92 @@
+"""Kotlin SDK detector."""
+
+from __future__ import annotations
+
+import re
+from collections.abc import Iterator
+from pathlib import Path
+
+from ..models import Finding, FindingType, SDKUsage
+from .base import BaseDetector
+
+# AI/ML SDK packages to detect
+AI_SDK_PACKAGES = frozenset(
+    {
+        "com.openai",
+        "com.anthropic",
+        "com.google.ai",
+        "com.google.mlkit",
+        "ai.onnxruntime",
+        "org.tensorflow",
+        "org.pytorch",
+        "dev.langchain4j",
+        "com.aallam.openai",
+        "com.huggingface",
+        "io.cohere",
+        "io.replicate",
+        "com.groq",
+    }
+)
+
+# Regex for import statements
+IMPORT_RE = re.compile(
+    r"^(?P<statement>import\s+(?P<package>[\w.]+)(?:\.\*)?)",
+    re.MULTILINE,
+)
+
+
+class KotlinDetector(BaseDetector):
+    """Detect SDK usage in Kotlin files."""
+
+    @property
+    def extensions(self) -> frozenset[str]:
+        return frozenset({".kt", ".kts"})
+
+    def _get_base_package(self, package: str) -> str:
+        """Get the base package (first 2-3 parts for standard naming)."""
+        parts = package.split(".")
+        # com.company.lib -> com.company
+        if len(parts) >= 2:
+            return f"{parts[0]}.{parts[1]}"
+        return parts[0]
+
+    def _is_ai_sdk(self, package: str) -> bool:
+        """Check if package is an AI SDK."""
+        return any(package.startswith(sdk_pkg) for sdk_pkg in AI_SDK_PACKAGES)
+
+    def _find_line_number(self, content: str, match_start: int) -> int:
+        """Find line number for a match position."""
+        return content[:match_start].count("\n") + 1
+
+    def detect(self, content: str, path: Path) -> Iterator[Finding]:
+        """Detect SDK usage in Kotlin file content.
+
+        Args:
+            content: Kotlin source code.
+            path: File path (relative to scan root).
+
+        Yields:
+            Finding for each SDK usage detected.
+        """
+        seen_packages: set[str] = set()
+
+        for match in IMPORT_RE.finditer(content):
+            package = match.group("package")
+            base_package = self._get_base_package(package)
+
+            if self._is_ai_sdk(package) and base_package not in seen_packages:
+                seen_packages.add(base_package)
+                # Extract a friendly SDK name from the package
+                sdk_name = base_package
+                for prefix in ["com.", "org.", "io.", "dev.", "ai."]:
+                    sdk_name = sdk_name.replace(prefix, "")
+                yield Finding(
+                    type=FindingType.SDK_USAGE,
+                    file_path=str(path),
+                    line=self._find_line_number(content, match.start()),
+                    confidence=1.0,
+                    sdk_usage=SDKUsage(
+                        sdk=sdk_name,
+                        import_statement=match.group("statement").strip(),
+                    ),
+                )

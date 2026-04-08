@@ -7,18 +7,33 @@ import time
 from pathlib import Path
 
 from .detectors import (
+    CppDetector,
+    CSharpDetector,
     GoDetector,
     JavaDetector,
     JavaScriptDetector,
+    KotlinDetector,
+    PHPDetector,
     PythonDetector,
     RubyDetector,
     RustDetector,
+    SwiftDetector,
 )
 from .detectors.base import BaseDetector
 from .discovery import FileDiscovery
-from .manifests import NpmManifestParser, PythonManifestParser
+from .license import LicenseDetector
+from .manifests import (
+    CargoManifestParser,
+    ComposerManifestParser,
+    GemfileManifestParser,
+    GoModManifestParser,
+    GradleManifestParser,
+    MavenManifestParser,
+    NpmManifestParser,
+    PythonManifestParser,
+)
 from .manifests.base import BaseManifestParser
-from .models import Finding, ScanResult
+from .models import Finding, LicenseInfo, ScanResult
 from .parsers import GGUFParser, ONNXParser, PyTorchParser, SafeTensorsParser
 from .parsers.base import BaseModelParser
 
@@ -28,22 +43,40 @@ logger = logging.getLogger(__name__)
 class Scanner:
     """Main scanner that orchestrates file discovery, detection, and parsing."""
 
-    def __init__(self) -> None:
-        """Initialize scanner with default detectors and parsers."""
+    def __init__(self, detect_licenses: bool = True) -> None:
+        """Initialize scanner with default detectors and parsers.
+
+        Args:
+            detect_licenses: Whether to detect licenses using osslili.
+        """
+        # License detector
+        self._license_detector = LicenseDetector() if detect_licenses else None
+
         # SDK detectors by extension
         self._detectors: list[BaseDetector] = [
             PythonDetector(),
-            JavaScriptDetector(),
+            JavaScriptDetector(),  # Also handles TypeScript (.ts, .tsx)
             GoDetector(),
             RustDetector(),
             JavaDetector(),
             RubyDetector(),
+            PHPDetector(),
+            CSharpDetector(),
+            CppDetector(),
+            SwiftDetector(),
+            KotlinDetector(),
         ]
 
         # Manifest parsers by filename
         self._manifest_parsers: list[BaseManifestParser] = [
-            PythonManifestParser(),
-            NpmManifestParser(),
+            PythonManifestParser(),  # requirements.txt, pyproject.toml, setup.py
+            NpmManifestParser(),  # package.json
+            CargoManifestParser(),  # Cargo.toml
+            GoModManifestParser(),  # go.mod
+            GemfileManifestParser(),  # Gemfile
+            MavenManifestParser(),  # pom.xml
+            GradleManifestParser(),  # build.gradle, build.gradle.kts
+            ComposerManifestParser(),  # composer.json
         ]
 
         # Build extension -> detector mapping
@@ -141,11 +174,27 @@ class Scanner:
                 if model_finding:
                     findings.append(model_finding)
 
+        # Detect licenses
+        licenses: list[LicenseInfo] = []
+        if self._license_detector and self._license_detector.available:
+            result = self._license_detector.detect_path(path)
+            if result and result.licenses:
+                for lic in result.licenses:
+                    if lic.spdx_id:
+                        licenses.append(
+                            LicenseInfo(
+                                spdx_id=lic.spdx_id,
+                                file_path=lic.file_path if hasattr(lic, "file_path") else "",
+                                confidence=lic.confidence if hasattr(lic, "confidence") else 1.0,
+                            )
+                        )
+
         duration_ms = int((time.monotonic() - start_time) * 1000)
 
         return ScanResult(
             root_path=str(path),
             findings=findings,
+            licenses=licenses,
             files_scanned=files_scanned,
             duration_ms=duration_ms,
         )

@@ -7,6 +7,7 @@ from scanoss_ai_scanner.models import (
     AIComponent,
     Finding,
     FindingType,
+    LicenseInfo,
     ManifestDep,
     ModelInfo,
     ScanResult,
@@ -27,6 +28,7 @@ __all__ = [
     "ManifestDep",
     "ModelInfo",
     "AIComponent",
+    "LicenseInfo",
     # Discovery
     "FileDiscovery",
     # Caching
