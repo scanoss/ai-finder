@@ -3,10 +3,29 @@
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import Iterator
 
 from .database import Database
 from .models import MCPMatch, ModelMatch, SDKMatch
+
+logger = logging.getLogger(__name__)
+
+# Common model file extensions to strip
+MODEL_EXTENSIONS = (
+    ".gguf",
+    ".safetensors",
+    ".bin",
+    ".pt",
+    ".pth",
+    ".onnx",
+    ".tflite",
+    ".mlmodel",
+    ".h5",
+    ".keras",
+    ".pb",
+    ".pkl",
+)
 
 
 class Matcher:
@@ -33,7 +52,12 @@ class Matcher:
 
         text_lower = text.lower()
         for row in cursor:
-            patterns = json.loads(row["patterns"])
+            try:
+                patterns = json.loads(row["patterns"])
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.warning("Invalid patterns JSON for SDK %s: %s", row["id"], e)
+                continue
+
             for pattern in patterns:
                 if pattern.lower() in text_lower:
                     return SDKMatch(
@@ -61,10 +85,34 @@ class Matcher:
                 seen.add(match.id)
                 yield match
 
+    def _normalize_filename(self, filename: str) -> str:
+        """Normalize model filename for matching.
+
+        Strips all known extensions and converts to lowercase.
+
+        Args:
+            filename: Model filename to normalize.
+
+        Returns:
+            Normalized filename.
+        """
+        name_lower = filename.lower()
+        # Strip all known extensions (can be stacked like .Q4_K_M.gguf)
+        changed = True
+        while changed:
+            changed = False
+            for ext in MODEL_EXTENSIONS:
+                if name_lower.endswith(ext):
+                    name_lower = name_lower[: -len(ext)]
+                    changed = True
+                    break
+        return name_lower
+
     def match_model(self, filename: str) -> ModelMatch | None:
         """Match model filename against known models.
 
-        Uses fuzzy matching on model name.
+        Uses fuzzy matching on model name. Returns the best match
+        (longest model name match) to handle base/fine-tuned variants.
 
         Args:
             filename: Model filename to match.
@@ -72,17 +120,12 @@ class Matcher:
         Returns:
             ModelMatch if found, None otherwise.
         """
-        # Normalize filename for matching
-        name_lower = filename.lower()
-        # Remove common extensions
-        for ext in (".gguf", ".safetensors", ".bin", ".pt", ".onnx"):
-            if name_lower.endswith(ext):
-                name_lower = name_lower[: -len(ext)]
-                break
+        name_lower = self._normalize_filename(filename)
 
+        # Query with ORDER BY name length DESC to prefer longer (more specific) matches
         cursor = self.db.execute(
             "SELECT purl, name, organization, architecture, format, "
-            "parameter_count, license FROM models"
+            "parameter_count, license FROM models ORDER BY length(name) DESC"
         )
 
         for row in cursor:
@@ -142,7 +185,12 @@ class Matcher:
 
         text_lower = text.lower()
         for row in cursor:
-            patterns = json.loads(row["patterns"])
+            try:
+                patterns = json.loads(row["patterns"])
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.warning("Invalid patterns JSON for MCP %s: %s", row["id"], e)
+                continue
+
             for pattern in patterns:
                 if pattern.lower() in text_lower:
                     return MCPMatch(
