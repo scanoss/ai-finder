@@ -9,12 +9,6 @@ permissions:
   contents: read
 
 jobs:
-  # Build standalone binaries first
-  binaries:
-    uses: ./.github/workflows/build-binaries.yml
-    permissions:
-      contents: read
-
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -127,7 +121,7 @@ jobs:
           skip-existing: true
 
   publish-github:
-    needs: [build, provenance, binaries]
+    needs: [build, provenance]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -139,33 +133,24 @@ jobs:
           name: python-packages
           path: dist/
 
-      - name: Download binaries
-        uses: actions/download-artifact@v4
-        with:
-          pattern: scanoss-ai-*
-          path: binaries/
-          merge-multiple: true
-
       - name: Download provenance
         uses: actions/download-artifact@v4
         with:
           pattern: "*.intoto.jsonl"
           path: provenance/
           merge-multiple: true
+        continue-on-error: true
 
       - name: Create checksums
         run: |
           cd dist
-          sha256sum * > SHA256SUMS-python.txt
-          cd ../binaries
-          sha256sum * > SHA256SUMS-binaries.txt 2>/dev/null || true
+          sha256sum * > SHA256SUMS.txt
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/*
-            binaries/*
             provenance/*
           generate_release_notes: true
           draft: false
