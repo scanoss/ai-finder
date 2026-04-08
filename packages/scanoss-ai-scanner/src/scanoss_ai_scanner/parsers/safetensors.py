@@ -76,9 +76,7 @@ class SafeTensorsParser(BaseModelParser):
             logger.debug("Failed to read SafeTensors file %s: %s", file_path, e)
             return None
 
-    def _guess_architecture(
-        self, filename: str, metadata: dict[str, str]
-    ) -> str | None:
+    def _guess_architecture(self, filename: str, metadata: dict[str, str]) -> str | None:
         """Guess model architecture from filename or metadata."""
         # Check metadata first
         if "model_type" in metadata:

@@ -95,9 +95,7 @@ class TestScanCache:
         assert cached is not None
         assert cached["sdk"] == "openai"
 
-    def test_cached_finding_invalidated_on_change(
-        self, cache: ScanCache, tmp_path: Path
-    ) -> None:
+    def test_cached_finding_invalidated_on_change(self, cache: ScanCache, tmp_path: Path) -> None:
         test_file = tmp_path / "test.py"
         test_file.write_text("import openai")
 

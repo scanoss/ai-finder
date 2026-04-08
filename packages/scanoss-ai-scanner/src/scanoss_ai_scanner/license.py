@@ -4,35 +4,19 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 # Try to import osslili, gracefully degrade if unavailable
 try:
-    from osslili import (  # type: ignore[import-untyped]
-        DetectedLicense,
-        DetectionResult,
-        LicenseCopyrightDetector,
-    )
+    from osslili import LicenseCopyrightDetector
 
     OSSLILI_AVAILABLE = True
-except ImportError:
+except (ImportError, TypeError):
+    # ImportError: osslili not installed
+    # TypeError: Python 3.8 compatibility issues with osslili's type hints
     OSSLILI_AVAILABLE = False
-
-    # Placeholders when osslili not available
-    class DetectedLicense:  # type: ignore[no-redef]
-        """Placeholder for DetectedLicense when osslili unavailable."""
-
-        pass
-
-    class DetectionResult:  # type: ignore[no-redef]
-        """Placeholder for DetectionResult when osslili unavailable."""
-
-        licenses: list[object] = []
-
-        def get_primary_license(self) -> None:
-            return None
-
     LicenseCopyrightDetector = None
 
 
@@ -52,7 +36,7 @@ class LicenseDetector:
         """Check if license detection is available."""
         return OSSLILI_AVAILABLE and self._detector is not None
 
-    def detect_path(self, path: Path) -> DetectionResult | None:
+    def detect_path(self, path: Path) -> Any:
         """Detect licenses in a path (file or directory).
 
         Args:
@@ -73,7 +57,7 @@ class LicenseDetector:
             logger.debug("License detection failed for %s: %s", path, e)
             return None
 
-    def detect_file(self, file_path: Path) -> DetectionResult | None:
+    def detect_file(self, file_path: Path) -> Any:
         """Detect licenses in a single file.
 
         Args:
@@ -84,7 +68,7 @@ class LicenseDetector:
         """
         return self.detect_path(file_path)
 
-    def get_primary_license(self, result: DetectionResult) -> DetectedLicense | None:
+    def get_primary_license(self, result: Any) -> Any:
         """Get the primary (highest confidence) license from a result.
 
         Args:
@@ -99,7 +83,7 @@ class LicenseDetector:
         return result.get_primary_license()
 
 
-def detect_license(path: Path) -> DetectionResult | None:
+def detect_license(path: Path) -> Any:
     """Convenience function to detect licenses in a path.
 
     Args:

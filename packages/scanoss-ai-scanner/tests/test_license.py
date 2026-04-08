@@ -50,9 +50,7 @@ SOFTWARE.
         assert any("MIT" in lid for lid in license_ids)
 
     @pytest.mark.skipif(not OSSLILI_AVAILABLE, reason="osslili not available")
-    def test_detect_apache_license(
-        self, detector: LicenseDetector, tmp_path: Path
-    ) -> None:
+    def test_detect_apache_license(self, detector: LicenseDetector, tmp_path: Path) -> None:
         license_file = tmp_path / "LICENSE"
         license_file.write_text(
             """                                 Apache License
