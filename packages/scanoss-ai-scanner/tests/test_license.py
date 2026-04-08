@@ -5,8 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
-from scanoss_ai_scanner.license import LicenseDetector, detect_license, OSSLILI_AVAILABLE
+from scanoss_ai_scanner.license import OSSLILI_AVAILABLE, LicenseDetector, detect_license
 
 
 class TestLicenseDetector:
@@ -51,7 +50,9 @@ SOFTWARE.
         assert any("MIT" in lid for lid in license_ids)
 
     @pytest.mark.skipif(not OSSLILI_AVAILABLE, reason="osslili not available")
-    def test_detect_license_from_apache_file(self, detector: LicenseDetector, tmp_path: Path) -> None:
+    def test_detect_apache_license(
+        self, detector: LicenseDetector, tmp_path: Path
+    ) -> None:
         license_file = tmp_path / "LICENSE"
         license_file.write_text(
             """                                 Apache License

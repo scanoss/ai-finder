@@ -6,7 +6,6 @@ from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
-
 from scanoss_ai_cli import __version__
 from scanoss_ai_cli.main import main
 

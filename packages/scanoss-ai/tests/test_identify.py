@@ -7,7 +7,6 @@ import struct
 from pathlib import Path
 
 from click.testing import CliRunner
-
 from scanoss_ai_cli.commands.identify import identify
 
 

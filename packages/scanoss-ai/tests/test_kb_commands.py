@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 
 from click.testing import CliRunner
-
 from scanoss_ai_cli.commands.kb import kb
 
 
@@ -94,7 +93,8 @@ class TestKbLookup:
 
     def test_kb_lookup_no_db_error(self, tmp_path: Path) -> None:
         runner = CliRunner()
+        db_path = str(tmp_path / "none.db")
 
-        result = runner.invoke(kb, ["lookup", "pkg:pypi/openai", "--kb-path", str(tmp_path / "none.db")])
+        result = runner.invoke(kb, ["lookup", "pkg:pypi/openai", "--kb-path", db_path])
 
         assert result.exit_code == 2
