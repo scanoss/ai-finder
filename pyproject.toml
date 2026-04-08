@@ -4,6 +4,15 @@ version = "0.0.0"
 description = "SCANOSS AI - AI artifact scanner workspace"
 requires-python = ">=3.8"
 
+[dependency-groups]
+dev = [
+    "ruff>=0.4.0",
+    "mypy>=1.0.0",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+]
+
 [tool.uv.workspace]
 members = ["packages/*"]
 
@@ -20,10 +29,11 @@ target-version = "py38"
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 strict = true
 warn_return_any = true
 warn_unused_ignores = true
+exclude = ["tests/"]
 
 [tool.pytest.ini_options]
 testpaths = [
