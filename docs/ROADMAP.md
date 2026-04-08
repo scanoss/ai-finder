@@ -21,11 +21,11 @@
 
 ---
 
-## v0.2.x - Fingerprinting & Relationships (In Progress)
+## v0.2.x - Component Relationships (COMPLETE)
 
 **Goal:** Component relationship analysis for comprehensive SBOM.
 
-**Completed:**
+**Features:**
 - Tree-sitter integration for Python AST parsing
 - PythonAnalyzer: detects AI SDK instantiations and method calls
 - JavaScriptAnalyzer: JS/TS/JSX/TSX SDK detection
@@ -37,10 +37,10 @@
 - RelationshipAnalyzer orchestrating all language analyzers
 - CycloneDX dependencies array from graph
 - SPDX DEPENDS_ON/CONTAINS relationships
+- DataFlowGraph for tracking AI component output propagation
+- Taint tracking (variables holding AI SDK outputs)
 
-**Pending:**
-- Data flow tracking
-- Model provenance detection (fine-tuned, merged, derived)
+**Test Coverage:** 91% (325 tests)
 
 **Architecture:**
 - Tree-sitter parsers per language
@@ -67,7 +67,18 @@
 **Goal:** Deep analysis capabilities.
 
 **Features:**
-- Model similarity detection (TLSH)
 - Training data inference
 - Risk scoring
 - Vulnerability correlation
+
+---
+
+## v2.0.x - Fingerprinting (Future)
+
+**Goal:** Model fingerprinting and provenance detection.
+
+**Features:**
+- Model similarity detection (TLSH)
+- Model provenance detection (fine-tuned, merged, derived)
+- Model fingerprint database
+- Known model identification
