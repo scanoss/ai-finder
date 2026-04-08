@@ -26,5 +26,9 @@ warn_return_any = true
 warn_unused_ignores = true
 
 [tool.pytest.ini_options]
-testpaths = ["packages/*/tests"]
+testpaths = [
+    "packages/scanoss-ai-kb/tests",
+    "packages/scanoss-ai-scanner/tests",
+    "packages/scanoss-ai/tests",
+]
 addopts = "-v --tb=short --cov-report=term-missing"
