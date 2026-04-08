@@ -9,6 +9,9 @@ import click
 from scanoss_ai_scanner.output import CycloneDXFormatter, JSONFormatter, SPDXFormatter
 from scanoss_ai_scanner.scanner import Scanner
 
+from scanoss_ai_cli.commands.identify import identify
+from scanoss_ai_cli.commands.kb import kb
+
 VERSION = "0.1.0"
 
 
@@ -104,6 +107,11 @@ def scan(
             click.echo(f"Output written to {output}", err=True)
     else:
         click.echo(formatted)
+
+
+# Register additional commands
+main.add_command(identify)
+main.add_command(kb)
 
 
 if __name__ == "__main__":
