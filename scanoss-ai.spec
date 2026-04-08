@@ -67,8 +67,17 @@ hiddenimports = [
     "scanoss_ai_cli.commands",
     "scanoss_ai_cli.commands.identify",
     "scanoss_ai_cli.commands.kb",
-    # Standard library
+    # Standard library and dependencies
     "click",
+    "click.core",
+    "click.decorators",
+    "click.exceptions",
+    "click.formatting",
+    "click.parser",
+    "click.termui",
+    "click.testing",
+    "click.types",
+    "click.utils",
     "sqlite3",
     "importlib.resources",
 ]
