@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
+
+from scanoss_ai_cli import __version__
 from scanoss_ai_cli.main import main
 
 
@@ -31,7 +33,7 @@ class TestCLI:
     def test_version(self, runner: CliRunner) -> None:
         result = runner.invoke(main, ["--version"])
         assert result.exit_code == 0
-        assert "0.1.0" in result.output
+        assert __version__ in result.output
 
     def test_scan_command_exists(self, runner: CliRunner) -> None:
         result = runner.invoke(main, ["scan", "--help"])
