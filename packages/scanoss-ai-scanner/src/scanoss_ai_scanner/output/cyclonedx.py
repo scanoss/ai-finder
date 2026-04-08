@@ -5,9 +5,12 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from ..models import Finding, FindingType, ScanResult
+
+if TYPE_CHECKING:
+    from ..analyzers.graph import ComponentGraph
 
 
 class CycloneDXFormatter:
@@ -23,6 +26,10 @@ class CycloneDXFormatter:
             indent: JSON indentation level.
         """
         self.indent = indent
+
+    def _generate_bom_ref(self, name: str) -> str:
+        """Generate a bom-ref for a component."""
+        return f"pkg:{name.replace('/', '-').replace('@', '')}"
 
     def _finding_to_component(self, finding: Finding) -> dict[str, Any] | None:
         """Convert a finding to a CycloneDX component.
@@ -75,11 +82,14 @@ class CycloneDXFormatter:
 
         return None
 
-    def format(self, result: ScanResult) -> str:
+    def format(
+        self, result: ScanResult, graph: "ComponentGraph | None" = None
+    ) -> str:
         """Format scan result as CycloneDX SBOM.
 
         Args:
             result: Scan result to format.
+            graph: Optional component relationship graph for dependencies.
 
         Returns:
             CycloneDX JSON string.
@@ -87,11 +97,16 @@ class CycloneDXFormatter:
         # Build components from findings
         components: list[dict[str, Any]] = []
         seen_names: set[str] = set()
+        name_to_ref: dict[str, str] = {}
 
         for finding in result.findings:
             component = self._finding_to_component(finding)
             if component and component["name"] not in seen_names:
                 seen_names.add(component["name"])
+                # Add bom-ref for dependency tracking
+                bom_ref = self._generate_bom_ref(component["name"])
+                component["bom-ref"] = bom_ref
+                name_to_ref[component["name"]] = bom_ref
                 components.append(component)
 
         bom: dict[str, Any] = {
@@ -112,4 +127,43 @@ class CycloneDXFormatter:
             "components": components,
         }
 
+        # Add dependencies from graph if provided
+        if graph:
+            dependencies = self._build_dependencies(graph, name_to_ref)
+            if dependencies:
+                bom["dependencies"] = dependencies
+
         return json.dumps(bom, indent=self.indent)
+
+    def _build_dependencies(
+        self, graph: "ComponentGraph", name_to_ref: dict[str, str]
+    ) -> list[dict[str, Any]]:
+        """Build CycloneDX dependencies from component graph.
+
+        Args:
+            graph: Component relationship graph.
+            name_to_ref: Mapping of component names to bom-refs.
+
+        Returns:
+            List of CycloneDX dependency objects.
+        """
+        from collections import defaultdict
+
+        # Group edges by source
+        source_to_targets: dict[str, set[str]] = defaultdict(set)
+
+        for edge in graph.edges:
+            if edge.relationship == "dependsOn":
+                # Map source and target to bom-refs
+                source_ref = name_to_ref.get(edge.source)
+                target_ref = name_to_ref.get(edge.target)
+
+                if source_ref and target_ref:
+                    source_to_targets[source_ref].add(target_ref)
+
+        # Build dependency list
+        dependencies: list[dict[str, Any]] = []
+        for ref, depends_on in source_to_targets.items():
+            dependencies.append({"ref": ref, "dependsOn": sorted(depends_on)})
+
+        return dependencies

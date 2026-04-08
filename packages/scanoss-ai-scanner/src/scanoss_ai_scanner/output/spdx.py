@@ -5,9 +5,12 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import datetime, timezone
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from ..models import Finding, FindingType, ScanResult
+
+if TYPE_CHECKING:
+    from ..analyzers.graph import ComponentGraph
 
 
 class SPDXFormatter:
@@ -91,11 +94,14 @@ class SPDXFormatter:
 
         return None
 
-    def format(self, result: ScanResult) -> str:
+    def format(
+        self, result: ScanResult, graph: "ComponentGraph | None" = None
+    ) -> str:
         """Format scan result as SPDX SBOM.
 
         Args:
             result: Scan result to format.
+            graph: Optional component relationship graph for dependencies.
 
         Returns:
             SPDX JSON string.
@@ -107,12 +113,14 @@ class SPDXFormatter:
         packages: list[dict[str, Any]] = []
         relationships: list[dict[str, Any]] = []
         seen_names: set[str] = set()
+        name_to_spdxid: dict[str, str] = {}
         idx = 0
 
         for finding in result.findings:
             package = self._finding_to_package(finding, idx)
             if package and package["name"] not in seen_names:
                 seen_names.add(package["name"])
+                name_to_spdxid[package["name"]] = package["SPDXID"]
                 packages.append(package)
                 # Add DESCRIBES relationship
                 relationships.append(
@@ -123,6 +131,11 @@ class SPDXFormatter:
                     }
                 )
                 idx += 1
+
+        # Add DEPENDS_ON relationships from graph
+        if graph:
+            dep_relationships = self._build_relationships(graph, name_to_spdxid)
+            relationships.extend(dep_relationships)
 
         spdx: dict[str, Any] = {
             "spdxVersion": self.SPDX_VERSION,
@@ -139,3 +152,52 @@ class SPDXFormatter:
         }
 
         return json.dumps(spdx, indent=self.indent)
+
+    def _build_relationships(
+        self, graph: "ComponentGraph", name_to_spdxid: dict[str, str]
+    ) -> list[dict[str, Any]]:
+        """Build SPDX relationships from component graph.
+
+        Args:
+            graph: Component relationship graph.
+            name_to_spdxid: Mapping of component names to SPDX IDs.
+
+        Returns:
+            List of SPDX relationship objects.
+        """
+        relationships: list[dict[str, Any]] = []
+        seen_pairs: set[tuple[str, str]] = set()
+
+        for edge in graph.edges:
+            if edge.relationship == "dependsOn":
+                source_id = name_to_spdxid.get(edge.source)
+                target_id = name_to_spdxid.get(edge.target)
+
+                if source_id and target_id:
+                    pair = (source_id, target_id)
+                    if pair not in seen_pairs:
+                        seen_pairs.add(pair)
+                        relationships.append(
+                            {
+                                "spdxElementId": source_id,
+                                "relatedSpdxElement": target_id,
+                                "relationshipType": "DEPENDS_ON",
+                            }
+                        )
+            elif edge.relationship == "contains":
+                source_id = name_to_spdxid.get(edge.source)
+                target_id = name_to_spdxid.get(edge.target)
+
+                if source_id and target_id:
+                    pair = (source_id, target_id)
+                    if pair not in seen_pairs:
+                        seen_pairs.add(pair)
+                        relationships.append(
+                            {
+                                "spdxElementId": source_id,
+                                "relatedSpdxElement": target_id,
+                                "relationshipType": "CONTAINS",
+                            }
+                        )
+
+        return relationships
