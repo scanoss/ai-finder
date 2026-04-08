@@ -1,7 +1,9 @@
 """Pattern matching against KB data."""
 
+from __future__ import annotations
+
 import json
-from typing import Iterator, Optional
+from collections.abc import Iterator
 
 from .database import Database
 from .models import MCPMatch, ModelMatch, SDKMatch
@@ -18,7 +20,7 @@ class Matcher:
         """
         self.db = db
 
-    def match_sdk(self, text: str) -> Optional[SDKMatch]:
+    def match_sdk(self, text: str) -> SDKMatch | None:
         """Match text against SDK patterns.
 
         Args:
@@ -59,7 +61,7 @@ class Matcher:
                 seen.add(match.id)
                 yield match
 
-    def match_model(self, filename: str) -> Optional[ModelMatch]:
+    def match_model(self, filename: str) -> ModelMatch | None:
         """Match model filename against known models.
 
         Uses fuzzy matching on model name.
@@ -99,7 +101,7 @@ class Matcher:
                 )
         return None
 
-    def lookup_model(self, purl: str) -> Optional[ModelMatch]:
+    def lookup_model(self, purl: str) -> ModelMatch | None:
         """Lookup model by PURL.
 
         Args:
@@ -127,7 +129,7 @@ class Matcher:
             )
         return None
 
-    def match_mcp(self, text: str) -> Optional[MCPMatch]:
+    def match_mcp(self, text: str) -> MCPMatch | None:
         """Match text against MCP server patterns.
 
         Args:

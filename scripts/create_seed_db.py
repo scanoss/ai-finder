@@ -293,7 +293,8 @@ def main() -> None:
         # Insert models
         for model in MODELS:
             db.execute(
-                "INSERT INTO models (purl, name, organization, architecture, parameter_count, license) "
+                "INSERT INTO models "
+                "(purl, name, organization, architecture, parameter_count, license) "
                 "VALUES (?, ?, ?, ?, ?, ?)",
                 (
                     model["purl"],
