@@ -1,38 +1,46 @@
 # SCANOSS AI Roadmap
 
-## v0.1.x - MVP (Current)
+## v0.1.x - MVP (COMPLETE)
 
 **Goal:** Basic AI artifact scanning with SBOM generation.
 
 **Features:**
-- SDK detection (11 languages) via KB-driven patterns
-- Model file parsing (GGUF, SafeTensors, ONNX, PyTorch)
-- Manifest dependency scanning (8 formats)
+- SDK detection (12 languages) via KB-driven patterns with fallback
+- Model file parsing (12 formats: GGUF, SafeTensors, ONNX, PyTorch, TensorFlow, TFLite, CoreML, Keras, JAX, MXNet, Paddle, Pickle)
+- Manifest dependency scanning (11 formats)
 - License detection (osslili integration)
 - Output formats: JSON, CycloneDX, SPDX
-- CLI and standalone binaries
+- CLI with scan, identify, kb commands
+- Knowledge Base with 134 seeded SDK patterns
 
 **Architecture:**
-- Patterns stored in KB (seed.db), not hardcoded
-- Extensible via KB updates (future API sync)
+- KB-driven patterns with hardcoded fallback
+- Extensible via KB updates (seed.db)
+
+**Test Coverage:** 93% (296 tests)
 
 ---
 
-## v0.2.x - Fingerprinting & Relationships (Planned)
+## v0.2.x - Fingerprinting & Relationships (In Progress)
 
 **Goal:** Component relationship analysis for comprehensive SBOM.
 
-**Features:**
-- Tree-sitter integration for AST parsing
-- Call graph analysis (who calls what)
+**Completed:**
+- Tree-sitter integration for Python AST parsing
+- PythonAnalyzer: detects AI SDK instantiations and method calls
+- Function call graph extraction
+- Component usage context tracking
+
+**Pending:**
+- Tree-sitter analyzers for other languages (JS, Go, Rust, etc.)
 - Data flow tracking
-- Component relationship graph
-- Enhanced SBOM with dependency relationships
+- Component relationship graph builder
+- Enhanced SBOM with `dependsOn`, `contains` relationships
 - Model provenance detection (fine-tuned, merged, derived)
 
 **Architecture:**
 - Tree-sitter parsers per language
-- Graph database or in-memory graph for relationships
+- In-memory graph for relationships
 - SBOM includes `dependsOn`, `contains` relationships
 
 ---
