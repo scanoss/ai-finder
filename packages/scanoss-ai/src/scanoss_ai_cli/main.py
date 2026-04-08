@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 import click
-from scanoss_ai_scanner.output import CycloneDXFormatter, JSONFormatter
+from scanoss_ai_scanner.output import CycloneDXFormatter, JSONFormatter, SPDXFormatter
 from scanoss_ai_scanner.scanner import Scanner
 
 VERSION = "0.1.0"
@@ -25,7 +25,7 @@ def main() -> None:
     "--format",
     "-f",
     "output_format",
-    type=click.Choice(["json", "cyclonedx", "text"]),
+    type=click.Choice(["json", "cyclonedx", "spdx", "text"]),
     default="text",
     help="Output format",
 )
@@ -75,6 +75,8 @@ def scan(
         formatted = JSONFormatter(indent=2).format(result)
     elif output_format == "cyclonedx":
         formatted = CycloneDXFormatter().format(result)
+    elif output_format == "spdx":
+        formatted = SPDXFormatter().format(result)
     else:
         # Text format - simple summary
         lines = [
