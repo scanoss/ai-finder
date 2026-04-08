@@ -9,14 +9,13 @@ import click
 from scanoss_ai_scanner.output import CycloneDXFormatter, JSONFormatter, SPDXFormatter
 from scanoss_ai_scanner.scanner import Scanner
 
+from scanoss_ai_cli import __version__
 from scanoss_ai_cli.commands.identify import identify
 from scanoss_ai_cli.commands.kb import kb
 
-VERSION = "0.1.0"
-
 
 @click.group()
-@click.version_option(VERSION, prog_name="scanoss-ai")
+@click.version_option(__version__, prog_name="scanoss-ai")
 def main() -> None:
     """SCANOSS AI - AI artifact scanner for supply chain security."""
     pass
