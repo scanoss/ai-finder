@@ -127,13 +127,54 @@ class CycloneDXFormatter:
             "components": components,
         }
 
-        # Add dependencies from graph if provided
+        # Add file components and dependencies from graph if provided
         if graph:
+            # Add file components for files that use AI SDKs
+            file_components, name_to_ref = self._build_file_components(graph, name_to_ref)
+            components.extend(file_components)
+
+            # Build dependencies
             dependencies = self._build_dependencies(graph, name_to_ref)
             if dependencies:
                 bom["dependencies"] = dependencies
 
         return json.dumps(bom, indent=self.indent)
+
+    def _build_file_components(
+        self, graph: "ComponentGraph", name_to_ref: dict[str, str]
+    ) -> tuple[list[dict[str, Any]], dict[str, str]]:
+        """Build file components from graph for files that use AI SDKs.
+
+        Args:
+            graph: Component relationship graph.
+            name_to_ref: Existing mapping of component names to bom-refs.
+
+        Returns:
+            Tuple of (file components list, updated name_to_ref mapping).
+        """
+        file_components: list[dict[str, Any]] = []
+        updated_refs = dict(name_to_ref)
+
+        # Find files that contain AI SDK usage
+        ai_files: set[str] = set()
+        for edge in graph.edges:
+            if edge.relationship == "contains" and edge.target in name_to_ref:
+                ai_files.add(edge.source)
+
+        for file_path in sorted(ai_files):
+            # Only include actual file paths, not function paths
+            if "::" not in file_path:
+                bom_ref = f"pkg:file/{file_path.replace('/', '-')}"
+                file_components.append(
+                    {
+                        "type": "file",
+                        "name": file_path,
+                        "bom-ref": bom_ref,
+                    }
+                )
+                updated_refs[file_path] = bom_ref
+
+        return file_components, updated_refs
 
     def _build_dependencies(
         self, graph: "ComponentGraph", name_to_ref: dict[str, str]
@@ -153,7 +194,8 @@ class CycloneDXFormatter:
         source_to_targets: dict[str, set[str]] = defaultdict(set)
 
         for edge in graph.edges:
-            if edge.relationship == "dependsOn":
+            # Handle both dependsOn and contains relationships
+            if edge.relationship in ("dependsOn", "contains"):
                 # Map source and target to bom-refs
                 source_ref = name_to_ref.get(edge.source)
                 target_ref = name_to_ref.get(edge.target)

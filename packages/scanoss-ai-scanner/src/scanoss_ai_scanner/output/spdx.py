@@ -132,8 +132,23 @@ class SPDXFormatter:
                 )
                 idx += 1
 
-        # Add DEPENDS_ON relationships from graph
+        # Add file packages and relationships from graph
         if graph:
+            # Add file packages for files that use AI SDKs
+            file_packages, name_to_spdxid, idx = self._build_file_packages(
+                graph, name_to_spdxid, idx
+            )
+            for pkg in file_packages:
+                packages.append(pkg)
+                relationships.append(
+                    {
+                        "spdxElementId": "SPDXRef-DOCUMENT",
+                        "relatedSpdxElement": pkg["SPDXID"],
+                        "relationshipType": "DESCRIBES",
+                    }
+                )
+
+            # Add dependency relationships
             dep_relationships = self._build_relationships(graph, name_to_spdxid)
             relationships.extend(dep_relationships)
 
@@ -152,6 +167,50 @@ class SPDXFormatter:
         }
 
         return json.dumps(spdx, indent=self.indent)
+
+    def _build_file_packages(
+        self,
+        graph: "ComponentGraph",
+        name_to_spdxid: dict[str, str],
+        start_idx: int,
+    ) -> tuple[list[dict[str, Any]], dict[str, str], int]:
+        """Build file packages from graph for files that use AI SDKs.
+
+        Args:
+            graph: Component relationship graph.
+            name_to_spdxid: Existing mapping of component names to SPDX IDs.
+            start_idx: Starting index for package IDs.
+
+        Returns:
+            Tuple of (file packages list, updated name_to_spdxid mapping, next idx).
+        """
+        file_packages: list[dict[str, Any]] = []
+        updated_ids = dict(name_to_spdxid)
+        idx = start_idx
+
+        # Find files that contain AI SDK usage
+        ai_files: set[str] = set()
+        for edge in graph.edges:
+            if edge.relationship == "contains" and edge.target in name_to_spdxid:
+                ai_files.add(edge.source)
+
+        for file_path in sorted(ai_files):
+            # Only include actual file paths, not function paths
+            if "::" not in file_path:
+                spdx_id = f"SPDXRef-Package-{idx}"
+                file_packages.append(
+                    {
+                        "SPDXID": spdx_id,
+                        "name": file_path,
+                        "downloadLocation": "NOASSERTION",
+                        "filesAnalyzed": False,
+                        "primaryPackagePurpose": "SOURCE",
+                    }
+                )
+                updated_ids[file_path] = spdx_id
+                idx += 1
+
+        return file_packages, updated_ids, idx
 
     def _build_relationships(
         self, graph: "ComponentGraph", name_to_spdxid: dict[str, str]

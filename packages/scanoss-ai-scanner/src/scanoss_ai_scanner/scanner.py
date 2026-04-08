@@ -5,6 +5,10 @@ from __future__ import annotations
 import logging
 import time
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .analyzers.graph import ComponentGraph
 
 from .detectors import (
     CppDetector,
@@ -133,6 +137,29 @@ class Scanner:
         for model_parser in self._model_parsers:
             for ext in model_parser.extensions:
                 self._ext_to_model_parser[ext] = model_parser
+
+        # Relationship analyzer (lazy loaded)
+        self._relationship_analyzer = None
+
+    def _get_relationship_analyzer(self):
+        """Lazily load the relationship analyzer."""
+        if self._relationship_analyzer is None:
+            from .analyzers.graph import RelationshipAnalyzer
+
+            self._relationship_analyzer = RelationshipAnalyzer()
+        return self._relationship_analyzer
+
+    def build_relationship_graph(self, path: Path) -> "ComponentGraph":
+        """Build a component relationship graph for the given path.
+
+        Args:
+            path: Root directory to analyze.
+
+        Returns:
+            ComponentGraph with component relationships.
+        """
+        analyzer = self._get_relationship_analyzer()
+        return analyzer.analyze_directory(path)
 
     def scan(self, path: Path, kb: object | None = None) -> ScanResult:
         """Scan a directory for AI artifacts.
