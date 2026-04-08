@@ -11,8 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "packages/scanoss-ai-kb/sr
 from scanoss_ai_kb.database import Database
 
 SEED_DB_PATH = (
-    Path(__file__).parent.parent
-    / "packages/scanoss-ai-kb/src/scanoss_ai_kb/data/seed.db"
+    Path(__file__).parent.parent / "packages/scanoss-ai-kb/src/scanoss_ai_kb/data/seed.db"
 )
 
 # SDK patterns by language/ecosystem
