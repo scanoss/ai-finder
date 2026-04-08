@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         run: uv python install 3.11
       - name: Install dependencies
-        run: uv sync --all-packages
+        run: uv sync --locked --all-packages
       - name: Lint with ruff
         run: uv run ruff check .
       - name: Format check
@@ -35,7 +35,7 @@ jobs:
       - name: Set up Python
         run: uv python install 3.11
       - name: Install dependencies
-        run: uv sync --all-packages
+        run: uv sync --locked --all-packages
       - name: Type check
         run: uv run mypy packages/ --ignore-missing-imports
 
@@ -53,9 +53,9 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
       - name: Install dependencies
-        run: uv sync --all-packages --all-extras
+        run: uv sync --locked --python ${{ matrix.python-version }} --all-packages --all-extras
       - name: Run tests with coverage
-        run: uv run pytest --cov=packages/ --cov-report=xml
+        run: uv run --python ${{ matrix.python-version }} pytest --cov=packages/ --cov-report=xml
         # TODO: Re-enable --cov-fail-under=80 after Phase 2 (KB library)
       - name: Upload coverage
         if: matrix.python-version == '3.11'
