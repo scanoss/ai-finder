@@ -11,6 +11,8 @@ project_root = Path(SPECPATH)
 
 # Collect all package data
 datas = [
+    # Include KB schema SQL
+    (str(project_root / "packages/scanoss-ai-kb/src/scanoss_ai_kb/schema.sql"), "scanoss_ai_kb"),
     # Include KB seed database if it exists
     (str(project_root / "packages/scanoss-ai-kb/src/scanoss_ai_kb/data"), "scanoss_ai_kb/data"),
 ]
