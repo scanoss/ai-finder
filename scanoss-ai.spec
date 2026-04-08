@@ -20,41 +20,55 @@ datas = [(src, dst) for src, dst in datas if Path(src).exists()]
 
 # Hidden imports that PyInstaller might miss
 hiddenimports = [
+    # KB package
     "scanoss_ai_kb",
     "scanoss_ai_kb.database",
     "scanoss_ai_kb.matcher",
     "scanoss_ai_kb.models",
+    # Scanner package
     "scanoss_ai_scanner",
     "scanoss_ai_scanner.scanner",
     "scanoss_ai_scanner.discovery",
     "scanoss_ai_scanner.cache",
     "scanoss_ai_scanner.license",
+    "scanoss_ai_scanner.models",
+    # Detectors
     "scanoss_ai_scanner.detectors",
+    "scanoss_ai_scanner.detectors.base",
     "scanoss_ai_scanner.detectors.python",
     "scanoss_ai_scanner.detectors.javascript",
     "scanoss_ai_scanner.detectors.go",
     "scanoss_ai_scanner.detectors.rust",
     "scanoss_ai_scanner.detectors.java",
     "scanoss_ai_scanner.detectors.ruby",
+    # Parsers
     "scanoss_ai_scanner.parsers",
+    "scanoss_ai_scanner.parsers.base",
     "scanoss_ai_scanner.parsers.gguf",
     "scanoss_ai_scanner.parsers.safetensors",
     "scanoss_ai_scanner.parsers.onnx",
     "scanoss_ai_scanner.parsers.pytorch",
+    # Manifests
     "scanoss_ai_scanner.manifests",
+    "scanoss_ai_scanner.manifests.base",
     "scanoss_ai_scanner.manifests.python",
     "scanoss_ai_scanner.manifests.npm",
+    # Output formatters
     "scanoss_ai_scanner.output",
+    "scanoss_ai_scanner.output.base",
     "scanoss_ai_scanner.output.json_output",
     "scanoss_ai_scanner.output.cyclonedx",
     "scanoss_ai_scanner.output.spdx",
+    # CLI
     "scanoss_ai_cli",
     "scanoss_ai_cli.main",
     "scanoss_ai_cli.commands",
     "scanoss_ai_cli.commands.identify",
     "scanoss_ai_cli.commands.kb",
+    # Standard library
     "click",
     "sqlite3",
+    "importlib.resources",
 ]
 
 # Try to include osslili if available

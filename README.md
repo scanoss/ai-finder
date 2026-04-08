@@ -42,6 +42,30 @@ requirements.txt, pyproject.toml, package.json, go.mod, Cargo.toml, pom.xml, bui
 
 ## Installation
 
+### Standalone Binary (Recommended)
+
+Download the pre-built binary for your platform from [GitHub Releases](https://github.com/scanoss/scanoss-ai/releases):
+
+| Platform | Binary |
+|----------|--------|
+| macOS (Apple Silicon) | `scanoss-ai-macos-arm64` |
+| macOS (Intel) | `scanoss-ai-macos-x64` |
+| Linux (x86_64) | `scanoss-ai-linux-x64` |
+| Windows | `scanoss-ai-windows-x64.exe` |
+
+```bash
+# macOS/Linux
+chmod +x scanoss-ai-*
+./scanoss-ai-macos-arm64 --version
+
+# Windows
+scanoss-ai-windows-x64.exe --version
+```
+
+No Python installation required - all dependencies are bundled.
+
+### From PyPI
+
 ```bash
 pip install scanoss-ai
 ```
