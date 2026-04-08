@@ -1,6 +1,7 @@
 """Component relationship analyzers using tree-sitter."""
 
 from .base import BaseAnalyzer, ComponentUsage, FunctionCall, RelationshipGraph
+from .dataflow import DataFlowGraph, DataFlowNode, FlowType
 from .go_analyzer import GoAnalyzer
 from .graph import ComponentGraph, RelationshipAnalyzer
 from .javascript_analyzer import JavaScriptAnalyzer
@@ -12,6 +13,9 @@ __all__ = [
     "ComponentUsage",
     "FunctionCall",
     "RelationshipGraph",
+    "DataFlowGraph",
+    "DataFlowNode",
+    "FlowType",
     "PythonAnalyzer",
     "JavaScriptAnalyzer",
     "GoAnalyzer",

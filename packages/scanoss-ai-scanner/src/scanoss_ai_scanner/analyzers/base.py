@@ -5,6 +5,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .dataflow import DataFlowGraph
 
 
 @dataclass
@@ -80,3 +84,17 @@ class BaseAnalyzer(ABC):
         Returns:
             List of function calls found.
         """
+
+    def extract_dataflow(self, content: str, path: Path) -> "DataFlowGraph":
+        """Extract data flow graph showing how AI outputs propagate.
+
+        Args:
+            content: Source code content.
+            path: File path (relative to scan root).
+
+        Returns:
+            DataFlowGraph tracking AI component output flow.
+        """
+        from .dataflow import DataFlowGraph
+
+        return DataFlowGraph()  # Default: empty graph

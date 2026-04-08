@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from scanoss_ai_scanner.analyzers.dataflow import FlowType
 from scanoss_ai_scanner.analyzers.go_analyzer import GoAnalyzer
 from scanoss_ai_scanner.analyzers.graph import ComponentGraph, RelationshipAnalyzer
 from scanoss_ai_scanner.analyzers.javascript_analyzer import JavaScriptAnalyzer
@@ -162,6 +163,66 @@ client = OpenAI()  # Line 3
         usages = analyzer.analyze(code, Path("test.py"))
 
         assert usages[0].line == 3
+
+    def test_dataflow_tracks_ai_assignment(self, analyzer: PythonAnalyzer) -> None:
+        code = """
+client = OpenAI()
+response = client.create(prompt="Hello")
+"""
+        graph = analyzer.extract_dataflow(code, Path("test.py"))
+
+        # Should track the client assignment
+        definitions = [n for n in graph.nodes if n.flow_type == FlowType.DEFINITION]
+        assert len(definitions) >= 1
+        assert any(n.variable == "client" for n in definitions)
+
+    def test_dataflow_tracks_tainted_return(self, analyzer: PythonAnalyzer) -> None:
+        code = """
+def get_client():
+    client = OpenAI()
+    return client
+"""
+        graph = analyzer.extract_dataflow(code, Path("test.py"))
+
+        # Should track the return of tainted variable
+        returns = [n for n in graph.nodes if n.flow_type == FlowType.RETURN]
+        assert len(returns) == 1
+        assert returns[0].variable == "client"
+        assert returns[0].function_context == "get_client"
+
+    def test_dataflow_tracks_tainted_argument(self, analyzer: PythonAnalyzer) -> None:
+        code = """
+client = OpenAI()
+process(client)
+"""
+        graph = analyzer.extract_dataflow(code, Path("test.py"))
+
+        # Should track client being passed as argument
+        args = [n for n in graph.nodes if n.flow_type == FlowType.ARGUMENT]
+        assert len(args) == 1
+        assert args[0].variable == "client"
+        assert args[0].target_function == "process"
+
+    def test_dataflow_is_tainted(self, analyzer: PythonAnalyzer) -> None:
+        code = """
+client = OpenAI()
+other = SomeClass()
+"""
+        graph = analyzer.extract_dataflow(code, Path("test.py"))
+
+        assert graph.is_tainted("client", None)
+        assert not graph.is_tainted("other", None)
+
+    def test_dataflow_to_dict(self, analyzer: PythonAnalyzer) -> None:
+        code = """
+client = OpenAI()
+"""
+        graph = analyzer.extract_dataflow(code, Path("test.py"))
+        data = graph.to_dict()
+
+        assert "nodes" in data
+        assert "edges" in data
+        assert "tainted_variables" in data
 
 
 class TestJavaScriptAnalyzer:
