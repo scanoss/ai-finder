@@ -9,15 +9,20 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 # Try to import osslili, gracefully degrade if unavailable
+# osslili uses Python 3.9+ type annotations that fail at runtime on Python 3.8
+OSSLILI_AVAILABLE = False
+LicenseCopyrightDetector = None
+
 try:
     from osslili import LicenseCopyrightDetector
 
+    # Test that osslili actually works (may fail on Python 3.8 due to type annotations)
+    _test_detector = LicenseCopyrightDetector()
     OSSLILI_AVAILABLE = True
 except (ImportError, TypeError):
     # ImportError: osslili not installed
     # TypeError: Python 3.8 compatibility issues with osslili's type hints
-    OSSLILI_AVAILABLE = False
-    LicenseCopyrightDetector = None
+    pass
 
 
 class LicenseDetector:

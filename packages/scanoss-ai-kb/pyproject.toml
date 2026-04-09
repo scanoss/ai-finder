@@ -22,7 +22,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "osslili>=1.6",
+    # osslili uses Python 3.9+ type annotations at runtime
+    "osslili>=1.6;python_version>='3.9'",
 ]
 
 [project.optional-dependencies]
