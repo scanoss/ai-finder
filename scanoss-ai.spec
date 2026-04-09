@@ -107,11 +107,13 @@ except ImportError:
     pass
 
 # Try to include tree-sitter for relationship analysis (Python 3.10+)
+tree_sitter_binaries = []
+tree_sitter_datas = []
 try:
-    import tree_sitter
-    import tree_sitter_python
-    import tree_sitter_javascript
-    hiddenimports.extend([
+    from PyInstaller.utils.hooks import collect_dynamic_libs, collect_data_files
+
+    # Collect binaries and data for tree-sitter packages
+    tree_sitter_packages = [
         "tree_sitter",
         "tree_sitter_python",
         "tree_sitter_javascript",
@@ -123,12 +125,24 @@ try:
         "tree_sitter_php",
         "tree_sitter_c_sharp",
         "tree_sitter_cpp",
-    ])
+    ]
+
+    for pkg in tree_sitter_packages:
+        try:
+            tree_sitter_binaries.extend(collect_dynamic_libs(pkg))
+            tree_sitter_datas.extend(collect_data_files(pkg))
+            hiddenimports.append(pkg)
+        except Exception:
+            pass  # Package not installed
+
 except ImportError:
     pass
 
 # Add osslili data files if available
 datas.extend(osslili_datas)
+
+# Add tree-sitter binaries and data
+datas.extend(tree_sitter_datas)
 
 a = Analysis(
     [str(project_root / "packages/scanoss-ai/src/scanoss_ai_cli/main.py")],
@@ -137,7 +151,7 @@ a = Analysis(
         str(project_root / "packages/scanoss-ai-scanner/src"),
         str(project_root / "packages/scanoss-ai-kb/src"),
     ],
-    binaries=[],
+    binaries=tree_sitter_binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
