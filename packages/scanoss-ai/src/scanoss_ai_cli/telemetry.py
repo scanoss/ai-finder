@@ -102,11 +102,14 @@ def track_cli_started() -> None:
     """Track CLI startup event."""
     client = _get_client()
     if client:
+        # Note: Don't use event_type parameter - it may filter events differently
         client.track(
             "cli.started",
             properties={"version": __version__},
-            event_type="lifecycle",
         )
+        # Flush immediately to ensure this event is sent
+        with suppress(Exception):
+            client.flush()
 
 
 def track_command_started(command: str, properties: dict[str, Any] | None = None) -> None:
@@ -117,6 +120,9 @@ def track_command_started(command: str, properties: dict[str, Any] | None = None
         if properties:
             props.update(properties)
         client.track(f"command.{command}.started", properties=props)
+        # Flush immediately to ensure this event is sent before long-running commands
+        with suppress(Exception):
+            client.flush()
 
 
 def track_command_completed(
@@ -136,6 +142,9 @@ def track_command_completed(
         if properties:
             props.update(properties)
         client.track(f"command.{command}.completed", properties=props)
+        # Flush immediately to ensure completion event is sent
+        with suppress(Exception):
+            client.flush()
 
 
 def track_error(exception: Exception, context: str | None = None) -> None:
