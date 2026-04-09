@@ -247,6 +247,12 @@ def scan(
                 if enricher_path is None:
                     enricher_path = Path("~/.scanoss-ai/kb/scanoss-ai.db").expanduser()
 
+                # Auto-initialize KB from seed if not present
+                if not enricher_path.exists():
+                    from scanoss_ai_cli.commands.kb import _ensure_kb_exists
+
+                    _ensure_kb_exists(enricher_path)
+
                 kb_exists = enricher_path.exists()
                 ctx["kb_available"] = kb_exists
 
