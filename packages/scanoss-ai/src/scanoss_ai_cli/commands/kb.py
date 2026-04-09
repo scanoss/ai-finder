@@ -84,7 +84,9 @@ def kb() -> None:
 )
 def init(kb_path: Path | None) -> None:
     """Initialize the local knowledge base database."""
-    from scanoss_ai_kb import Database
+    import shutil
+
+    from scanoss_ai_kb import Database, get_seed_db_path
 
     with telemetry.track_command("kb.init"):
         db_path = kb_path if kb_path else _default_kb_path()
@@ -93,9 +95,15 @@ def init(kb_path: Path | None) -> None:
             # Create parent directory if needed
             db_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with Database(db_path) as db:
-                db.initialize()
-            click.echo(f"Knowledge base initialized at {db_path}")
+            # Copy seed database if available, otherwise create empty
+            seed_path = get_seed_db_path()
+            if seed_path and seed_path.exists():
+                shutil.copy(seed_path, db_path)
+                click.echo(f"Knowledge base initialized from seed at {db_path}")
+            else:
+                with Database(db_path) as db:
+                    db.initialize()
+                click.echo(f"Knowledge base initialized (empty) at {db_path}")
         except Exception as exc:
             click.echo(f"Error initializing KB: {exc}", err=True)
             sys.exit(2)

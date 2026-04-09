@@ -16,6 +16,7 @@ __all__ = [
     "ModelMatch",
     "MCPMatch",
     "AncestryEdge",
+    "get_seed_db_path",
 ]
 
 
@@ -26,6 +27,15 @@ def get_default_db_path() -> Path:
 
 def get_seed_db_path() -> Optional[Path]:
     """Get path to bundled seed database."""
+    import sys
+
+    # PyInstaller bundle: data is extracted to sys._MEIPASS
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        pyinstaller_path = Path(sys._MEIPASS) / "scanoss_ai_kb" / "data" / "seed.db"
+        if pyinstaller_path.exists():
+            return pyinstaller_path
+
+    # Standard Python: use importlib.resources
     try:
         import importlib.resources as resources
 
