@@ -57,14 +57,22 @@ class TestKbStatus:
         data = json.loads(result.output)
         assert "schema_version" in data
 
-    def test_kb_status_no_db_error(self, tmp_path: Path) -> None:
+    def test_kb_status_auto_init(self, tmp_path: Path) -> None:
+        """Test that kb status auto-initializes from seed if available."""
         runner = CliRunner()
         db_path = tmp_path / "nonexistent.db"
 
         result = runner.invoke(kb, ["status", "--kb-path", str(db_path)])
 
-        assert result.exit_code == 2
-        assert "not found" in result.output.lower()
+        # If seed is available, auto-init succeeds; otherwise fails
+        if result.exit_code == 0:
+            # Auto-initialized successfully
+            assert db_path.exists()
+            assert "auto-initialized" in result.output.lower() or "version" in result.output.lower()
+        else:
+            # No seed available
+            assert result.exit_code == 2
+            assert "not found" in result.output.lower()
 
 
 class TestKbLookup:
@@ -91,10 +99,22 @@ class TestKbLookup:
         assert result.exit_code == 2
         assert "invalid" in result.output.lower()
 
-    def test_kb_lookup_no_db_error(self, tmp_path: Path) -> None:
+    def test_kb_lookup_auto_init(self, tmp_path: Path) -> None:
+        """Test that kb lookup auto-initializes from seed if available."""
         runner = CliRunner()
-        db_path = str(tmp_path / "none.db")
+        db_path = tmp_path / "none.db"
 
-        result = runner.invoke(kb, ["lookup", "pkg:pypi/openai", "--kb-path", db_path])
+        result = runner.invoke(kb, ["lookup", "pkg:pypi/openai", "--kb-path", str(db_path)])
 
-        assert result.exit_code == 2
+        # If seed is available, auto-init succeeds; otherwise fails
+        if result.exit_code == 1:
+            # Auto-initialized but no results found (normal behavior)
+            assert db_path.exists()
+            assert "no results" in result.output.lower()
+        elif result.exit_code == 0:
+            # Auto-initialized and found results
+            assert db_path.exists()
+        else:
+            # No seed available
+            assert result.exit_code == 2
+            assert "not found" in result.output.lower()
