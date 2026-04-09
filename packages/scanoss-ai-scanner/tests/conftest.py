@@ -4,6 +4,12 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from scanoss_ai_scanner.analyzers import is_tree_sitter_available
+
+# Skip test_analyzers.py if tree-sitter is not available (Python < 3.10)
+collect_ignore = []
+if not is_tree_sitter_available():
+    collect_ignore.append("test_analyzers.py")
 
 
 @pytest.fixture

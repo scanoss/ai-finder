@@ -1,28 +1,18 @@
 """Tests for tree-sitter based analyzers.
 
 These tests require tree-sitter which needs Python 3.10+.
+This file is skipped during collection on Python < 3.10 (see conftest.py).
 """
 
 from pathlib import Path
 
 import pytest
-from scanoss_ai_scanner.analyzers import is_tree_sitter_available
 from scanoss_ai_scanner.analyzers.dataflow import FlowType
-from scanoss_ai_scanner.analyzers.graph import ComponentGraph
-
-# Skip all tests in this module if tree-sitter is not available
-pytestmark = pytest.mark.skipif(
-    not is_tree_sitter_available(),
-    reason="tree-sitter analyzers require Python 3.10+",
-)
-
-# Import analyzers only if available (to avoid import errors)
-if is_tree_sitter_available():
-    from scanoss_ai_scanner.analyzers.go_analyzer import GoAnalyzer
-    from scanoss_ai_scanner.analyzers.graph import RelationshipAnalyzer
-    from scanoss_ai_scanner.analyzers.javascript_analyzer import JavaScriptAnalyzer
-    from scanoss_ai_scanner.analyzers.python_analyzer import PythonAnalyzer
-    from scanoss_ai_scanner.analyzers.rust_analyzer import RustAnalyzer
+from scanoss_ai_scanner.analyzers.go_analyzer import GoAnalyzer
+from scanoss_ai_scanner.analyzers.graph import ComponentGraph, RelationshipAnalyzer
+from scanoss_ai_scanner.analyzers.javascript_analyzer import JavaScriptAnalyzer
+from scanoss_ai_scanner.analyzers.python_analyzer import PythonAnalyzer
+from scanoss_ai_scanner.analyzers.rust_analyzer import RustAnalyzer
 
 
 class TestPythonAnalyzer:
