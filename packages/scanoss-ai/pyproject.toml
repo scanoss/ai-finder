@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scanoss-ai"
-version = "0.2.5"
+version = "0.2.6"
 description = "SCANOSS AI - AI artifact scanner for supply chain security"
 license = {text = "Apache-2.0"}
 readme = "README.md"
