@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict
+from typing import TYPE_CHECKING, Any, Callable
 
 from .detectors import (
     CppDetector,
@@ -63,7 +63,7 @@ ProgressCallback = Callable[[int, int, str], None]
 
 # Telemetry callback: (event_name, properties) -> None
 # Uses Dict for Python 3.8 compatibility
-TelemetryCallback = Callable[[str, Dict[str, Any]], None]
+TelemetryCallback = Callable[[str, dict[str, Any]], None]
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +199,7 @@ class Scanner:
         findings: list[Finding] = []
         files_scanned = 0
 
-        def track(event: str, props: Dict[str, Any] | None = None) -> None:
+        def track(event: str, props: dict[str, Any] | None = None) -> None:
             """Emit telemetry event."""
             if telemetry_callback:
                 telemetry_callback(event, props or {})
@@ -235,7 +235,7 @@ class Scanner:
         # Scan source files for SDK usage
         track("scan.detection.started", {"phase": "sdk"})
         sdk_findings = 0
-        sdk_by_name: Dict[str, int] = {}
+        sdk_by_name: dict[str, int] = {}
         for file_path in file_cache["source"]:
             files_scanned += 1
             report_progress("source")
@@ -266,7 +266,7 @@ class Scanner:
         # Scan manifest files for dependencies
         track("scan.detection.started", {"phase": "manifest"})
         manifest_findings = 0
-        manifest_by_name: Dict[str, int] = {}
+        manifest_by_name: dict[str, int] = {}
         for file_path in file_cache["manifest"]:
             files_scanned += 1
             report_progress("manifest")
@@ -302,7 +302,7 @@ class Scanner:
         # Scan model files
         track("scan.detection.started", {"phase": "model"})
         model_findings = 0
-        model_formats: Dict[str, int] = {}
+        model_formats: dict[str, int] = {}
         for file_path in file_cache["model"]:
             files_scanned += 1
             report_progress("model")
