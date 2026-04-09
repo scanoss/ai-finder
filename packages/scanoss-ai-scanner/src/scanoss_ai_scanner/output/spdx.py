@@ -246,6 +246,10 @@ class SPDXFormatter:
                     if pkg_data.homepage and "homepage" not in package:
                         package["homepage"] = pkg_data.homepage
 
+                    # Set downloadLocation from homepage if still NOASSERTION
+                    if pkg_data.homepage and package.get("downloadLocation") == "NOASSERTION":
+                        package["downloadLocation"] = pkg_data.homepage
+
     def format(
         self,
         result: ScanResult,

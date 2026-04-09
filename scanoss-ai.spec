@@ -82,12 +82,53 @@ hiddenimports = [
     "importlib.resources",
 ]
 
-# Try to include osslili if available
+# Try to include osslili if available (with data files)
+osslili_datas = []  # Define before try block
 try:
     import osslili
-    hiddenimports.append("osslili")
+    import os
+    osslili_path = os.path.dirname(osslili.__file__)
+    hiddenimports.extend([
+        "osslili",
+        "osslili.core",
+        "osslili.core.models",
+        "osslili.core.generator",
+        "osslili.data",
+        "osslili.data.spdx_licenses",
+        "osslili.detectors",
+        "osslili.detectors.license_detector",
+        "osslili.utils",
+        "osslili.extractors",
+        "osslili.formatters",
+    ])
+    # Include osslili data files
+    osslili_datas.append((os.path.join(osslili_path, "data"), "osslili/data"))
 except ImportError:
     pass
+
+# Try to include tree-sitter for relationship analysis (Python 3.10+)
+try:
+    import tree_sitter
+    import tree_sitter_python
+    import tree_sitter_javascript
+    hiddenimports.extend([
+        "tree_sitter",
+        "tree_sitter_python",
+        "tree_sitter_javascript",
+        "tree_sitter_typescript",
+        "tree_sitter_go",
+        "tree_sitter_rust",
+        "tree_sitter_java",
+        "tree_sitter_ruby",
+        "tree_sitter_php",
+        "tree_sitter_c_sharp",
+        "tree_sitter_cpp",
+    ])
+except ImportError:
+    pass
+
+# Add osslili data files if available
+datas.extend(osslili_datas)
 
 a = Analysis(
     [str(project_root / "packages/scanoss-ai/src/scanoss_ai_cli/main.py")],
