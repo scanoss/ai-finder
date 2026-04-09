@@ -28,6 +28,37 @@ def _escape_like(value: str) -> str:
     return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
+def _ensure_kb_exists(db_path: Path) -> bool:
+    """Ensure KB exists, auto-initializing from seed if needed.
+
+    Returns True if KB exists (or was created), False on error.
+    """
+    import shutil
+
+    from scanoss_ai_kb import get_seed_db_path
+
+    if db_path.exists():
+        return True
+
+    # Auto-initialize from seed
+    seed_path = get_seed_db_path()
+    if seed_path and seed_path.exists():
+        try:
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(seed_path, db_path)
+            click.echo(f"Knowledge base auto-initialized at {db_path}", err=True)
+            return True
+        except Exception as e:
+            click.echo(f"Failed to initialize KB: {e}", err=True)
+            return False
+
+    click.echo(
+        f"Knowledge base not found at {db_path} and no seed database available.",
+        err=True,
+    )
+    return False
+
+
 def _parse_purl(purl: str) -> dict[str, str | None]:
     """Parse a Package URL (PURL) into components.
 
@@ -135,12 +166,8 @@ def status(kb_path: Path | None, output_format: str) -> None:
 
         db_path = kb_path if kb_path else _default_kb_path()
 
-        if not db_path.exists():
+        if not _ensure_kb_exists(db_path):
             telemetry.track_feature("kb.status", "db", "not_found")
-            click.echo(
-                f"Knowledge base not found at {db_path}. Run 'scanoss-ai kb init' first.",
-                err=True,
-            )
             sys.exit(2)
 
         try:
@@ -225,11 +252,7 @@ def lookup(purl: str, kb_path: Path | None, output_format: str) -> None:
 
     db_path = kb_path if kb_path else _default_kb_path()
 
-    if not db_path.exists():
-        click.echo(
-            f"Knowledge base not found at {db_path}. Run 'scanoss-ai kb init' first.",
-            err=True,
-        )
+    if not _ensure_kb_exists(db_path):
         sys.exit(2)
 
     exit_code = 0
@@ -362,21 +385,17 @@ def crawl(
 
         scanoss-ai kb crawl all
     """
-    from scanoss_ai_kb import Database
-
     with telemetry.track_command("kb.crawl", {"source": source}) as ctx:
         # Emit discrete source event
         telemetry.track_feature("kb.crawl", "source", source)
 
         db_path = kb_path if kb_path else _default_kb_path()
 
-        # Ensure DB exists
+        # Ensure DB exists (auto-init from seed if needed)
         if not db_path.exists():
             telemetry.track_feature("kb.crawl", "db_init", "created")
-            click.echo(f"Initializing KB at {db_path}...")
-            db_path.parent.mkdir(parents=True, exist_ok=True)
-            with Database(db_path) as db:
-                db.initialize()
+            if not _ensure_kb_exists(db_path):
+                sys.exit(2)
 
         results = []
         total_items_added = 0
