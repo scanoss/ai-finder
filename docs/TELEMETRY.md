@@ -92,8 +92,8 @@ Each command emits `started` and `completed` events with properties for detailed
 
 | Command | Started Properties | Completed Properties |
 |---------|-------------------|---------------------|
-| scan | `format`, `quiet`, `enrich`, `relationships` | `files_scanned`, `findings_count`, `output_format` |
-| identify | `format`, `enrich` | `recognized`, `kb_match`, `output_format`, `model_format` |
+| scan | `format`, `quiet`, `enrich`, `relationships` | `files_scanned`, `findings_count`, `output_format`, `model_count`, `sdk_count`, `manifest_count`, `kb_available`, `graph_nodes`, `graph_edges` |
+| identify | `format`, `enrich` | `recognized`, `kb_match`, `output_format`, `model_format`, `kb_available` |
 | kb.init | - | - |
 | kb.status | `format` | `schema_version`, `total_entries`, `output_format` |
 | kb.lookup | `format` | `results_count` |
@@ -116,6 +116,12 @@ These events enable funnel visualization without parsing properties:
 | `scan.findings.none` | No AI artifacts found |
 | `scan.findings.few` | 1-10 AI artifacts found |
 | `scan.findings.many` | 10+ AI artifacts found |
+| `scan.artifact_type.model` | Model files found |
+| `scan.artifact_type.sdk` | SDK usage found |
+| `scan.artifact_type.manifest` | Manifest dependencies found |
+| `scan.graph_built.success` | Relationship graph built |
+| `scan.kb_source.local` | Using local KB cache |
+| `scan.kb_source.live_only` | No local KB, using live APIs |
 
 #### identify
 
@@ -124,12 +130,15 @@ These events enable funnel visualization without parsing properties:
 | `identify.format.json` | Output format is JSON |
 | `identify.format.text` | Output format is text |
 | `identify.enrich.enabled` | KB enrichment is enabled |
+| `identify.unknown_extension.{ext}` | Unknown file extension encountered |
 | `identify.recognized.yes` | Model file was recognized |
 | `identify.recognized.no` | Model file was not recognized |
 | `identify.model_format.gguf` | Model format is GGUF |
 | `identify.model_format.safetensors` | Model format is SafeTensors |
 | `identify.model_format.onnx` | Model format is ONNX |
 | `identify.model_format.pytorch` | Model format is PyTorch |
+| `identify.kb_source.local` | Using local KB cache |
+| `identify.kb_source.live_only` | No local KB, using live APIs |
 | `identify.kb_match.found` | KB lookup found a match |
 | `identify.kb_match.not_found` | KB lookup found no match |
 
@@ -178,6 +187,33 @@ These events enable funnel visualization without parsing properties:
 | `kb.crawl.result.success` | Overall crawl added items |
 | `kb.crawl.result.empty` | Overall crawl added nothing |
 | `kb.crawl.had_errors.yes` | Overall crawl had errors |
+
+#### Enrichment Events (from KBEnricher)
+
+These events are emitted during KB enrichment in scan and identify commands:
+
+| Event | Properties | Description |
+|-------|------------|-------------|
+| `enrichment.cache_hit` | `type` | Session cache hit (avoids repeated lookups) |
+| `enrichment.kb_hit` | `type`, `name`/`ecosystem` | Found in local KB cache |
+| `enrichment.live_fetch` | `type`, `source` | Successfully fetched from live API |
+| `enrichment.model_not_found` | `source`, `name` | Model not found in HuggingFace |
+| `enrichment.package_not_found` | `source`, `name` | Package not found in PyPI/npm |
+| `enrichment.live_fetch_failed` | `type`, `source`, `error_category` | Live API fetch failed |
+| `enrichment.unsupported_ecosystem` | `ecosystem` | Unsupported package ecosystem |
+
+**Enrichment error categories:**
+- `network_error` - Connection failed
+- `timeout` - Request timed out
+- `ssl_error` - SSL/TLS error
+- `not_found` - 404 response
+- `rate_limited` - 429 response
+- `auth_error` - 401/403 response
+- `server_error` - 5xx response
+- `http_error` - Other HTTP error
+- `missing_dependency` - Required library not installed
+- `parse_error` - JSON/response parsing failed
+- `unknown` - Unclassified error
 
 ### Error Events (granular)
 

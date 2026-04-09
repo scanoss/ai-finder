@@ -7,10 +7,21 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .base import BaseAnalyzer, ComponentUsage, RelationshipGraph
-from .go_analyzer import GoAnalyzer
-from .javascript_analyzer import JavaScriptAnalyzer
-from .python_analyzer import PythonAnalyzer
-from .rust_analyzer import RustAnalyzer
+
+# Tree-sitter analyzers are optional (require Python 3.10+)
+_ANALYZERS_AVAILABLE = False
+try:
+    from .go_analyzer import GoAnalyzer
+    from .javascript_analyzer import JavaScriptAnalyzer
+    from .python_analyzer import PythonAnalyzer
+    from .rust_analyzer import RustAnalyzer
+
+    _ANALYZERS_AVAILABLE = True
+except ImportError:
+    GoAnalyzer = None  # type: ignore[misc, assignment]
+    JavaScriptAnalyzer = None  # type: ignore[misc, assignment]
+    PythonAnalyzer = None  # type: ignore[misc, assignment]
+    RustAnalyzer = None  # type: ignore[misc, assignment]
 
 
 @dataclass
@@ -103,11 +114,28 @@ class ComponentGraph:
         }
 
 
+class TreeSitterNotAvailableError(Exception):
+    """Raised when tree-sitter analyzers are not available."""
+
+    pass
+
+
 class RelationshipAnalyzer:
     """Analyzes codebase to build component relationship graph."""
 
     def __init__(self) -> None:
-        """Initialize with language-specific analyzers."""
+        """Initialize with language-specific analyzers.
+
+        Raises:
+            TreeSitterNotAvailableError: If tree-sitter is not installed or
+                incompatible with current Python version.
+        """
+        if not _ANALYZERS_AVAILABLE:
+            raise TreeSitterNotAvailableError(
+                "Relationship analysis requires tree-sitter which needs Python 3.10+. "
+                "Install with: pip install 'scanoss-ai[relationships]' (Python 3.10+)"
+            )
+
         self._analyzers: list[BaseAnalyzer] = [
             PythonAnalyzer(),
             JavaScriptAnalyzer(),

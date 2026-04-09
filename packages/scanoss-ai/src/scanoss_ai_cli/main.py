@@ -181,15 +181,26 @@ def scan(
             if relationships:
                 if not quiet:
                     click.echo("Building component relationships...", err=True)
-                graph = scanner.build_relationship_graph(path)
-                ctx["graph_nodes"] = len(graph.nodes)
-                ctx["graph_edges"] = len(graph.edges)
-                telemetry.track_feature("scan", "graph_built", "success")
-                if not quiet:
-                    click.echo(
-                        f"Found {len(graph.nodes)} components, {len(graph.edges)} relationships",
-                        err=True,
-                    )
+                try:
+                    graph = scanner.build_relationship_graph(path)
+                    ctx["graph_nodes"] = len(graph.nodes)
+                    ctx["graph_edges"] = len(graph.edges)
+                    telemetry.track_feature("scan", "graph_built", "success")
+                    if not quiet:
+                        nodes = len(graph.nodes)
+                        edges = len(graph.edges)
+                        click.echo(f"Found {nodes} components, {edges} relationships", err=True)
+                except Exception as e:
+                    # Tree-sitter not available (Python < 3.10)
+                    if "tree-sitter" in str(e).lower() or "3.10" in str(e):
+                        click.echo(
+                            "Warning: --relationships requires Python 3.10+. "
+                            "Skipping relationship analysis.",
+                            err=True,
+                        )
+                        telemetry.track_feature("scan", "graph_built", "unavailable")
+                    else:
+                        raise
 
             # Format output with optional KB enrichment
             def format_output(enricher=None):
