@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# Telemetry callback type (Dict for Python 3.8 compatibility - type aliases are evaluated at runtime)
+# Telemetry callback type
+# Uses Dict for Python 3.8 - type aliases are evaluated at runtime, not by PEP 563
 TelemetryCallback = Callable[[str, Dict[str, Any]], None]
 
 # Type var for cache values
