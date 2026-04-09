@@ -112,7 +112,6 @@ def scan(
 
             # Progress callback for large codebases
             progress_bar = None
-            last_phase = [None]  # Use list to allow mutation in closure
 
             def progress_callback(current: int, total: int, phase: str) -> None:
                 nonlocal progress_bar
@@ -130,12 +129,13 @@ def scan(
                 if progress_bar is not None:
                     progress_bar.update(1)
 
-            result = scanner.scan(path, progress_callback=progress_callback)
-
-            # Close progress bar if opened
-            if progress_bar is not None:
-                progress_bar.__exit__(None, None, None)
-                click.echo("", err=True)  # Newline after progress bar
+            try:
+                result = scanner.scan(path, progress_callback=progress_callback)
+            finally:
+                # Ensure progress bar is cleaned up even on error
+                if progress_bar is not None:
+                    progress_bar.__exit__(None, None, None)
+                    click.echo("", err=True)  # Newline after progress bar
 
             # Add anonymous metrics to telemetry
             ctx["files_scanned"] = result.files_scanned

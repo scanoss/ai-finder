@@ -129,39 +129,38 @@ class NpmCrawler:
             author = author.get("name")
 
         try:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
 
-            cursor.execute(
-                """
-                INSERT INTO packages (
-                    purl, name, ecosystem, version, license, summary,
-                    homepage, author, is_ai_package, ai_category
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(purl) DO UPDATE SET
-                    version = excluded.version,
-                    license = COALESCE(excluded.license, license),
-                    summary = excluded.summary,
-                    homepage = excluded.homepage,
-                    author = excluded.author,
-                    updated_at = datetime('now')
-                """,
-                (
-                    purl,
-                    name,
-                    "npm",
-                    version,
-                    license_id,
-                    version_info.get("description") or data.get("description"),
-                    version_info.get("homepage") or data.get("homepage"),
-                    author,
-                    1,
-                    self._categorize(name),
-                ),
-            )
+                cursor.execute(
+                    """
+                    INSERT INTO packages (
+                        purl, name, ecosystem, version, license, summary,
+                        homepage, author, is_ai_package, ai_category
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(purl) DO UPDATE SET
+                        version = excluded.version,
+                        license = COALESCE(excluded.license, license),
+                        summary = excluded.summary,
+                        homepage = excluded.homepage,
+                        author = excluded.author,
+                        updated_at = datetime('now')
+                    """,
+                    (
+                        purl,
+                        name,
+                        "npm",
+                        version,
+                        license_id,
+                        version_info.get("description") or data.get("description"),
+                        version_info.get("homepage") or data.get("homepage"),
+                        author,
+                        1,
+                        self._categorize(name),
+                    ),
+                )
 
-            conn.commit()
-            conn.close()
+                conn.commit()
             return True
 
         except sqlite3.Error as e:

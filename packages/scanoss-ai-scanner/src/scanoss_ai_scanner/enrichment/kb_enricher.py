@@ -112,9 +112,18 @@ class KBEnricher:
         self._pypi_enricher = None
         self._npm_enricher = None
 
-        # In-memory cache for session (avoid duplicate API calls)
+        # In-memory LRU cache for session (avoid duplicate API calls, bounded size)
+        self._cache_max_size = 1000
         self._model_cache: dict[str, ModelEnrichment | None] = {}
         self._package_cache: dict[str, PackageEnrichment | None] = {}
+
+    def _cache_set(self, cache: dict, key: str, value) -> None:
+        """Set cache value with LRU eviction if needed."""
+        if len(cache) >= self._cache_max_size:
+            # Remove oldest entry (first key in dict - Python 3.7+ preserves order)
+            oldest_key = next(iter(cache))
+            del cache[oldest_key]
+        cache[key] = value
 
     def __enter__(self) -> "KBEnricher":
         """Open database connection."""
@@ -199,7 +208,7 @@ class KBEnricher:
                         base_model_purl=row["base_model_purl"],
                         datasets=datasets,
                     )
-                    self._model_cache[name] = result
+                    self._cache_set(self._model_cache, name, result)
                     return result
             except sqlite3.Error as e:
                 logger.debug("Model KB lookup failed: %s", e)
@@ -207,10 +216,10 @@ class KBEnricher:
         # Fallback to live HuggingFace API
         if self.enable_live_fallback:
             result = self._fetch_model_live(clean_name)
-            self._model_cache[name] = result  # Cache even None to avoid repeated lookups
+            self._cache_set(self._model_cache, name, result)  # Cache even None to avoid repeated lookups
             return result
 
-        self._model_cache[name] = None
+        self._cache_set(self._model_cache, name, None)
         return None
 
     def _fetch_model_live(self, name: str) -> ModelEnrichment | None:
@@ -292,7 +301,7 @@ class KBEnricher:
                         author=row["author"],
                         ai_category=row["ai_category"],
                     )
-                    self._package_cache[cache_key] = result
+                    self._cache_set(self._package_cache, cache_key, result)
                     return result
             except sqlite3.Error as e:
                 logger.debug("Package KB lookup failed: %s", e)
@@ -300,10 +309,10 @@ class KBEnricher:
         # Fallback to live API
         if self.enable_live_fallback:
             result = self._fetch_package_live(name, ecosystem)
-            self._package_cache[cache_key] = result  # Cache even None
+            self._cache_set(self._package_cache, cache_key, result)  # Cache even None
             return result
 
-        self._package_cache[cache_key] = None
+        self._cache_set(self._package_cache, cache_key, None)
         return None
 
     def _fetch_package_live(self, name: str, ecosystem: str) -> PackageEnrichment | None:

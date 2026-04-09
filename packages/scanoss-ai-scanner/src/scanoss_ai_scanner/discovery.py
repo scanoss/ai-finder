@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -155,19 +156,18 @@ class FileDiscovery:
         return path.name in IGNORE_DIRS
 
     def _walk_files(self) -> Iterator[Path]:
-        """Walk all files, skipping ignored directories."""
-        for item in self.root.rglob("*"):
-            # Skip if any parent is an ignored directory
-            skip = False
-            for parent in item.relative_to(self.root).parents:
-                if parent.name in IGNORE_DIRS:
-                    skip = True
-                    break
-            if skip:
-                continue
+        """Walk all files, skipping ignored directories.
 
-            if item.is_file():
-                yield item.relative_to(self.root)
+        Uses os.walk with in-place directory pruning for efficiency.
+        This avoids traversing into large ignored directories like node_modules.
+        """
+        for dirpath, dirnames, filenames in os.walk(self.root):
+            # Prune ignored directories IN-PLACE (prevents descent)
+            dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
+
+            for filename in filenames:
+                full_path = Path(dirpath) / filename
+                yield full_path.relative_to(self.root)
 
     def _build_cache(self) -> None:
         """Build file cache with single directory walk (efficient for large codebases)."""

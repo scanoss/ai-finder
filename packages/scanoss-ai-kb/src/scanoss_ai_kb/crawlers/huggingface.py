@@ -273,50 +273,49 @@ class HuggingFaceCrawler:
         source_url = f"https://huggingface.co/{model_id}"
 
         try:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
 
-            cursor.execute(
-                """
-                INSERT INTO models (
-                    purl, name, organization, version, format, architecture,
-                    architecture_family, parameter_count, license, source_url,
-                    task, base_model_purl, datasets
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(purl) DO UPDATE SET
-                    name = excluded.name,
-                    organization = excluded.organization,
-                    version = COALESCE(excluded.version, version),
-                    format = COALESCE(excluded.format, format),
-                    architecture = COALESCE(excluded.architecture, architecture),
-                    architecture_family = COALESCE(excluded.architecture_family, architecture_family),
-                    parameter_count = COALESCE(excluded.parameter_count, parameter_count),
-                    license = COALESCE(excluded.license, license),
-                    source_url = excluded.source_url,
-                    task = COALESCE(excluded.task, task),
-                    base_model_purl = COALESCE(excluded.base_model_purl, base_model_purl),
-                    datasets = COALESCE(excluded.datasets, datasets),
-                    updated_at = datetime('now')
-                """,
-                (
-                    purl,
-                    name,
-                    org,
-                    version,
-                    model_format,
-                    architecture,
-                    architecture_family,
-                    param_count,
-                    license_id,
-                    source_url,
-                    task,
-                    base_model_purl,
-                    datasets_json,
-                ),
-            )
+                cursor.execute(
+                    """
+                    INSERT INTO models (
+                        purl, name, organization, version, format, architecture,
+                        architecture_family, parameter_count, license, source_url,
+                        task, base_model_purl, datasets
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(purl) DO UPDATE SET
+                        name = excluded.name,
+                        organization = excluded.organization,
+                        version = COALESCE(excluded.version, version),
+                        format = COALESCE(excluded.format, format),
+                        architecture = COALESCE(excluded.architecture, architecture),
+                        architecture_family = COALESCE(excluded.architecture_family, architecture_family),
+                        parameter_count = COALESCE(excluded.parameter_count, parameter_count),
+                        license = COALESCE(excluded.license, license),
+                        source_url = excluded.source_url,
+                        task = COALESCE(excluded.task, task),
+                        base_model_purl = COALESCE(excluded.base_model_purl, base_model_purl),
+                        datasets = COALESCE(excluded.datasets, datasets),
+                        updated_at = datetime('now')
+                    """,
+                    (
+                        purl,
+                        name,
+                        org,
+                        version,
+                        model_format,
+                        architecture,
+                        architecture_family,
+                        param_count,
+                        license_id,
+                        source_url,
+                        task,
+                        base_model_purl,
+                        datasets_json,
+                    ),
+                )
 
-            conn.commit()
-            conn.close()
+                conn.commit()
             return True
 
         except sqlite3.Error as e:

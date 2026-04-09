@@ -132,39 +132,38 @@ class PyPICrawler:
             license_id = self._map_license(info.get("license"))
 
         try:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
 
-            cursor.execute(
-                """
-                INSERT INTO packages (
-                    purl, name, ecosystem, version, license, summary,
-                    homepage, author, is_ai_package, ai_category
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(purl) DO UPDATE SET
-                    version = excluded.version,
-                    license = COALESCE(excluded.license, license),
-                    summary = excluded.summary,
-                    homepage = excluded.homepage,
-                    author = excluded.author,
-                    updated_at = datetime('now')
-                """,
-                (
-                    purl,
-                    name,
-                    "pypi",
-                    version,
-                    license_id,
-                    info.get("summary"),
-                    info.get("home_page") or info.get("project_url"),
-                    info.get("author"),
-                    1,
-                    self._categorize(name),
-                ),
-            )
+                cursor.execute(
+                    """
+                    INSERT INTO packages (
+                        purl, name, ecosystem, version, license, summary,
+                        homepage, author, is_ai_package, ai_category
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(purl) DO UPDATE SET
+                        version = excluded.version,
+                        license = COALESCE(excluded.license, license),
+                        summary = excluded.summary,
+                        homepage = excluded.homepage,
+                        author = excluded.author,
+                        updated_at = datetime('now')
+                    """,
+                    (
+                        purl,
+                        name,
+                        "pypi",
+                        version,
+                        license_id,
+                        info.get("summary"),
+                        info.get("home_page") or info.get("project_url"),
+                        info.get("author"),
+                        1,
+                        self._categorize(name),
+                    ),
+                )
 
-            conn.commit()
-            conn.close()
+                conn.commit()
             return True
 
         except sqlite3.Error as e:
