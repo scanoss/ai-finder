@@ -135,7 +135,7 @@ class SPDXFormatter:
 
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
             info = finding.model_info
-            package: dict[str, Any] = {
+            package = {
                 "SPDXID": f"SPDXRef-Package-{idx}",
                 "name": finding.file_path.split("/")[-1],
                 "downloadLocation": "NOASSERTION",

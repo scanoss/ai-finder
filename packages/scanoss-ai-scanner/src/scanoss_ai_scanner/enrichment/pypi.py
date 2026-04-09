@@ -94,7 +94,7 @@ class PyPIEnricher:
             author=info.get("author"),
         )
 
-    def _map_to_spdx(self, license_text: str) -> str:
+    def _map_to_spdx(self, license_text: str) -> str | None:
         """Map license text to SPDX identifier."""
         if not license_text:
             return None

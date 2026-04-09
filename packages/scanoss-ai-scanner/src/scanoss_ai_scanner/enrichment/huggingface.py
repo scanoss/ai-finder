@@ -133,7 +133,7 @@ class HuggingFaceEnricher:
 
         # Search HuggingFace
         url = f"{self.API_BASE}/models"
-        params = {"search": clean_name, "limit": 5, "sort": "downloads"}
+        params: dict[str, str | int] = {"search": clean_name, "limit": 5, "sort": "downloads"}
 
         try:
             resp = self._session.get(url, params=params, timeout=self.TIMEOUT)

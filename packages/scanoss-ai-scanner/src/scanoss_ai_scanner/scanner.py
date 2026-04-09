@@ -56,7 +56,7 @@ from .parsers import (
 from .parsers.base import BaseModelParser
 
 if TYPE_CHECKING:
-    from .analyzers.graph import ComponentGraph
+    from .analyzers.graph import ComponentGraph, RelationshipAnalyzer
 
 # Progress callback: (current, total, phase) -> None
 ProgressCallback = Callable[[int, int, str], None]
@@ -142,9 +142,9 @@ class Scanner:
                 self._ext_to_model_parser[ext] = model_parser
 
         # Relationship analyzer (lazy loaded)
-        self._relationship_analyzer = None
+        self._relationship_analyzer: RelationshipAnalyzer | None = None
 
-    def _get_relationship_analyzer(self):
+    def _get_relationship_analyzer(self) -> RelationshipAnalyzer:
         """Lazily load the relationship analyzer."""
         if self._relationship_analyzer is None:
             from .analyzers.graph import RelationshipAnalyzer

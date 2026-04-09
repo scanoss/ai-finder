@@ -82,7 +82,7 @@ def identify(file: Path, output_format: str, no_enrich: bool, kb_path: Path | No
             ext = file_path.suffix.lower()
 
             # Track extension for understanding coverage gaps
-            known_extensions = set()
+            known_extensions: set[str] = set()
             for parser in parsers:
                 known_extensions.update(parser.extensions)
 

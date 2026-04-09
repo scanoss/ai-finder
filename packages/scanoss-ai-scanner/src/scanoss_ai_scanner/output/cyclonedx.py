@@ -148,7 +148,7 @@ class CycloneDXFormatter:
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
             info = finding.model_info
             filename = finding.file_path.split("/")[-1]
-            component: dict[str, Any] = {
+            component = {
                 "type": "machine-learning-model",
                 "name": filename,
             }

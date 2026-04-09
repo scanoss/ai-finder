@@ -173,7 +173,11 @@ class HuggingFaceCrawler:
     ) -> Iterator[dict[str, Any]]:
         """List models from HuggingFace API."""
         url = f"{self.API_BASE}/models"
-        params = {"sort": sort, "direction": "-1", "limit": min(limit or 100, 100)}
+        params: dict[str, str | int] = {
+            "sort": sort,
+            "direction": "-1",
+            "limit": min(limit or 100, 100),
+        }
 
         yielded = 0
         while True:

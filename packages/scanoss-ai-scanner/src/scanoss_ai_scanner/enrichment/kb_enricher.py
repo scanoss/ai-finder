@@ -8,12 +8,20 @@ import logging
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
+
+if TYPE_CHECKING:
+    from .huggingface import HuggingFaceEnricher
+    from .npm import NpmEnricher
+    from .pypi import PyPIEnricher
 
 logger = logging.getLogger(__name__)
 
 # Telemetry callback type
-TelemetryCallback = Callable[[str, dict], None]
+TelemetryCallback = Callable[[str, dict[str, Any]], None]
+
+# Type var for cache values
+T = TypeVar("T")
 
 
 def _classify_fetch_error(error: Exception) -> str:
@@ -109,16 +117,16 @@ class KBEnricher:
         self.enable_live_fallback = enable_live_fallback
         self._telemetry = telemetry_callback
         self._conn: sqlite3.Connection | None = None
-        self._hf_enricher = None
-        self._pypi_enricher = None
-        self._npm_enricher = None
+        self._hf_enricher: HuggingFaceEnricher | None = None
+        self._pypi_enricher: PyPIEnricher | None = None
+        self._npm_enricher: NpmEnricher | None = None
 
         # In-memory LRU cache for session (avoid duplicate API calls, bounded size)
         self._cache_max_size = 1000
         self._model_cache: dict[str, ModelEnrichment | None] = {}
         self._package_cache: dict[str, PackageEnrichment | None] = {}
 
-    def _cache_set(self, cache: dict, key: str, value) -> None:
+    def _cache_set(self, cache: dict[str, T | None], key: str, value: T | None) -> None:
         """Set cache value with LRU eviction if needed."""
         if len(cache) >= self._cache_max_size:
             # Remove oldest entry (first key in dict - Python 3.7+ preserves order)
@@ -192,7 +200,7 @@ class KBEnricher:
                             datasets = json.loads(row["datasets"])
 
                     self._track("enrichment.kb_hit", {"type": "model", "name": clean_name})
-                    result = ModelEnrichment(
+                    kb_result = ModelEnrichment(
                         purl=row["purl"],
                         name=row["name"],
                         organization=row["organization"],
@@ -205,18 +213,18 @@ class KBEnricher:
                         base_model_purl=row["base_model_purl"],
                         datasets=datasets,
                     )
-                    self._cache_set(self._model_cache, name, result)
-                    return result
+                    self._cache_set(self._model_cache, name, kb_result)
+                    return kb_result
             except sqlite3.Error as e:
                 logger.debug("Model KB lookup failed: %s", e)
 
         # Fallback to live HuggingFace API
         if self.enable_live_fallback:
-            result = self._fetch_model_live(clean_name)
+            live_result = self._fetch_model_live(clean_name)
             self._cache_set(
-                self._model_cache, name, result
+                self._model_cache, name, live_result
             )  # Cache even None to avoid repeated lookups
-            return result
+            return live_result
 
         self._cache_set(self._model_cache, name, None)
         return None
@@ -295,7 +303,7 @@ class KBEnricher:
                 row = cursor.fetchone()
                 if row:
                     self._track("enrichment.kb_hit", {"type": "package", "ecosystem": ecosystem})
-                    result = PackageEnrichment(
+                    kb_pkg = PackageEnrichment(
                         purl=row["purl"],
                         name=row["name"],
                         version=row["version"],
@@ -305,16 +313,16 @@ class KBEnricher:
                         author=row["author"],
                         ai_category=row["ai_category"],
                     )
-                    self._cache_set(self._package_cache, cache_key, result)
-                    return result
+                    self._cache_set(self._package_cache, cache_key, kb_pkg)
+                    return kb_pkg
             except sqlite3.Error as e:
                 logger.debug("Package KB lookup failed: %s", e)
 
         # Fallback to live API
         if self.enable_live_fallback:
-            result = self._fetch_package_live(name, ecosystem)
-            self._cache_set(self._package_cache, cache_key, result)  # Cache even None
-            return result
+            live_pkg = self._fetch_package_live(name, ecosystem)
+            self._cache_set(self._package_cache, cache_key, live_pkg)  # Cache even None
+            return live_pkg
 
         self._cache_set(self._package_cache, cache_key, None)
         return None
@@ -328,17 +336,17 @@ class KBEnricher:
                 if self._pypi_enricher is None:
                     self._pypi_enricher = PyPIEnricher()
 
-                result = self._pypi_enricher.lookup_package(name)
-                if result:
+                pypi_info = self._pypi_enricher.lookup_package(name)
+                if pypi_info:
                     self._track("enrichment.live_fetch", {"type": "package", "source": "pypi"})
                     return PackageEnrichment(
-                        purl=result.purl,
-                        name=result.name,
-                        version=result.version,
-                        license=result.license,
-                        summary=result.summary,
-                        homepage=result.homepage,
-                        author=result.author,
+                        purl=pypi_info.purl,
+                        name=pypi_info.name,
+                        version=pypi_info.version,
+                        license=pypi_info.license,
+                        summary=pypi_info.summary,
+                        homepage=pypi_info.homepage,
+                        author=pypi_info.author,
                     )
                 else:
                     self._track(
@@ -351,17 +359,17 @@ class KBEnricher:
                 if self._npm_enricher is None:
                     self._npm_enricher = NpmEnricher()
 
-                result = self._npm_enricher.lookup_package(name)
-                if result:
+                npm_info = self._npm_enricher.lookup_package(name)
+                if npm_info:
                     self._track("enrichment.live_fetch", {"type": "package", "source": "npm"})
                     return PackageEnrichment(
-                        purl=result.purl,
-                        name=result.name,
-                        version=result.version,
-                        license=result.license,
-                        summary=result.description,
-                        homepage=result.homepage,
-                        author=result.author,
+                        purl=npm_info.purl,
+                        name=npm_info.name,
+                        version=npm_info.version,
+                        license=npm_info.license,
+                        summary=npm_info.description,
+                        homepage=npm_info.homepage,
+                        author=npm_info.author,
                     )
                 else:
                     self._track(

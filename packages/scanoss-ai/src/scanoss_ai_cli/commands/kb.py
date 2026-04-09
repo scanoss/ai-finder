@@ -278,7 +278,7 @@ def lookup(purl: str, kb_path: Path | None, output_format: str) -> None:
             else:
                 telemetry.track_feature("kb.lookup", "result", "found")
                 # Track what types were found
-                found_types = set(r["type"] for r in results)
+                found_types = set(str(r["type"]) for r in results)
                 for t in found_types:
                     telemetry.track_feature("kb.lookup", "found_type", t)
 
@@ -379,48 +379,48 @@ def crawl(
 
             telemetry.track_feature("kb.crawl", "crawler", "huggingface")
             click.echo("Crawling HuggingFace Hub...")
-            crawler = HuggingFaceCrawler(db_path, verbose=verbose, token=token)
-            result = crawler.crawl(limit=limit)
-            results.append(f"HuggingFace: {result.models_added} models")
-            total_items_added += result.models_added
-            if result.models_added > 0:
+            hf_crawler = HuggingFaceCrawler(db_path, verbose=verbose, token=token)
+            hf_result = hf_crawler.crawl(limit=limit)
+            results.append(f"HuggingFace: {hf_result.models_added} models")
+            total_items_added += hf_result.models_added
+            if hf_result.models_added > 0:
                 telemetry.track_feature("kb.crawl.huggingface", "result", "success")
-            if result.errors:
-                total_errors += len(result.errors)
+            if hf_result.errors:
+                total_errors += len(hf_result.errors)
                 telemetry.track_feature("kb.crawl.huggingface", "errors", "yes")
-                click.echo(f"  Errors: {len(result.errors)}", err=True)
+                click.echo(f"  Errors: {len(hf_result.errors)}", err=True)
 
         if source in ("pypi", "all"):
             from scanoss_ai_kb.crawlers import PyPICrawler
 
             telemetry.track_feature("kb.crawl", "crawler", "pypi")
             click.echo("Crawling PyPI...")
-            crawler = PyPICrawler(db_path, verbose=verbose)
-            result = crawler.crawl()
-            results.append(f"PyPI: {result.packages_added} packages")
-            if result.packages_added > 0:
+            pypi_crawler = PyPICrawler(db_path, verbose=verbose)
+            pypi_result = pypi_crawler.crawl()
+            results.append(f"PyPI: {pypi_result.packages_added} packages")
+            if pypi_result.packages_added > 0:
                 telemetry.track_feature("kb.crawl.pypi", "result", "success")
-            total_items_added += result.packages_added
-            if result.errors:
-                total_errors += len(result.errors)
+            total_items_added += pypi_result.packages_added
+            if pypi_result.errors:
+                total_errors += len(pypi_result.errors)
                 telemetry.track_feature("kb.crawl.pypi", "errors", "yes")
-                click.echo(f"  Errors: {len(result.errors)}", err=True)
+                click.echo(f"  Errors: {len(pypi_result.errors)}", err=True)
 
         if source in ("npm", "all"):
             from scanoss_ai_kb.crawlers import NpmCrawler
 
             telemetry.track_feature("kb.crawl", "crawler", "npm")
             click.echo("Crawling npm...")
-            crawler = NpmCrawler(db_path, verbose=verbose)
-            result = crawler.crawl()
-            results.append(f"npm: {result.packages_added} packages")
-            total_items_added += result.packages_added
-            if result.packages_added > 0:
+            npm_crawler = NpmCrawler(db_path, verbose=verbose)
+            npm_result = npm_crawler.crawl()
+            results.append(f"npm: {npm_result.packages_added} packages")
+            total_items_added += npm_result.packages_added
+            if npm_result.packages_added > 0:
                 telemetry.track_feature("kb.crawl.npm", "result", "success")
-            if result.errors:
-                total_errors += len(result.errors)
+            if npm_result.errors:
+                total_errors += len(npm_result.errors)
                 telemetry.track_feature("kb.crawl.npm", "errors", "yes")
-                click.echo(f"  Errors: {len(result.errors)}", err=True)
+                click.echo(f"  Errors: {len(npm_result.errors)}", err=True)
 
         # Track crawl metrics (anonymous)
         ctx["items_added"] = total_items_added
