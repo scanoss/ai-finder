@@ -353,6 +353,12 @@ class CycloneDXFormatter:
         if enricher:
             self._enrich_components(components_by_name, enricher)
 
+        # Ensure all components have license fields (NOASSERTION if unknown)
+        for component in components_by_name.values():
+            if "licenses" not in component:
+                # CycloneDX 1.5 supports SPDX license expressions including NOASSERTION
+                component["licenses"] = [{"expression": "NOASSERTION"}]
+
         components = list(components_by_name.values())
 
         bom: dict[str, Any] = {

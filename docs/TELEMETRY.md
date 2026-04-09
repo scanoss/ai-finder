@@ -105,6 +105,26 @@ These events enable funnel visualization without parsing properties:
 
 #### scan
 
+##### Scan Pipeline Events (ordered funnel)
+
+| Event | Description |
+|-------|-------------|
+| `scan.started` | Scan execution started |
+| `scan.discovery.started` | File discovery phase started |
+| `scan.discovery.completed` | File discovery completed (with file counts) |
+| `scan.detection.started` | Detection phase started (sdk/manifest/model) |
+| `scan.detection.completed` | Detection phase completed (with finding counts) |
+| `scan.sdk.found` | Individual SDK detected (per SDK) |
+| `scan.manifest_dep.found` | Individual manifest dependency found (per dep) |
+| `scan.metrics` | Overall scan metrics |
+| `scan.completed` | Scan execution completed successfully |
+| `scan.enrichment.started` | KB enrichment phase started |
+| `scan.enrichment.completed` | KB enrichment phase completed |
+| `scan.output.started` | SBOM output generation started |
+| `scan.output.completed` | SBOM output generation completed |
+
+##### Scan Feature Events
+
 | Event | Description |
 |-------|-------------|
 | `scan.format.json` | Output format is JSON |
@@ -122,6 +142,32 @@ These events enable funnel visualization without parsing properties:
 | `scan.graph_built.success` | Relationship graph built |
 | `scan.kb_source.local` | Using local KB cache |
 | `scan.kb_source.live_only` | No local KB, using live APIs |
+
+##### Complete Scan Funnel
+
+```
+cli.started
+ -> command.scan.started
+    -> scan.started
+       -> scan.discovery.started
+       -> scan.discovery.completed
+       -> scan.detection.started (phase: sdk)
+       -> scan.sdk.found (per SDK)
+       -> scan.detection.completed (phase: sdk)
+       -> scan.detection.started (phase: manifest)
+       -> scan.manifest_dep.found (per dependency)
+       -> scan.detection.completed (phase: manifest)
+       -> scan.detection.started (phase: model)
+       -> scan.detection.completed (phase: model)
+       -> scan.metrics
+       -> scan.completed
+    -> scan.enrichment.started
+       -> enrichment.* events
+    -> scan.enrichment.completed
+    -> scan.output.started
+    -> scan.output.completed
+ -> command.scan.completed
+```
 
 #### identify
 

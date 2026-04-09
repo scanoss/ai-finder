@@ -134,7 +134,11 @@ def scan(
                     progress_bar.update(1)
 
             try:
-                result = scanner.scan(path, progress_callback=progress_callback)
+                result = scanner.scan(
+                    path,
+                    progress_callback=progress_callback,
+                    telemetry_callback=telemetry.track_event,
+                )
             finally:
                 # Ensure progress bar is cleaned up even on error
                 if progress_bar is not None:
@@ -255,15 +259,32 @@ def scan(
                 if not quiet:
                     click.echo("Enriching with KB metadata...", err=True)
 
+                # Track enrichment phase start
+                telemetry.track_event("scan.enrichment.started", {
+                    "kb_available": kb_exists,
+                    "findings_to_enrich": len(result.findings),
+                })
+
                 # Use proper context manager for enricher
                 with KBEnricher(
                     db_path=enricher_path if kb_exists else None,
                     enable_live_fallback=True,
                     telemetry_callback=telemetry.track_event,
                 ) as enricher:
+                    # Track output generation phase
+                    telemetry.track_event("scan.output.started", {"format": output_format})
                     formatted = format_output(enricher)
+                    telemetry.track_event("scan.output.completed", {"format": output_format})
+
+                # Track enrichment phase completed
+                telemetry.track_event("scan.enrichment.completed", {
+                    "kb_available": kb_exists,
+                })
             else:
+                # Track output generation phase (no enrichment)
+                telemetry.track_event("scan.output.started", {"format": output_format})
                 formatted = format_output()
+                telemetry.track_event("scan.output.completed", {"format": output_format})
 
             # Output result
             if output:

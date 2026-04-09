@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable, Dict
 
 from .detectors import (
     CppDetector,
@@ -60,6 +60,10 @@ if TYPE_CHECKING:
 
 # Progress callback: (current, total, phase) -> None
 ProgressCallback = Callable[[int, int, str], None]
+
+# Telemetry callback: (event_name, properties) -> None
+# Uses Dict for Python 3.8 compatibility
+TelemetryCallback = Callable[[str, Dict[str, Any]], None]
 
 logger = logging.getLogger(__name__)
 
@@ -169,6 +173,7 @@ class Scanner:
         path: Path,
         kb: object | None = None,
         progress_callback: ProgressCallback | None = None,
+        telemetry_callback: TelemetryCallback | None = None,
     ) -> ScanResult:
         """Scan a directory for AI artifacts.
 
@@ -177,6 +182,8 @@ class Scanner:
             kb: Optional KnowledgeBase for enrichment.
             progress_callback: Optional callback for progress updates.
                 Called with (current_file, total_files, phase_name).
+            telemetry_callback: Optional callback for telemetry events.
+                Called with (event_name, properties_dict).
 
         Returns:
             ScanResult with all findings.
@@ -192,7 +199,16 @@ class Scanner:
         findings: list[Finding] = []
         files_scanned = 0
 
+        def track(event: str, props: Dict[str, Any] | None = None) -> None:
+            """Emit telemetry event."""
+            if telemetry_callback:
+                telemetry_callback(event, props or {})
+
+        # Mark scan start
+        track("scan.started", {})
+
         # Single-pass file discovery (efficient for large codebases)
+        track("scan.discovery.started", {})
         discovery = FileDiscovery(path)
         file_cache = discovery.collect_all()
 
@@ -204,11 +220,22 @@ class Scanner:
             + len(file_cache["model"])
         )
 
+        track("scan.discovery.completed", {
+            "source_files": len(file_cache["source"]),
+            "manifest_files": len(file_cache["manifest"]),
+            "config_files": len(file_cache["config"]),
+            "model_files": len(file_cache["model"]),
+            "total_files": total_files,
+        })
+
         def report_progress(phase: str) -> None:
             if progress_callback:
                 progress_callback(files_scanned, total_files, phase)
 
         # Scan source files for SDK usage
+        track("scan.detection.started", {"phase": "sdk"})
+        sdk_findings = 0
+        sdk_by_name: Dict[str, int] = {}
         for file_path in file_cache["source"]:
             files_scanned += 1
             report_progress("source")
@@ -221,10 +248,25 @@ class Scanner:
                     content = full_path.read_text(encoding="utf-8", errors="ignore")
                     for finding in detector.detect(content, file_path):
                         findings.append(finding)
+                        sdk_findings += 1
+                        if finding.sdk_usage:
+                            sdk_name = finding.sdk_usage.sdk
+                            sdk_by_name[sdk_name] = sdk_by_name.get(sdk_name, 0) + 1
                 except OSError as e:
                     logger.warning("Failed to read %s: %s", file_path, e)
+        track("scan.detection.completed", {
+            "phase": "sdk",
+            "findings": sdk_findings,
+            "unique_sdks": len(sdk_by_name),
+        })
+        # Track each SDK found as discrete event
+        for sdk_name in sdk_by_name:
+            track("scan.sdk.found", {"name": sdk_name})
 
         # Scan manifest files for dependencies
+        track("scan.detection.started", {"phase": "manifest"})
+        manifest_findings = 0
+        manifest_by_name: Dict[str, int] = {}
         for file_path in file_cache["manifest"]:
             files_scanned += 1
             report_progress("manifest")
@@ -237,8 +279,20 @@ class Scanner:
                     content = full_path.read_text(encoding="utf-8", errors="ignore")
                     for finding in parser.parse(content, file_path):
                         findings.append(finding)
+                        manifest_findings += 1
+                        if finding.manifest_dep:
+                            dep_name = finding.manifest_dep.name
+                            manifest_by_name[dep_name] = manifest_by_name.get(dep_name, 0) + 1
                 except OSError as e:
                     logger.warning("Failed to read %s: %s", file_path, e)
+        track("scan.detection.completed", {
+            "phase": "manifest",
+            "findings": manifest_findings,
+            "unique_deps": len(manifest_by_name),
+        })
+        # Track each manifest dependency found as discrete event
+        for dep_name in manifest_by_name:
+            track("scan.manifest_dep.found", {"name": dep_name})
 
         # Scan config files (count only for now)
         for _file_path in file_cache["config"]:
@@ -246,6 +300,9 @@ class Scanner:
             report_progress("config")
 
         # Scan model files
+        track("scan.detection.started", {"phase": "model"})
+        model_findings = 0
+        model_formats: Dict[str, int] = {}
         for file_path in file_cache["model"]:
             files_scanned += 1
             report_progress("model")
@@ -257,6 +314,15 @@ class Scanner:
                 model_finding = model_parser.parse(full_path, file_path)
                 if model_finding:
                     findings.append(model_finding)
+                    model_findings += 1
+                    if model_finding.model_info:
+                        fmt = model_finding.model_info.format
+                        model_formats[fmt] = model_formats.get(fmt, 0) + 1
+        track("scan.detection.completed", {
+            "phase": "model",
+            "findings": model_findings,
+            "formats": list(model_formats.keys()),
+        })
 
         # Detect licenses
         report_progress("licenses")
@@ -275,6 +341,25 @@ class Scanner:
                         )
 
         duration_ms = int((time.monotonic() - start_time) * 1000)
+
+        # Track overall scan metrics
+        track("scan.metrics", {
+            "total_findings": len(findings),
+            "sdk_findings": sdk_findings,
+            "manifest_findings": manifest_findings,
+            "model_findings": model_findings,
+            "licenses_found": len(licenses),
+            "files_scanned": files_scanned,
+            "duration_ms": duration_ms,
+        })
+
+        # Mark scan completed successfully
+        track("scan.completed", {
+            "success": True,
+            "total_findings": len(findings),
+            "files_scanned": files_scanned,
+            "duration_ms": duration_ms,
+        })
 
         return ScanResult(
             root_path=str(path),

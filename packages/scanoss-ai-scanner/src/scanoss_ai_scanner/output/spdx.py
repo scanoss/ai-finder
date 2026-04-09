@@ -304,6 +304,13 @@ class SPDXFormatter:
         if enricher:
             self._enrich_packages(packages_by_name, enricher)
 
+        # Ensure all packages have license fields (NOASSERTION if unknown)
+        for package in packages_by_name.values():
+            if "licenseConcluded" not in package:
+                package["licenseConcluded"] = "NOASSERTION"
+            if "licenseDeclared" not in package:
+                package["licenseDeclared"] = "NOASSERTION"
+
         packages = list(packages_by_name.values())
 
         # Add file packages and relationships from graph
