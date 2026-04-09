@@ -11,13 +11,14 @@ logger = logging.getLogger(__name__)
 # Try to import osslili, gracefully degrade if unavailable
 # osslili uses Python 3.9+ type annotations that fail at runtime on Python 3.8
 OSSLILI_AVAILABLE = False
-LicenseCopyrightDetector = None
+_LicenseCopyrightDetector: Any = None
 
 try:
-    from osslili import LicenseCopyrightDetector
+    from osslili import LicenseCopyrightDetector as _LCDetector
 
     # Test that osslili actually works (may fail on Python 3.8 due to type annotations)
-    _test_detector = LicenseCopyrightDetector()
+    _test_detector = _LCDetector()
+    _LicenseCopyrightDetector = _LCDetector
     OSSLILI_AVAILABLE = True
 except (ImportError, TypeError):
     # ImportError: osslili not installed
@@ -30,8 +31,8 @@ class LicenseDetector:
 
     def __init__(self) -> None:
         """Initialize the license detector."""
-        if OSSLILI_AVAILABLE:
-            self._detector = LicenseCopyrightDetector()
+        if OSSLILI_AVAILABLE and _LicenseCopyrightDetector is not None:
+            self._detector = _LicenseCopyrightDetector()
         else:
             self._detector = None
             logger.warning("osslili not available, license detection disabled")
