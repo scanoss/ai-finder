@@ -1235,7 +1235,7 @@ wheels = [
 
 [[package]]
 name = "scanoss-ai"
-version = "0.2.4"
+version = "0.2.5"
 source = { editable = "packages/scanoss-ai" }
 dependencies = [
     { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -1265,7 +1265,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "scanoss-ai-kb"
-version = "0.2.4"
+version = "0.2.5"
 source = { editable = "packages/scanoss-ai-kb" }
 dependencies = [
     { name = "osslili", marker = "python_full_version >= '3.9'" },
@@ -1290,7 +1290,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "scanoss-ai-scanner"
-version = "0.2.4"
+version = "0.2.5"
 source = { editable = "packages/scanoss-ai-scanner" }
 dependencies = [
     { name = "python-tlsh" },
