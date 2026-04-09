@@ -220,13 +220,16 @@ class Scanner:
             + len(file_cache["model"])
         )
 
-        track("scan.discovery.completed", {
-            "source_files": len(file_cache["source"]),
-            "manifest_files": len(file_cache["manifest"]),
-            "config_files": len(file_cache["config"]),
-            "model_files": len(file_cache["model"]),
-            "total_files": total_files,
-        })
+        track(
+            "scan.discovery.completed",
+            {
+                "source_files": len(file_cache["source"]),
+                "manifest_files": len(file_cache["manifest"]),
+                "config_files": len(file_cache["config"]),
+                "model_files": len(file_cache["model"]),
+                "total_files": total_files,
+            },
+        )
 
         def report_progress(phase: str) -> None:
             if progress_callback:
@@ -254,11 +257,14 @@ class Scanner:
                             sdk_by_name[sdk_name] = sdk_by_name.get(sdk_name, 0) + 1
                 except OSError as e:
                     logger.warning("Failed to read %s: %s", file_path, e)
-        track("scan.detection.completed", {
-            "phase": "sdk",
-            "findings": sdk_findings,
-            "unique_sdks": len(sdk_by_name),
-        })
+        track(
+            "scan.detection.completed",
+            {
+                "phase": "sdk",
+                "findings": sdk_findings,
+                "unique_sdks": len(sdk_by_name),
+            },
+        )
         # Track each SDK found as discrete event
         for sdk_name in sdk_by_name:
             track("scan.sdk.found", {"name": sdk_name})
@@ -285,11 +291,14 @@ class Scanner:
                             manifest_by_name[dep_name] = manifest_by_name.get(dep_name, 0) + 1
                 except OSError as e:
                     logger.warning("Failed to read %s: %s", file_path, e)
-        track("scan.detection.completed", {
-            "phase": "manifest",
-            "findings": manifest_findings,
-            "unique_deps": len(manifest_by_name),
-        })
+        track(
+            "scan.detection.completed",
+            {
+                "phase": "manifest",
+                "findings": manifest_findings,
+                "unique_deps": len(manifest_by_name),
+            },
+        )
         # Track each manifest dependency found as discrete event
         for dep_name in manifest_by_name:
             track("scan.manifest_dep.found", {"name": dep_name})
@@ -318,11 +327,14 @@ class Scanner:
                     if model_finding.model_info:
                         fmt = model_finding.model_info.format
                         model_formats[fmt] = model_formats.get(fmt, 0) + 1
-        track("scan.detection.completed", {
-            "phase": "model",
-            "findings": model_findings,
-            "formats": list(model_formats.keys()),
-        })
+        track(
+            "scan.detection.completed",
+            {
+                "phase": "model",
+                "findings": model_findings,
+                "formats": list(model_formats.keys()),
+            },
+        )
 
         # Detect licenses
         report_progress("licenses")
@@ -343,23 +355,29 @@ class Scanner:
         duration_ms = int((time.monotonic() - start_time) * 1000)
 
         # Track overall scan metrics
-        track("scan.metrics", {
-            "total_findings": len(findings),
-            "sdk_findings": sdk_findings,
-            "manifest_findings": manifest_findings,
-            "model_findings": model_findings,
-            "licenses_found": len(licenses),
-            "files_scanned": files_scanned,
-            "duration_ms": duration_ms,
-        })
+        track(
+            "scan.metrics",
+            {
+                "total_findings": len(findings),
+                "sdk_findings": sdk_findings,
+                "manifest_findings": manifest_findings,
+                "model_findings": model_findings,
+                "licenses_found": len(licenses),
+                "files_scanned": files_scanned,
+                "duration_ms": duration_ms,
+            },
+        )
 
         # Mark scan completed successfully
-        track("scan.completed", {
-            "success": True,
-            "total_findings": len(findings),
-            "files_scanned": files_scanned,
-            "duration_ms": duration_ms,
-        })
+        track(
+            "scan.completed",
+            {
+                "success": True,
+                "total_findings": len(findings),
+                "files_scanned": files_scanned,
+                "duration_ms": duration_ms,
+            },
+        )
 
         return ScanResult(
             root_path=str(path),

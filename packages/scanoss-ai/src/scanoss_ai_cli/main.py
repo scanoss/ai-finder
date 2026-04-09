@@ -260,10 +260,13 @@ def scan(
                     click.echo("Enriching with KB metadata...", err=True)
 
                 # Track enrichment phase start
-                telemetry.track_event("scan.enrichment.started", {
-                    "kb_available": kb_exists,
-                    "findings_to_enrich": len(result.findings),
-                })
+                telemetry.track_event(
+                    "scan.enrichment.started",
+                    {
+                        "kb_available": kb_exists,
+                        "findings_to_enrich": len(result.findings),
+                    },
+                )
 
                 # Use proper context manager for enricher
                 with KBEnricher(
@@ -277,9 +280,12 @@ def scan(
                     telemetry.track_event("scan.output.completed", {"format": output_format})
 
                 # Track enrichment phase completed
-                telemetry.track_event("scan.enrichment.completed", {
-                    "kb_available": kb_exists,
-                })
+                telemetry.track_event(
+                    "scan.enrichment.completed",
+                    {
+                        "kb_available": kb_exists,
+                    },
+                )
             else:
                 # Track output generation phase (no enrichment)
                 telemetry.track_event("scan.output.started", {"format": output_format})
