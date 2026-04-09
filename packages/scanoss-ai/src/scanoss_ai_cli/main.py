@@ -196,9 +196,10 @@ def scan(
                         click.echo(f"Found {nodes} components, {edges} relationships", err=True)
                 except Exception as e:
                     # Tree-sitter not available (Python < 3.10)
-                    if "tree-sitter" in str(e).lower() or "3.10" in str(e):
+                    error_str = str(e).lower()
+                    if "tree-sitter" in error_str or "tree_sitter" in error_str or "3.10" in str(e):
                         click.echo(
-                            "Warning: --relationships requires Python 3.10+. "
+                            f"Warning: --relationships requires Python 3.10+ ({e}). "
                             "Skipping relationship analysis.",
                             err=True,
                         )
