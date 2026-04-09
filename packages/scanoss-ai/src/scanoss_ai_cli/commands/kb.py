@@ -9,13 +9,23 @@ from pathlib import Path
 
 import click
 
+from scanoss_ai_cli import telemetry
+
 
 def _default_kb_path() -> Path:
     """Return the default KB database path, respecting SCANOSS_KB_PATH env var."""
     env_path = os.environ.get("SCANOSS_KB_PATH")
     if env_path:
-        return Path(env_path)
+        return Path(env_path).expanduser()
     return Path("~/.scanoss-ai/kb/scanoss-ai.db").expanduser()
+
+
+def _escape_like(value: str) -> str:
+    """Escape SQL LIKE wildcards (% and _) in a string.
+
+    Uses backslash as escape character - must be used with ESCAPE '\\'.
+    """
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
 def _parse_purl(purl: str) -> dict[str, str | None]:
@@ -76,18 +86,19 @@ def init(kb_path: Path | None) -> None:
     """Initialize the local knowledge base database."""
     from scanoss_ai_kb import Database
 
-    db_path = kb_path if kb_path else _default_kb_path()
+    with telemetry.track_command("kb.init") as ctx:
+        db_path = kb_path if kb_path else _default_kb_path()
 
-    try:
-        # Create parent directory if needed
-        db_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            # Create parent directory if needed
+            db_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with Database(db_path) as db:
-            db.initialize()
-        click.echo(f"Knowledge base initialized at {db_path}")
-    except Exception as exc:
-        click.echo(f"Error initializing KB: {exc}", err=True)
-        sys.exit(2)
+            with Database(db_path) as db:
+                db.initialize()
+            click.echo(f"Knowledge base initialized at {db_path}")
+        except Exception as exc:
+            click.echo(f"Error initializing KB: {exc}", err=True)
+            sys.exit(2)
 
 
 @kb.command("status")
@@ -110,46 +121,67 @@ def status(kb_path: Path | None, output_format: str) -> None:
     """Show statistics about the knowledge base."""
     from scanoss_ai_kb import Database
 
-    db_path = kb_path if kb_path else _default_kb_path()
+    with telemetry.track_command("kb.status", {"format": output_format}) as ctx:
+        # Emit discrete feature events
+        telemetry.track_feature("kb.status", "format", output_format)
 
-    if not db_path.exists():
-        click.echo(
-            f"Knowledge base not found at {db_path}. Run 'scanoss-ai kb init' first.",
-            err=True,
-        )
-        sys.exit(2)
+        db_path = kb_path if kb_path else _default_kb_path()
 
-    try:
-        with Database(db_path) as db:
-            schema_version = db.get_version()
+        if not db_path.exists():
+            telemetry.track_feature("kb.status", "db", "not_found")
+            click.echo(
+                f"Knowledge base not found at {db_path}. Run 'scanoss-ai kb init' first.",
+                err=True,
+            )
+            sys.exit(2)
 
-            # Count rows per known table
-            table_counts: dict[str, int] = {}
-            for table in ("sdks", "models", "mcp_servers"):
-                try:
-                    cursor = db.execute(f"SELECT COUNT(*) FROM {table}")  # noqa: S608
-                    row = cursor.fetchone()
-                    table_counts[table] = row[0] if row else 0
-                except Exception:
-                    table_counts[table] = 0
+        try:
+            with Database(db_path) as db:
+                schema_version = db.get_version()
 
-        stat_data = {
-            "db_path": str(db_path),
-            "schema_version": schema_version,
-            "table_counts": table_counts,
-        }
+                # Count rows per known table
+                table_counts: dict[str, int] = {}
+                for table in ("sdks", "models", "mcp_servers"):
+                    try:
+                        cursor = db.execute(f"SELECT COUNT(*) FROM {table}")  # noqa: S608
+                        row = cursor.fetchone()
+                        table_counts[table] = row[0] if row else 0
+                    except Exception:
+                        table_counts[table] = 0
 
-        if output_format == "json":
-            click.echo(json.dumps(stat_data, indent=2))
-        else:
-            click.echo(f"DB path:        {db_path}")
-            click.echo(f"Schema version: {schema_version}")
-            for table, count in table_counts.items():
-                click.echo(f"  {table}: {count} row(s)")
+            stat_data = {
+                "db_path": str(db_path),
+                "schema_version": schema_version,
+                "table_counts": table_counts,
+            }
 
-    except Exception as exc:
-        click.echo(f"Error reading KB status: {exc}", err=True)
-        sys.exit(2)
+            # Track KB stats (anonymous - no paths)
+            ctx["schema_version"] = schema_version
+            ctx["total_entries"] = sum(table_counts.values())
+            ctx["output_format"] = output_format
+
+            # Emit discrete events for KB state
+            total = sum(table_counts.values())
+            if total == 0:
+                telemetry.track_feature("kb.status", "entries", "empty")
+            elif total < 100:
+                telemetry.track_feature("kb.status", "entries", "small")
+            elif total < 1000:
+                telemetry.track_feature("kb.status", "entries", "medium")
+            else:
+                telemetry.track_feature("kb.status", "entries", "large")
+
+            if output_format == "json":
+                click.echo(json.dumps(stat_data, indent=2))
+            else:
+                click.echo(f"DB path:        {db_path}")
+                click.echo(f"Schema version: {schema_version}")
+                for table, count in table_counts.items():
+                    click.echo(f"  {table}: {count} row(s)")
+
+        except Exception as exc:
+            click.echo(f"Error reading KB status: {exc}", err=True)
+            sys.exit(2)
 
 
 @kb.command("lookup")
@@ -176,7 +208,7 @@ def lookup(purl: str, kb_path: Path | None, output_format: str) -> None:
     """
     from scanoss_ai_kb import Database
 
-    # Validate PURL
+    # Validate PURL before entering telemetry context
     try:
         _parse_purl(purl)  # Validate format
     except ValueError as exc:
@@ -192,48 +224,214 @@ def lookup(purl: str, kb_path: Path | None, output_format: str) -> None:
         )
         sys.exit(2)
 
+    exit_code = 0
+    results: list[dict[str, str | int | None]] = []
+
     try:
-        with Database(db_path) as db:
-            # Search in multiple tables
-            results: list[dict[str, str | int | None]] = []
+        # Track command (PURL is not a file path, but don't send it anyway for privacy)
+        with telemetry.track_command("kb.lookup", {"format": output_format}) as ctx:
+            # Emit discrete feature events
+            telemetry.track_feature("kb.lookup", "format", output_format)
 
-            # Search SDKs
-            cursor = db.execute(
-                "SELECT id, purl, category, license FROM sdks WHERE purl = ? OR purl LIKE ?",
-                (purl, f"{purl}%"),
-            )
-            for row in cursor:
-                results.append({"type": "sdk", **dict(row)})
+            with Database(db_path) as db:
+                # Escape LIKE wildcards in purl to prevent SQL injection
+                escaped_purl = _escape_like(purl)
 
-            # Search models
-            cursor = db.execute(
-                "SELECT purl, name, organization, architecture, license "
-                "FROM models WHERE purl = ? OR purl LIKE ?",
-                (purl, f"{purl}%"),
-            )
-            for row in cursor:
-                results.append({"type": "model", **dict(row)})
+                # Search SDKs
+                cursor = db.execute(
+                    "SELECT id, purl, category, license FROM sdks "
+                    "WHERE purl = ? OR purl LIKE ? ESCAPE '\\'",
+                    (purl, f"{escaped_purl}%"),
+                )
+                for row in cursor:
+                    results.append({"type": "sdk", **dict(row)})
 
-        if not results:
-            click.echo(f"No results found for {purl}")
-            sys.exit(1)
+                # Search models
+                cursor = db.execute(
+                    "SELECT purl, name, organization, architecture, license "
+                    "FROM models WHERE purl = ? OR purl LIKE ? ESCAPE '\\'",
+                    (purl, f"{escaped_purl}%"),
+                )
+                for row in cursor:
+                    results.append({"type": "model", **dict(row)})
 
-        if output_format == "json":
-            click.echo(json.dumps(results, indent=2))
-        else:
-            for result in results:
-                click.echo(f"Type:    {result['type']}")
-                click.echo(f"PURL:    {result.get('purl', 'N/A')}")
-                if result.get("name"):
-                    click.echo(f"Name:    {result['name']}")
-                if result.get("category"):
-                    click.echo(f"Category: {result['category']}")
-                if result.get("architecture"):
-                    click.echo(f"Arch:    {result['architecture']}")
-                if result.get("license"):
-                    click.echo(f"License: {result['license']}")
-                click.echo("---")
+                # Search packages
+                try:
+                    cursor = db.execute(
+                        "SELECT purl, name, ecosystem, version, license, ai_category "
+                        "FROM packages WHERE purl = ? OR purl LIKE ? ESCAPE '\\'",
+                        (purl, f"{escaped_purl}%"),
+                    )
+                    for row in cursor:
+                        results.append({"type": "package", **dict(row)})
+                except Exception:
+                    pass  # Table may not exist in older DBs
+
+            # Track result count (anonymous)
+            ctx["results_count"] = len(results)
+
+            # Emit discrete result events
+            if not results:
+                telemetry.track_feature("kb.lookup", "result", "not_found")
+                click.echo(f"No results found for {purl}")
+                exit_code = 1
+            else:
+                telemetry.track_feature("kb.lookup", "result", "found")
+                # Track what types were found
+                found_types = set(r["type"] for r in results)
+                for t in found_types:
+                    telemetry.track_feature("kb.lookup", "found_type", t)
+
+            if output_format == "json":
+                click.echo(json.dumps(results, indent=2))
+            else:
+                for result in results:
+                    click.echo(f"Type:    {result['type']}")
+                    click.echo(f"PURL:    {result.get('purl', 'N/A')}")
+                    if result.get("name"):
+                        click.echo(f"Name:    {result['name']}")
+                    if result.get("ecosystem"):
+                        click.echo(f"Ecosystem: {result['ecosystem']}")
+                    if result.get("version"):
+                        click.echo(f"Version: {result['version']}")
+                    if result.get("category") or result.get("ai_category"):
+                        click.echo(f"Category: {result.get('category') or result.get('ai_category')}")
+                    if result.get("architecture"):
+                        click.echo(f"Arch:    {result['architecture']}")
+                    if result.get("license"):
+                        click.echo(f"License: {result['license']}")
+                    click.echo("---")
 
     except Exception as exc:
+        # Telemetry already tracked the error via context manager
         click.echo(f"Error looking up PURL: {exc}", err=True)
         sys.exit(2)
+
+    # Exit after telemetry context closes (so success is recorded correctly)
+    if exit_code != 0:
+        sys.exit(exit_code)
+
+
+@kb.command("crawl")
+@click.argument("source", type=click.Choice(["huggingface", "pypi", "npm", "all"]))
+@click.option(
+    "--kb-path",
+    default=None,
+    type=click.Path(path_type=Path),
+    help="Path to KB database (default: ~/.scanoss-ai/kb/scanoss-ai.db)",
+)
+@click.option(
+    "--limit",
+    default=None,
+    type=int,
+    help="Maximum items to crawl (HuggingFace only).",
+)
+@click.option(
+    "--token",
+    default=None,
+    envvar="HF_TOKEN",
+    help="HuggingFace API token (or set HF_TOKEN env var).",
+)
+@click.option("-v", "--verbose", is_flag=True, help="Enable verbose output.")
+def crawl(
+    source: str,
+    kb_path: Path | None,
+    limit: int | None,
+    token: str | None,
+    verbose: bool,
+) -> None:
+    """Crawl external APIs to populate the knowledge base.
+
+    SOURCE can be: huggingface, pypi, npm, or all.
+
+    Examples:
+
+        scanoss-ai kb crawl huggingface --limit 100
+
+        scanoss-ai kb crawl pypi
+
+        scanoss-ai kb crawl all
+    """
+    from scanoss_ai_kb import Database
+
+    with telemetry.track_command("kb.crawl", {"source": source}) as ctx:
+        # Emit discrete source event
+        telemetry.track_feature("kb.crawl", "source", source)
+
+        db_path = kb_path if kb_path else _default_kb_path()
+
+        # Ensure DB exists
+        if not db_path.exists():
+            telemetry.track_feature("kb.crawl", "db_init", "created")
+            click.echo(f"Initializing KB at {db_path}...")
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            with Database(db_path) as db:
+                db.initialize()
+
+        results = []
+        total_items_added = 0
+        total_errors = 0
+
+        if source in ("huggingface", "all"):
+            from scanoss_ai_kb.crawlers import HuggingFaceCrawler
+
+            telemetry.track_feature("kb.crawl", "crawler", "huggingface")
+            click.echo("Crawling HuggingFace Hub...")
+            crawler = HuggingFaceCrawler(db_path, verbose=verbose, token=token)
+            result = crawler.crawl(limit=limit)
+            results.append(f"HuggingFace: {result.models_added} models")
+            total_items_added += result.models_added
+            if result.models_added > 0:
+                telemetry.track_feature("kb.crawl.huggingface", "result", "success")
+            if result.errors:
+                total_errors += len(result.errors)
+                telemetry.track_feature("kb.crawl.huggingface", "errors", "yes")
+                click.echo(f"  Errors: {len(result.errors)}", err=True)
+
+        if source in ("pypi", "all"):
+            from scanoss_ai_kb.crawlers import PyPICrawler
+
+            telemetry.track_feature("kb.crawl", "crawler", "pypi")
+            click.echo("Crawling PyPI...")
+            crawler = PyPICrawler(db_path, verbose=verbose)
+            result = crawler.crawl()
+            results.append(f"PyPI: {result.packages_added} packages")
+            if result.packages_added > 0:
+                telemetry.track_feature("kb.crawl.pypi", "result", "success")
+            total_items_added += result.packages_added
+            if result.errors:
+                total_errors += len(result.errors)
+                telemetry.track_feature("kb.crawl.pypi", "errors", "yes")
+                click.echo(f"  Errors: {len(result.errors)}", err=True)
+
+        if source in ("npm", "all"):
+            from scanoss_ai_kb.crawlers import NpmCrawler
+
+            telemetry.track_feature("kb.crawl", "crawler", "npm")
+            click.echo("Crawling npm...")
+            crawler = NpmCrawler(db_path, verbose=verbose)
+            result = crawler.crawl()
+            results.append(f"npm: {result.packages_added} packages")
+            total_items_added += result.packages_added
+            if result.packages_added > 0:
+                telemetry.track_feature("kb.crawl.npm", "result", "success")
+            if result.errors:
+                total_errors += len(result.errors)
+                telemetry.track_feature("kb.crawl.npm", "errors", "yes")
+                click.echo(f"  Errors: {len(result.errors)}", err=True)
+
+        # Track crawl metrics (anonymous)
+        ctx["items_added"] = total_items_added
+        ctx["error_count"] = total_errors
+
+        # Emit overall result
+        if total_items_added > 0:
+            telemetry.track_feature("kb.crawl", "result", "success")
+        else:
+            telemetry.track_feature("kb.crawl", "result", "empty")
+        if total_errors > 0:
+            telemetry.track_feature("kb.crawl", "had_errors", "yes")
+
+        click.echo("Crawl complete:")
+        for r in results:
+            click.echo(f"  {r}")

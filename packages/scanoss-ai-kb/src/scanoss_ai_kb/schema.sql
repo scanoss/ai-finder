@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS sdks (
 
 CREATE INDEX IF NOT EXISTS idx_sdks_category ON sdks(category);
 
--- Known AI models
+-- Known AI models (from HuggingFace, etc.)
 CREATE TABLE IF NOT EXISTS models (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     purl TEXT UNIQUE NOT NULL,
@@ -27,14 +27,39 @@ CREATE TABLE IF NOT EXISTS models (
     version TEXT,
     format TEXT,
     architecture TEXT,
+    architecture_family TEXT,
     parameter_count INTEGER,
+    quantization TEXT,
     sha256 TEXT,
     tlsh TEXT,
     license TEXT,
     source_url TEXT,
+    task TEXT,                    -- HuggingFace pipeline_tag (text-generation, etc.)
+    base_model_purl TEXT,         -- Fine-tuned from
+    datasets TEXT,                -- JSON array of dataset names
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
+
+-- Known packages (PyPI, npm, etc.)
+CREATE TABLE IF NOT EXISTS packages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    purl TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    ecosystem TEXT NOT NULL,      -- pypi, npm, cargo, golang, maven
+    version TEXT,
+    license TEXT,
+    summary TEXT,
+    homepage TEXT,
+    author TEXT,
+    is_ai_package INTEGER DEFAULT 1,
+    ai_category TEXT,             -- sdk, framework, library, tool
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_packages_ecosystem ON packages(ecosystem);
+CREATE INDEX IF NOT EXISTS idx_packages_name ON packages(name);
 
 CREATE INDEX IF NOT EXISTS idx_models_sha256 ON models(sha256);
 CREATE INDEX IF NOT EXISTS idx_models_tlsh ON models(tlsh);

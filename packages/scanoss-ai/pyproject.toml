@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scanoss-ai"
-version = "0.1.1"
+version = "0.2.0"
 description = "SCANOSS AI - AI artifact scanner for supply chain security"
 license = {text = "Apache-2.0"}
 readme = "README.md"
@@ -28,6 +28,11 @@ dependencies = [
     "scanoss-ai-kb",
     "click>=8.0",
 ]
+
+# ptelemetry for anonymous usage telemetry
+# Install from PyPI when available, or from local build:
+#   pip install ptelemetry
+# Telemetry is optional - CLI works without it (silently disabled)
 
 [project.scripts]
 scanoss-ai = "scanoss_ai_cli.main:main"

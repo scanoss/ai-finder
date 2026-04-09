@@ -5,10 +5,13 @@ from __future__ import annotations
 import logging
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from .analyzers.graph import ComponentGraph
+
+# Progress callback: (current, total, phase) -> None
+ProgressCallback = Callable[[int, int, str], None]
 
 from .detectors import (
     CppDetector,
@@ -161,12 +164,19 @@ class Scanner:
         analyzer = self._get_relationship_analyzer()
         return analyzer.analyze_directory(path)
 
-    def scan(self, path: Path, kb: object | None = None) -> ScanResult:
+    def scan(
+        self,
+        path: Path,
+        kb: object | None = None,
+        progress_callback: ProgressCallback | None = None,
+    ) -> ScanResult:
         """Scan a directory for AI artifacts.
 
         Args:
             path: Root directory to scan.
             kb: Optional KnowledgeBase for enrichment.
+            progress_callback: Optional callback for progress updates.
+                Called with (current_file, total_files, phase_name).
 
         Returns:
             ScanResult with all findings.
@@ -182,11 +192,26 @@ class Scanner:
         findings: list[Finding] = []
         files_scanned = 0
 
+        # Single-pass file discovery (efficient for large codebases)
         discovery = FileDiscovery(path)
+        file_cache = discovery.collect_all()
+
+        # Calculate total for progress
+        total_files = (
+            len(file_cache["source"])
+            + len(file_cache["manifest"])
+            + len(file_cache["config"])
+            + len(file_cache["model"])
+        )
+
+        def report_progress(phase: str) -> None:
+            if progress_callback:
+                progress_callback(files_scanned, total_files, phase)
 
         # Scan source files for SDK usage
-        for file_path in discovery.source_files():
+        for file_path in file_cache["source"]:
             files_scanned += 1
+            report_progress("source")
             full_path = path / file_path
             ext = file_path.suffix.lower()
 
@@ -200,8 +225,9 @@ class Scanner:
                     logger.warning("Failed to read %s: %s", file_path, e)
 
         # Scan manifest files for dependencies
-        for file_path in discovery.manifest_files():
+        for file_path in file_cache["manifest"]:
             files_scanned += 1
+            report_progress("manifest")
             full_path = path / file_path
             name = file_path.name
 
@@ -215,12 +241,14 @@ class Scanner:
                     logger.warning("Failed to read %s: %s", file_path, e)
 
         # Scan config files (count only for now)
-        for _ in discovery.config_files():
+        for file_path in file_cache["config"]:
             files_scanned += 1
+            report_progress("config")
 
         # Scan model files
-        for file_path in discovery.model_files():
+        for file_path in file_cache["model"]:
             files_scanned += 1
+            report_progress("model")
             full_path = path / file_path
             ext = file_path.suffix.lower()
 
@@ -231,6 +259,7 @@ class Scanner:
                     findings.append(model_finding)
 
         # Detect licenses
+        report_progress("licenses")
         licenses: list[LicenseInfo] = []
         if self._license_detector and self._license_detector.available:
             result = self._license_detector.detect_path(path)

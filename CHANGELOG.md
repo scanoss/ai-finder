@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial project setup
+- **Anonymous telemetry** for product improvement (enabled by default)
+  - Tracks command usage, success/failure, duration, and error diagnostics
+  - No file paths, scan targets, or PII collected
+  - Opt-out via `--no-telemetry` flag, `SCANOSS_AI_TELEMETRY=0`, `DO_NOT_TRACK=1`, or config file
+  - Config file location: `~/.scanoss-ai/config.json` with `{"telemetry": false}`
 
 ### Changed
 

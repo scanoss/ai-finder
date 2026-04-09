@@ -15,6 +15,7 @@ AI_SDK_IMPORTS_FALLBACK = frozenset(
     {
         "github.com/sashabaranov/go-openai",
         "github.com/anthropics/anthropic-sdk-go",
+        "github.com/liushuangls/go-anthropic",
         "github.com/cohere-ai/cohere-go",
         "github.com/replicate/replicate-go",
         "github.com/tmc/langchaingo",

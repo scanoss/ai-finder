@@ -7,10 +7,12 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
+from .. import __version__
 from ..models import Finding, FindingType, ScanResult
 
 if TYPE_CHECKING:
     from ..analyzers.graph import ComponentGraph
+    from ..enrichment.kb_enricher import KBEnricher
 
 
 class SPDXFormatter:
@@ -19,6 +21,36 @@ class SPDXFormatter:
     SPDX_VERSION = "SPDX-2.3"
     DATA_LICENSE = "CC0-1.0"
 
+    # Manifest file to PURL type mapping
+    MANIFEST_PURL_TYPES: dict[str, str] = {
+        "requirements.txt": "pypi",
+        "requirements-dev.txt": "pypi",
+        "requirements-test.txt": "pypi",
+        "pyproject.toml": "pypi",
+        "setup.py": "pypi",
+        "setup.cfg": "pypi",
+        "Pipfile": "pypi",
+        "package.json": "npm",
+        "package-lock.json": "npm",
+        "yarn.lock": "npm",
+        "go.mod": "golang",
+        "go.sum": "golang",
+        "Cargo.toml": "cargo",
+        "Cargo.lock": "cargo",
+        "pom.xml": "maven",
+        "build.gradle": "maven",
+        "build.gradle.kts": "maven",
+        "Gemfile": "gem",
+        "Gemfile.lock": "gem",
+        "composer.json": "composer",
+        "composer.lock": "composer",
+        "Package.swift": "swift",
+        "Podfile": "cocoapods",
+        "Podfile.lock": "cocoapods",
+        "*.csproj": "nuget",
+        "packages.config": "nuget",
+    }
+
     def __init__(self, indent: int | None = 2) -> None:
         """Initialize formatter.
 
@@ -26,6 +58,25 @@ class SPDXFormatter:
             indent: JSON indentation level.
         """
         self.indent = indent
+
+    def _infer_purl_type_from_sdk(self, sdk_name: str) -> str:
+        """Infer PURL type from SDK name pattern."""
+        if sdk_name.startswith("github.com/") or sdk_name.startswith("golang.org/"):
+            return "golang"
+        if sdk_name.startswith("@"):
+            return "npm"
+        if sdk_name.startswith("async-") or sdk_name.endswith("-rs"):
+            return "cargo"
+        return "pypi"
+
+    def _infer_purl_type_from_manifest(self, manifest_file: str) -> str:
+        """Infer PURL type from manifest filename."""
+        filename = manifest_file.split("/")[-1]
+        if filename in self.MANIFEST_PURL_TYPES:
+            return self.MANIFEST_PURL_TYPES[filename]
+        if filename.endswith(".csproj"):
+            return "nuget"
+        return "pypi"
 
     def _finding_to_package(self, finding: Finding, idx: int) -> dict[str, Any] | None:
         """Convert a finding to an SPDX package.
@@ -48,11 +99,12 @@ class SPDXFormatter:
             if sdk.version:
                 package["versionInfo"] = sdk.version
             # Add external ref for PURL
+            purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
             package["externalRefs"] = [
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": f"pkg:pypi/{sdk.sdk}",
+                    "referenceLocator": f"pkg:{purl_type}/{sdk.sdk}",
                 }
             ]
             return package
@@ -66,11 +118,11 @@ class SPDXFormatter:
                 "filesAnalyzed": False,
             }
             if dep.version:
-                version = dep.version.lstrip(">=<~^")
+                version = dep.version.lstrip(">=<~^=")
                 if version:
                     package["versionInfo"] = version
             # Generate PURL based on manifest type
-            purl_type = "npm" if "package.json" in dep.manifest_file else "pypi"
+            purl_type = self._infer_purl_type_from_manifest(dep.manifest_file)
             package["externalRefs"] = [
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
@@ -81,27 +133,124 @@ class SPDXFormatter:
             return package
 
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
-            package = {
+            info = finding.model_info
+            package: dict[str, Any] = {
                 "SPDXID": f"SPDXRef-Package-{idx}",
                 "name": finding.file_path.split("/")[-1],
                 "downloadLocation": "NOASSERTION",
                 "filesAnalyzed": False,
                 "primaryPackagePurpose": "APPLICATION",
             }
-            if finding.model_info.format:
-                package["comment"] = f"AI model file, format: {finding.model_info.format}"
+
+            # Build detailed comment with model metadata
+            comment_parts = ["AI/ML model file"]
+            if info.format:
+                comment_parts.append(f"format: {info.format}")
+            if info.architecture:
+                comment_parts.append(f"architecture: {info.architecture}")
+            if info.quantization:
+                comment_parts.append(f"quantization: {info.quantization}")
+            if info.parameter_count:
+                comment_parts.append(f"parameters: {info.parameter_count:,}")
+            package["comment"] = ", ".join(comment_parts)
+
+            # Add external references for model metadata (SPDX 2.3 compatible)
+            # Using OTHER category for AI/ML specific references
+            ext_refs = []
+            if info.format:
+                ext_refs.append({
+                    "referenceCategory": "OTHER",
+                    "referenceType": "scanoss-ai-model-format",
+                    "referenceLocator": info.format,
+                })
+            if info.architecture:
+                ext_refs.append({
+                    "referenceCategory": "OTHER",
+                    "referenceType": "scanoss-ai-model-architecture",
+                    "referenceLocator": info.architecture,
+                })
+            if ext_refs:
+                package["externalRefs"] = ext_refs
+
             return package
 
         return None
 
+    def _enrich_packages(
+        self,
+        packages: dict[str, dict[str, Any]],
+        enricher: "KBEnricher",
+    ) -> None:
+        """Enrich packages with KB metadata.
+
+        Args:
+            packages: Dict of package name to package dict (modified in place).
+            enricher: KB enricher instance.
+        """
+        for name, package in packages.items():
+            purpose = package.get("primaryPackagePurpose")
+
+            if purpose == "APPLICATION":
+                # This is a model file - enrich from KB
+                model_data = enricher.lookup_model(name)
+                if model_data:
+                    # Add license
+                    if model_data.license and "licenseConcluded" not in package:
+                        package["licenseConcluded"] = model_data.license
+                        package["licenseDeclared"] = model_data.license
+
+                    # Update comment with more info
+                    comment_parts = [package.get("comment", "")]
+                    if model_data.architecture:
+                        comment_parts.append(f"architecture: {model_data.architecture}")
+                    if model_data.parameter_count:
+                        comment_parts.append(f"parameters: {model_data.parameter_count:,}")
+                    if model_data.task:
+                        comment_parts.append(f"task: {model_data.task}")
+                    package["comment"] = ", ".join(filter(None, comment_parts))
+
+                    # Add external refs for source
+                    if model_data.source_url:
+                        ext_refs = package.get("externalRefs", [])
+                        ext_refs.append({
+                            "referenceCategory": "OTHER",
+                            "referenceType": "scanoss-ai-source-url",
+                            "referenceLocator": model_data.source_url,
+                        })
+                        package["externalRefs"] = ext_refs
+            else:
+                # SDK/package - enrich from KB
+                pkg_data = enricher.lookup_sdk(name)
+                if pkg_data:
+                    # Add license
+                    if pkg_data.license and "licenseConcluded" not in package:
+                        package["licenseConcluded"] = pkg_data.license
+                        package["licenseDeclared"] = pkg_data.license
+
+                    # Add supplier
+                    if pkg_data.author and "supplier" not in package:
+                        package["supplier"] = pkg_data.author
+
+                    # Add summary
+                    if pkg_data.summary and "summary" not in package:
+                        package["summary"] = pkg_data.summary
+
+                    # Add homepage
+                    if pkg_data.homepage and "homepage" not in package:
+                        package["homepage"] = pkg_data.homepage
+
     def format(
-        self, result: ScanResult, graph: "ComponentGraph | None" = None
+        self,
+        result: ScanResult,
+        graph: "ComponentGraph | None" = None,
+        enricher: "KBEnricher | None" = None,
     ) -> str:
         """Format scan result as SPDX SBOM.
 
         Args:
             result: Scan result to format.
             graph: Optional component relationship graph for dependencies.
+            enricher: Optional KB enricher for metadata lookup.
 
         Returns:
             SPDX JSON string.
@@ -110,18 +259,24 @@ class SPDXFormatter:
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # Build packages from findings
-        packages: list[dict[str, Any]] = []
+        # Use dict to allow updating with better info (e.g., version)
+        packages_by_name: dict[str, dict[str, Any]] = {}
         relationships: list[dict[str, Any]] = []
-        seen_names: set[str] = set()
         name_to_spdxid: dict[str, str] = {}
         idx = 0
 
         for finding in result.findings:
             package = self._finding_to_package(finding, idx)
-            if package and package["name"] not in seen_names:
-                seen_names.add(package["name"])
-                name_to_spdxid[package["name"]] = package["SPDXID"]
-                packages.append(package)
+            if not package:
+                continue
+
+            name = package["name"]
+            existing = packages_by_name.get(name)
+
+            if existing is None:
+                # First time seeing this package
+                name_to_spdxid[name] = package["SPDXID"]
+                packages_by_name[name] = package
                 # Add DESCRIBES relationship
                 relationships.append(
                     {
@@ -131,6 +286,18 @@ class SPDXFormatter:
                     }
                 )
                 idx += 1
+            elif "versionInfo" not in existing and "versionInfo" in package:
+                # Existing has no version but new one does - update
+                existing["versionInfo"] = package["versionInfo"]
+                # Also update PURL in externalRefs if present
+                if "externalRefs" in package:
+                    existing["externalRefs"] = package["externalRefs"]
+
+        # Enrich packages from KB if available
+        if enricher:
+            self._enrich_packages(packages_by_name, enricher)
+
+        packages = list(packages_by_name.values())
 
         # Add file packages and relationships from graph
         if graph:
@@ -160,7 +327,7 @@ class SPDXFormatter:
             "documentNamespace": f"https://scanoss.com/spdx/{doc_uuid}",
             "creationInfo": {
                 "created": timestamp,
-                "creators": ["Tool: scanoss-ai-0.1.0"],
+                "creators": [f"Tool: scanoss-ai-{__version__}"],
             },
             "packages": packages,
             "relationships": relationships,

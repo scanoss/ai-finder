@@ -147,6 +147,8 @@ class FileDiscovery:
             root: Root directory to scan.
         """
         self.root = Path(root).resolve()
+        # Cache for single-pass scanning
+        self._cached_files: dict[str, list[Path]] | None = None
 
     def _should_skip_dir(self, path: Path) -> bool:
         """Check if a directory should be skipped."""
@@ -166,6 +168,40 @@ class FileDiscovery:
 
             if item.is_file():
                 yield item.relative_to(self.root)
+
+    def _build_cache(self) -> None:
+        """Build file cache with single directory walk (efficient for large codebases)."""
+        if self._cached_files is not None:
+            return
+
+        self._cached_files = {
+            "source": [],
+            "manifest": [],
+            "model": [],
+            "config": [],
+        }
+
+        for path in self._walk_files():
+            ext = path.suffix.lower()
+            name = path.name
+
+            if ext in SOURCE_EXTENSIONS:
+                self._cached_files["source"].append(path)
+            if name in MANIFEST_FILES:
+                self._cached_files["manifest"].append(path)
+            if ext in MODEL_EXTENSIONS:
+                self._cached_files["model"].append(path)
+            if name in CONFIG_PATTERNS:
+                self._cached_files["config"].append(path)
+
+    def collect_all(self) -> dict[str, list[Path]]:
+        """Collect all files in a single pass (optimized for large codebases).
+
+        Returns:
+            Dict with keys 'source', 'manifest', 'model', 'config' containing file lists.
+        """
+        self._build_cache()
+        return self._cached_files  # type: ignore
 
     def source_files(self) -> Iterator[Path]:
         """Yield source code files.

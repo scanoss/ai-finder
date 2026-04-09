@@ -7,10 +7,12 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
+from .. import __version__
 from ..models import Finding, FindingType, ScanResult
 
 if TYPE_CHECKING:
     from ..analyzers.graph import ComponentGraph
+    from ..enrichment.kb_enricher import KBEnricher
 
 
 class CycloneDXFormatter:
@@ -18,6 +20,36 @@ class CycloneDXFormatter:
 
     SPEC_VERSION = "1.5"
     BOM_FORMAT = "CycloneDX"
+
+    # Manifest file to PURL type mapping
+    MANIFEST_PURL_TYPES: dict[str, str] = {
+        "requirements.txt": "pypi",
+        "requirements-dev.txt": "pypi",
+        "requirements-test.txt": "pypi",
+        "pyproject.toml": "pypi",
+        "setup.py": "pypi",
+        "setup.cfg": "pypi",
+        "Pipfile": "pypi",
+        "package.json": "npm",
+        "package-lock.json": "npm",
+        "yarn.lock": "npm",
+        "go.mod": "golang",
+        "go.sum": "golang",
+        "Cargo.toml": "cargo",
+        "Cargo.lock": "cargo",
+        "pom.xml": "maven",
+        "build.gradle": "maven",
+        "build.gradle.kts": "maven",
+        "Gemfile": "gem",
+        "Gemfile.lock": "gem",
+        "composer.json": "composer",
+        "composer.lock": "composer",
+        "Package.swift": "swift",
+        "Podfile": "cocoapods",
+        "Podfile.lock": "cocoapods",
+        "*.csproj": "nuget",
+        "packages.config": "nuget",
+    }
 
     def __init__(self, indent: int | None = 2) -> None:
         """Initialize formatter.
@@ -30,6 +62,49 @@ class CycloneDXFormatter:
     def _generate_bom_ref(self, name: str) -> str:
         """Generate a bom-ref for a component."""
         return f"pkg:{name.replace('/', '-').replace('@', '')}"
+
+    def _infer_purl_type_from_sdk(self, sdk_name: str) -> str:
+        """Infer PURL type from SDK name pattern.
+
+        Args:
+            sdk_name: SDK name or import path.
+
+        Returns:
+            PURL type string (pypi, npm, golang, etc.)
+        """
+        # Go modules start with domain paths
+        if sdk_name.startswith("github.com/") or sdk_name.startswith("golang.org/"):
+            return "golang"
+        # npm scoped packages
+        if sdk_name.startswith("@"):
+            return "npm"
+        # Rust crates (typically lowercase with hyphens, async- prefix common)
+        if sdk_name.startswith("async-") or sdk_name.endswith("-rs"):
+            return "cargo"
+        # Default to pypi for Python-style names
+        return "pypi"
+
+    def _infer_purl_type_from_manifest(self, manifest_file: str) -> str:
+        """Infer PURL type from manifest filename.
+
+        Args:
+            manifest_file: Path to manifest file.
+
+        Returns:
+            PURL type string.
+        """
+        filename = manifest_file.split("/")[-1]
+
+        # Check exact matches first
+        if filename in self.MANIFEST_PURL_TYPES:
+            return self.MANIFEST_PURL_TYPES[filename]
+
+        # Check for .csproj files
+        if filename.endswith(".csproj"):
+            return "nuget"
+
+        # Default to pypi
+        return "pypi"
 
     def _finding_to_component(self, finding: Finding) -> dict[str, Any] | None:
         """Convert a finding to a CycloneDX component.
@@ -48,8 +123,9 @@ class CycloneDXFormatter:
             }
             if sdk.version:
                 component["version"] = sdk.version
-            # Generate PURL based on SDK name
-            component["purl"] = f"pkg:pypi/{sdk.sdk}"
+            # Generate PURL based on SDK name pattern
+            purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
+            component["purl"] = f"pkg:{purl_type}/{sdk.sdk}"
             return component
 
         if finding.type == FindingType.MANIFEST_DEP and finding.manifest_dep:
@@ -60,54 +136,215 @@ class CycloneDXFormatter:
             }
             if dep.version:
                 # Clean version specifiers for CycloneDX
-                version = dep.version.lstrip(">=<~^")
+                version = dep.version.lstrip(">=<~^=")
                 if version:
                     component["version"] = version
             # Generate PURL based on manifest type
-            if "package.json" in dep.manifest_file:
-                component["purl"] = f"pkg:npm/{dep.name}"
-            else:
-                component["purl"] = f"pkg:pypi/{dep.name}"
+            purl_type = self._infer_purl_type_from_manifest(dep.manifest_file)
+            component["purl"] = f"pkg:{purl_type}/{dep.name}"
             return component
 
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
             info = finding.model_info
-            component = {
+            filename = finding.file_path.split("/")[-1]
+            component: dict[str, Any] = {
                 "type": "machine-learning-model",
-                "name": finding.file_path.split("/")[-1],
+                "name": filename,
             }
+
+            # Build modelCard per CycloneDX 1.5 ML-BOM spec
+            model_params: dict[str, Any] = {}
+
+            # Map our architecture to CycloneDX modelArchitecture
+            if info.architecture:
+                model_params["modelArchitecture"] = info.architecture
+                # Infer architecture family from known architectures
+                arch_families = {
+                    "llama": "transformer",
+                    "mistral": "transformer",
+                    "mixtral": "transformer",
+                    "phi": "transformer",
+                    "gemma": "transformer",
+                    "qwen": "transformer",
+                    "falcon": "transformer",
+                    "gpt": "transformer",
+                    "bert": "transformer",
+                    "t5": "transformer",
+                    "resnet": "convolutional neural network",
+                    "yolo": "convolutional neural network",
+                    "vgg": "convolutional neural network",
+                    "lstm": "recurrent neural network",
+                }
+                for pattern, family in arch_families.items():
+                    if pattern in info.architecture.lower():
+                        model_params["architectureFamily"] = family
+                        break
+
+            # Add format-specific info
             if info.format:
-                component["description"] = f"Format: {info.format}"
+                # Use description for format since CycloneDX doesn't have a format field
+                component["description"] = f"Model format: {info.format}"
+                if info.quantization:
+                    component["description"] += f", quantization: {info.quantization}"
+
+            # Add modelCard if we have model parameters
+            if model_params:
+                component["modelCard"] = {"modelParameters": model_params}
+
+            # Add properties for additional metadata not in modelCard
+            properties = []
+            if info.format:
+                properties.append({"name": "scanoss:model:format", "value": info.format})
+            if info.quantization:
+                properties.append({"name": "scanoss:model:quantization", "value": info.quantization})
+            if info.parameter_count:
+                properties.append({"name": "scanoss:model:parameters", "value": str(info.parameter_count)})
+            if properties:
+                component["properties"] = properties
+
             return component
 
         return None
 
+    def _enrich_components(
+        self,
+        components: dict[str, dict[str, Any]],
+        enricher: "KBEnricher",
+    ) -> None:
+        """Enrich components with KB metadata.
+
+        Args:
+            components: Dict of component name to component dict (modified in place).
+            enricher: KB enricher instance.
+        """
+        for name, component in components.items():
+            comp_type = component.get("type")
+
+            if comp_type == "machine-learning-model":
+                # Enrich model from KB
+                model_data = enricher.lookup_model(name)
+                if model_data:
+                    # Update PURL if we have a better one
+                    if model_data.purl:
+                        component["purl"] = model_data.purl
+
+                    # Add license if not present
+                    if model_data.license and "licenses" not in component:
+                        component["licenses"] = [
+                            {"license": {"id": model_data.license}}
+                        ]
+
+                    # Update modelCard with KB data
+                    model_card = component.get("modelCard", {})
+                    model_params = model_card.get("modelParameters", {})
+
+                    if model_data.architecture and "modelArchitecture" not in model_params:
+                        model_params["modelArchitecture"] = model_data.architecture
+                    if model_data.architecture_family and "architectureFamily" not in model_params:
+                        model_params["architectureFamily"] = model_data.architecture_family
+                    if model_data.task and "task" not in model_params:
+                        model_params["task"] = model_data.task
+
+                    if model_params:
+                        model_card["modelParameters"] = model_params
+                        component["modelCard"] = model_card
+
+                    # Add properties for additional metadata
+                    properties = component.get("properties", [])
+                    if model_data.parameter_count:
+                        if not any(p["name"] == "scanoss:model:parameters" for p in properties):
+                            properties.append({
+                                "name": "scanoss:model:parameters",
+                                "value": str(model_data.parameter_count),
+                            })
+                    if model_data.source_url:
+                        properties.append({
+                            "name": "scanoss:model:source_url",
+                            "value": model_data.source_url,
+                        })
+                    if model_data.base_model_purl:
+                        properties.append({
+                            "name": "scanoss:model:base_model",
+                            "value": model_data.base_model_purl,
+                        })
+                    if properties:
+                        component["properties"] = properties
+
+            elif comp_type == "library":
+                # Enrich SDK/package from KB
+                pkg_data = enricher.lookup_sdk(name)
+                if pkg_data:
+                    # Add license if not present
+                    if pkg_data.license and "licenses" not in component:
+                        component["licenses"] = [
+                            {"license": {"id": pkg_data.license}}
+                        ]
+
+                    # Add supplier/author
+                    if pkg_data.author and "supplier" not in component:
+                        component["supplier"] = {"name": pkg_data.author}
+
+                    # Add description
+                    if pkg_data.summary and "description" not in component:
+                        component["description"] = pkg_data.summary
+
+                    # Add external reference for homepage
+                    if pkg_data.homepage:
+                        ext_refs = component.get("externalReferences", [])
+                        ext_refs.append({
+                            "type": "website",
+                            "url": pkg_data.homepage,
+                        })
+                        component["externalReferences"] = ext_refs
+
     def format(
-        self, result: ScanResult, graph: "ComponentGraph | None" = None
+        self,
+        result: ScanResult,
+        graph: "ComponentGraph | None" = None,
+        enricher: "KBEnricher | None" = None,
     ) -> str:
         """Format scan result as CycloneDX SBOM.
 
         Args:
             result: Scan result to format.
             graph: Optional component relationship graph for dependencies.
+            enricher: Optional KB enricher for metadata lookup.
 
         Returns:
             CycloneDX JSON string.
         """
         # Build components from findings
-        components: list[dict[str, Any]] = []
-        seen_names: set[str] = set()
+        # Use dict to allow updating with better info (e.g., version)
+        components_by_name: dict[str, dict[str, Any]] = {}
         name_to_ref: dict[str, str] = {}
 
         for finding in result.findings:
             component = self._finding_to_component(finding)
-            if component and component["name"] not in seen_names:
-                seen_names.add(component["name"])
-                # Add bom-ref for dependency tracking
-                bom_ref = self._generate_bom_ref(component["name"])
+            if not component:
+                continue
+
+            name = component["name"]
+            existing = components_by_name.get(name)
+
+            # Add or update component - prefer one with version
+            if existing is None:
+                # First time seeing this component
+                bom_ref = self._generate_bom_ref(name)
                 component["bom-ref"] = bom_ref
-                name_to_ref[component["name"]] = bom_ref
-                components.append(component)
+                name_to_ref[name] = bom_ref
+                components_by_name[name] = component
+            elif "version" not in existing and "version" in component:
+                # Existing has no version but new one does - update
+                existing["version"] = component["version"]
+                # Also update PURL if new component has better type
+                if "purl" in component:
+                    existing["purl"] = component["purl"]
+
+        # Enrich components from KB if available
+        if enricher:
+            self._enrich_components(components_by_name, enricher)
+
+        components = list(components_by_name.values())
 
         bom: dict[str, Any] = {
             "bomFormat": self.BOM_FORMAT,
@@ -120,7 +357,7 @@ class CycloneDXFormatter:
                     {
                         "vendor": "SCANOSS",
                         "name": "scanoss-ai",
-                        "version": "0.1.0",
+                        "version": __version__,
                     }
                 ],
             },

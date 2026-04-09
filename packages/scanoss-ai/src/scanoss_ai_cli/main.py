@@ -67,88 +67,195 @@ def main(ctx: click.Context, no_telemetry: bool) -> None:
     is_flag=True,
     help="Include component relationships in SBOM (dependsOn/contains)",
 )
+@click.option(
+    "--no-enrich",
+    is_flag=True,
+    help="Disable automatic KB enrichment",
+)
+@click.option(
+    "--kb-path",
+    default=None,
+    type=click.Path(path_type=Path),
+    envvar="SCANOSS_KB_PATH",
+    help="Path to KB database (default: ~/.scanoss-ai/kb/scanoss-ai.db)",
+)
 def scan(
     path: Path,
     output_format: str,
     output: Path | None,
     quiet: bool,
     relationships: bool,
+    no_enrich: bool,
+    kb_path: Path | None,
 ) -> None:
     """Scan a directory for AI artifacts.
 
     PATH is the directory to scan.
     """
-    # Track command with telemetry (no file paths sent)
-    with telemetry.track_command("scan", {"format": output_format, "quiet": quiet}) as ctx:
-        scanner = Scanner()
+    try:
+        # Track command with telemetry (no file paths sent)
+        with telemetry.track_command(
+            "scan",
+            {"format": output_format, "quiet": quiet, "enrich": not no_enrich, "relationships": relationships},
+        ) as ctx:
+            # Emit discrete feature events for funnel analysis
+            telemetry.track_feature("scan", "format", output_format)
+            if not no_enrich:
+                telemetry.track_feature("scan", "enrich", "enabled")
+            if relationships:
+                telemetry.track_feature("scan", "relationships", "enabled")
 
-        if not quiet:
-            click.echo(f"Scanning {path}...", err=True)
+            scanner = Scanner()
 
-        try:
-            result = scanner.scan(path)
-        except FileNotFoundError as e:
-            click.echo(f"Error: {e}", err=True)
-            sys.exit(1)
-
-        # Add anonymous metrics to telemetry
-        ctx["files_scanned"] = result.files_scanned
-        ctx["findings_count"] = len(result.findings)
-
-        if not quiet:
-            click.echo(
-                f"Scanned {result.files_scanned} files in {result.duration_ms}ms",
-                err=True,
-            )
-            click.echo(f"Found {len(result.findings)} AI artifacts", err=True)
-
-        # Build relationship graph if requested
-        graph = None
-        if relationships:
             if not quiet:
-                click.echo("Building component relationships...", err=True)
-            graph = scanner.build_relationship_graph(path)
+                click.echo(f"Scanning {path}...", err=True)
+
+            # Progress callback for large codebases
+            progress_bar = None
+            last_phase = [None]  # Use list to allow mutation in closure
+
+            def progress_callback(current: int, total: int, phase: str) -> None:
+                nonlocal progress_bar
+                if quiet:
+                    return
+                if progress_bar is None and total > 100:
+                    # Only show progress bar for larger scans
+                    progress_bar = click.progressbar(
+                        length=total,
+                        label="Scanning",
+                        file=sys.stderr,
+                        show_pos=True,
+                    )
+                    progress_bar.__enter__()
+                if progress_bar is not None:
+                    progress_bar.update(1)
+
+            result = scanner.scan(path, progress_callback=progress_callback)
+
+            # Close progress bar if opened
+            if progress_bar is not None:
+                progress_bar.__exit__(None, None, None)
+                click.echo("", err=True)  # Newline after progress bar
+
+            # Add anonymous metrics to telemetry
+            ctx["files_scanned"] = result.files_scanned
+            ctx["findings_count"] = len(result.findings)
+            ctx["output_format"] = output_format
+
+            # Emit findings count bucket for funnel analysis
+            if len(result.findings) == 0:
+                telemetry.track_feature("scan", "findings", "none")
+            elif len(result.findings) <= 10:
+                telemetry.track_feature("scan", "findings", "few")
+            else:
+                telemetry.track_feature("scan", "findings", "many")
+
             if not quiet:
                 click.echo(
-                    f"Found {len(graph.nodes)} components, {len(graph.edges)} relationships",
+                    f"Scanned {result.files_scanned} files in {result.duration_ms}ms",
                     err=True,
                 )
+                click.echo(f"Found {len(result.findings)} AI artifacts", err=True)
 
-        # Format output
-        formatted: str
-        if output_format == "json":
-            formatted = JSONFormatter(indent=2).format(result)
-        elif output_format == "cyclonedx":
-            formatted = CycloneDXFormatter().format(result, graph)
-        elif output_format == "spdx":
-            formatted = SPDXFormatter().format(result, graph)
-        else:
-            # Text format - simple summary
-            lines = [
-                "SCANOSS AI Scan Results",
-                "=======================",
-                f"Path: {result.root_path}",
-                f"Files scanned: {result.files_scanned}",
-                f"Duration: {result.duration_ms}ms",
-                f"Findings: {len(result.findings)}",
-                "",
-            ]
-            for finding in result.findings:
-                if finding.sdk_usage:
-                    lines.append(f"  SDK: {finding.sdk_usage.sdk} ({finding.file_path}:{finding.line})")
-                elif finding.manifest_dep:
-                    lines.append(f"  Dep: {finding.manifest_dep.name} ({finding.file_path})")
-                elif finding.model_info:
-                    lines.append(f"  Model: {finding.file_path} ({finding.model_info.format})")
-            formatted = "\n".join(lines)
+            # Track artifact types found for dataset improvement
+            model_count = sum(1 for f in result.findings if f.model_info)
+            sdk_count = sum(1 for f in result.findings if f.sdk_usage)
+            manifest_count = sum(1 for f in result.findings if f.manifest_dep)
+            ctx["model_count"] = model_count
+            ctx["sdk_count"] = sdk_count
+            ctx["manifest_count"] = manifest_count
 
-        # Output result
-        if output:
-            output.write_text(formatted)
-            if not quiet:
-                click.echo(f"Output written to {output}", err=True)
-        else:
-            click.echo(formatted)
+            if model_count > 0:
+                telemetry.track_feature("scan", "artifact_type", "model")
+            if sdk_count > 0:
+                telemetry.track_feature("scan", "artifact_type", "sdk")
+            if manifest_count > 0:
+                telemetry.track_feature("scan", "artifact_type", "manifest")
+
+            # Build relationship graph if requested
+            graph = None
+            if relationships:
+                if not quiet:
+                    click.echo("Building component relationships...", err=True)
+                graph = scanner.build_relationship_graph(path)
+                ctx["graph_nodes"] = len(graph.nodes)
+                ctx["graph_edges"] = len(graph.edges)
+                telemetry.track_feature("scan", "graph_built", "success")
+                if not quiet:
+                    click.echo(
+                        f"Found {len(graph.nodes)} components, {len(graph.edges)} relationships",
+                        err=True,
+                    )
+
+            # Format output with optional KB enrichment
+            def format_output(enricher=None):
+                if output_format == "json":
+                    return JSONFormatter(indent=2).format(result)
+                elif output_format == "cyclonedx":
+                    return CycloneDXFormatter().format(result, graph, enricher)
+                elif output_format == "spdx":
+                    return SPDXFormatter().format(result, graph, enricher)
+                else:
+                    # Text format - simple summary
+                    lines = [
+                        "SCANOSS AI Scan Results",
+                        "=======================",
+                        f"Path: {result.root_path}",
+                        f"Files scanned: {result.files_scanned}",
+                        f"Duration: {result.duration_ms}ms",
+                        f"Findings: {len(result.findings)}",
+                        "",
+                    ]
+                    for finding in result.findings:
+                        if finding.sdk_usage:
+                            lines.append(f"  SDK: {finding.sdk_usage.sdk} ({finding.file_path}:{finding.line})")
+                        elif finding.manifest_dep:
+                            lines.append(f"  Dep: {finding.manifest_dep.name} ({finding.file_path})")
+                        elif finding.model_info:
+                            lines.append(f"  Model: {finding.file_path} ({finding.model_info.format})")
+                    return "\n".join(lines)
+
+            # Setup KB enricher (enabled by default)
+            if not no_enrich:
+                from scanoss_ai_scanner.enrichment import KBEnricher
+
+                enricher_path = kb_path
+                if enricher_path is None:
+                    enricher_path = Path("~/.scanoss-ai/kb/scanoss-ai.db").expanduser()
+
+                kb_exists = enricher_path.exists()
+                ctx["kb_available"] = kb_exists
+
+                # Track KB availability for understanding dataset coverage
+                if kb_exists:
+                    telemetry.track_feature("scan", "kb_source", "local")
+                else:
+                    telemetry.track_feature("scan", "kb_source", "live_only")
+
+                if not quiet:
+                    click.echo("Enriching with KB metadata...", err=True)
+
+                # Use proper context manager for enricher
+                with KBEnricher(
+                    db_path=enricher_path if kb_exists else None,
+                    enable_live_fallback=True,
+                    telemetry_callback=telemetry.track_event,
+                ) as enricher:
+                    formatted = format_output(enricher)
+            else:
+                formatted = format_output()
+
+            # Output result
+            if output:
+                output.write_text(formatted)
+                if not quiet:
+                    click.echo(f"Output written to {output}", err=True)
+            else:
+                click.echo(formatted)
+
+    except Exception as exc:
+        click.echo(f"Error: {exc}", err=True)
+        sys.exit(1)
 
 
 # Register additional commands

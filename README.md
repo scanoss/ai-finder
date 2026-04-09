@@ -99,6 +99,10 @@ scanoss-ai kb init
 scanoss-ai kb lookup pkg:huggingface/TinyLlama/TinyLlama-1.1B-Chat-v1.0
 ```
 
+## Telemetry
+
+This tool collects anonymous usage telemetry. See [docs/TELEMETRY.md](docs/TELEMETRY.md) for details and opt-out instructions.
+
 ## Development
 
 ```bash
