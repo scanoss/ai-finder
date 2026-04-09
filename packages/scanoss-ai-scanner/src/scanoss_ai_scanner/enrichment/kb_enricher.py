@@ -8,7 +8,7 @@ import logging
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Dict, TypeVar
 
 if TYPE_CHECKING:
     from .huggingface import HuggingFaceEnricher
@@ -17,8 +17,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# Telemetry callback type
-TelemetryCallback = Callable[[str, dict[str, Any]], None]
+# Telemetry callback type (Dict for Python 3.8 compatibility - type aliases are evaluated at runtime)
+TelemetryCallback = Callable[[str, Dict[str, Any]], None]
 
 # Type var for cache values
 T = TypeVar("T")
