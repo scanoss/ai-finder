@@ -2,7 +2,7 @@
 name = "scanoss-ai-workspace"
 version = "0.0.0"
 description = "SCANOSS AI - AI artifact scanner workspace"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [dependency-groups]
 dev = [
