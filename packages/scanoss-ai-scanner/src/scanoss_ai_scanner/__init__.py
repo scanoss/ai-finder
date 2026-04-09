@@ -15,7 +15,7 @@ from scanoss_ai_scanner.models import (
 )
 from scanoss_ai_scanner.scanner import Scanner
 
-__version__ = "0.2.10"
+__version__ = "0.2.11"
 
 __all__ = [
     # Core

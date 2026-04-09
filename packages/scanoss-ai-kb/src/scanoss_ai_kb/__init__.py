@@ -7,7 +7,7 @@ from .database import Database
 from .matcher import Matcher
 from .models import AncestryEdge, MCPMatch, ModelMatch, SDKMatch
 
-__version__ = "0.2.10"
+__version__ = "0.2.11"
 __all__ = [
     "KnowledgeBase",
     "Database",
