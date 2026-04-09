@@ -59,9 +59,7 @@ class NpmEnricher:
             logger.warning("Failed to fetch package %s: %s", name, e)
             return None
 
-    def _parse_response(
-        self, name: str, data: dict, version: str | None = None
-    ) -> NpmPackageInfo:
+    def _parse_response(self, name: str, data: dict, version: str | None = None) -> NpmPackageInfo:
         """Parse npm API response."""
         # Get latest version if not specified
         if not version:

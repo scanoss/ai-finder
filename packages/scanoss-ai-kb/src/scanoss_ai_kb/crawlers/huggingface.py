@@ -289,7 +289,8 @@ class HuggingFaceCrawler:
                         version = COALESCE(excluded.version, version),
                         format = COALESCE(excluded.format, format),
                         architecture = COALESCE(excluded.architecture, architecture),
-                        architecture_family = COALESCE(excluded.architecture_family, architecture_family),
+                        architecture_family = COALESCE(
+                            excluded.architecture_family, architecture_family),
                         parameter_count = COALESCE(excluded.parameter_count, parameter_count),
                         license = COALESCE(excluded.license, license),
                         source_url = excluded.source_url,
@@ -349,9 +350,7 @@ class HuggingFaceCrawler:
         """Extract parameter count."""
         safetensors = detail.get("safetensors", {})
         if safetensors:
-            params = safetensors.get("total") or safetensors.get("parameters", {}).get(
-                "total"
-            )
+            params = safetensors.get("total") or safetensors.get("parameters", {}).get("total")
             if params:
                 return int(params)
 

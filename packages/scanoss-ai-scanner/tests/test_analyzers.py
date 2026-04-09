@@ -3,7 +3,6 @@
 from pathlib import Path
 
 import pytest
-
 from scanoss_ai_scanner.analyzers.dataflow import FlowType
 from scanoss_ai_scanner.analyzers.go_analyzer import GoAnalyzer
 from scanoss_ai_scanner.analyzers.graph import ComponentGraph, RelationshipAnalyzer

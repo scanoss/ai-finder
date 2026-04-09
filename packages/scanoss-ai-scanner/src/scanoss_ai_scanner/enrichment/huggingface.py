@@ -265,9 +265,7 @@ class HuggingFaceEnricher:
         # Try safetensors metadata
         safetensors = data.get("safetensors", {})
         if safetensors:
-            params = safetensors.get("total") or safetensors.get("parameters", {}).get(
-                "total"
-            )
+            params = safetensors.get("total") or safetensors.get("parameters", {}).get("total")
             if params:
                 return int(params)
 

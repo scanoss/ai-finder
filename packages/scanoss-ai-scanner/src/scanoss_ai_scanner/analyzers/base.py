@@ -85,7 +85,7 @@ class BaseAnalyzer(ABC):
             List of function calls found.
         """
 
-    def extract_dataflow(self, content: str, path: Path) -> "DataFlowGraph":
+    def extract_dataflow(self, content: str, path: Path) -> DataFlowGraph:
         """Extract data flow graph showing how AI outputs propagate.
 
         Args:

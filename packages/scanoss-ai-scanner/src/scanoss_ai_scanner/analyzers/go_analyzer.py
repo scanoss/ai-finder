@@ -131,9 +131,7 @@ class GoAnalyzer(BaseAnalyzer):
 
         return functions
 
-    def _get_current_function(
-        self, functions: dict[tuple[int, int], str], line: int
-    ) -> str | None:
+    def _get_current_function(self, functions: dict[tuple[int, int], str], line: int) -> str | None:
         """Get the function name containing the given line."""
         for (start, end), name in functions.items():
             if start <= line <= end:

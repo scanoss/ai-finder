@@ -26,9 +26,7 @@ class BaseDetector(ABC):
         """
 
     @abstractmethod
-    def detect(
-        self, content: str, path: Path, matcher: Any | None = None
-    ) -> Iterator[Finding]:
+    def detect(self, content: str, path: Path, matcher: Any | None = None) -> Iterator[Finding]:
         """Detect SDK usage in file content.
 
         Args:

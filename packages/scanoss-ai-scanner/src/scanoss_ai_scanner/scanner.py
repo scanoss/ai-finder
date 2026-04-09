@@ -7,12 +7,6 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable
 
-if TYPE_CHECKING:
-    from .analyzers.graph import ComponentGraph
-
-# Progress callback: (current, total, phase) -> None
-ProgressCallback = Callable[[int, int, str], None]
-
 from .detectors import (
     CppDetector,
     CSharpDetector,
@@ -60,6 +54,12 @@ from .parsers import (
     TFLiteParser,
 )
 from .parsers.base import BaseModelParser
+
+if TYPE_CHECKING:
+    from .analyzers.graph import ComponentGraph
+
+# Progress callback: (current, total, phase) -> None
+ProgressCallback = Callable[[int, int, str], None]
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +152,7 @@ class Scanner:
             self._relationship_analyzer = RelationshipAnalyzer()
         return self._relationship_analyzer
 
-    def build_relationship_graph(self, path: Path) -> "ComponentGraph":
+    def build_relationship_graph(self, path: Path) -> ComponentGraph:
         """Build a component relationship graph for the given path.
 
         Args:
@@ -241,7 +241,7 @@ class Scanner:
                     logger.warning("Failed to read %s: %s", file_path, e)
 
         # Scan config files (count only for now)
-        for file_path in file_cache["config"]:
+        for _file_path in file_cache["config"]:
             files_scanned += 1
             report_progress("config")
 

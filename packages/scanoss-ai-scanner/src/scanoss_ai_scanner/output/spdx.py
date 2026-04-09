@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
@@ -118,7 +119,7 @@ class SPDXFormatter:
                 "filesAnalyzed": False,
             }
             if dep.version:
-                version = dep.version.lstrip(">=<~^=")
+                version = re.sub(r"^[>=<~^]+", "", dep.version)
                 if version:
                     package["versionInfo"] = version
             # Generate PURL based on manifest type
@@ -158,17 +159,21 @@ class SPDXFormatter:
             # Using OTHER category for AI/ML specific references
             ext_refs = []
             if info.format:
-                ext_refs.append({
-                    "referenceCategory": "OTHER",
-                    "referenceType": "scanoss-ai-model-format",
-                    "referenceLocator": info.format,
-                })
+                ext_refs.append(
+                    {
+                        "referenceCategory": "OTHER",
+                        "referenceType": "scanoss-ai-model-format",
+                        "referenceLocator": info.format,
+                    }
+                )
             if info.architecture:
-                ext_refs.append({
-                    "referenceCategory": "OTHER",
-                    "referenceType": "scanoss-ai-model-architecture",
-                    "referenceLocator": info.architecture,
-                })
+                ext_refs.append(
+                    {
+                        "referenceCategory": "OTHER",
+                        "referenceType": "scanoss-ai-model-architecture",
+                        "referenceLocator": info.architecture,
+                    }
+                )
             if ext_refs:
                 package["externalRefs"] = ext_refs
 
@@ -179,7 +184,7 @@ class SPDXFormatter:
     def _enrich_packages(
         self,
         packages: dict[str, dict[str, Any]],
-        enricher: "KBEnricher",
+        enricher: KBEnricher,
     ) -> None:
         """Enrich packages with KB metadata.
 
@@ -212,11 +217,13 @@ class SPDXFormatter:
                     # Add external refs for source
                     if model_data.source_url:
                         ext_refs = package.get("externalRefs", [])
-                        ext_refs.append({
-                            "referenceCategory": "OTHER",
-                            "referenceType": "scanoss-ai-source-url",
-                            "referenceLocator": model_data.source_url,
-                        })
+                        ext_refs.append(
+                            {
+                                "referenceCategory": "OTHER",
+                                "referenceType": "scanoss-ai-source-url",
+                                "referenceLocator": model_data.source_url,
+                            }
+                        )
                         package["externalRefs"] = ext_refs
             else:
                 # SDK/package - enrich from KB
@@ -242,8 +249,8 @@ class SPDXFormatter:
     def format(
         self,
         result: ScanResult,
-        graph: "ComponentGraph | None" = None,
-        enricher: "KBEnricher | None" = None,
+        graph: ComponentGraph | None = None,
+        enricher: KBEnricher | None = None,
     ) -> str:
         """Format scan result as SPDX SBOM.
 
@@ -337,7 +344,7 @@ class SPDXFormatter:
 
     def _build_file_packages(
         self,
-        graph: "ComponentGraph",
+        graph: ComponentGraph,
         name_to_spdxid: dict[str, str],
         start_idx: int,
     ) -> tuple[list[dict[str, Any]], dict[str, str], int]:
@@ -380,7 +387,7 @@ class SPDXFormatter:
         return file_packages, updated_ids, idx
 
     def _build_relationships(
-        self, graph: "ComponentGraph", name_to_spdxid: dict[str, str]
+        self, graph: ComponentGraph, name_to_spdxid: dict[str, str]
     ) -> list[dict[str, Any]]:
         """Build SPDX relationships from component graph.
 

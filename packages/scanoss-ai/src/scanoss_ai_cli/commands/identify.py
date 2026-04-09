@@ -57,7 +57,9 @@ def identify(file: Path, output_format: str, no_enrich: bool, kb_path: Path | No
 
     try:
         # Track command with telemetry (no file paths sent)
-        with telemetry.track_command("identify", {"format": output_format, "enrich": not no_enrich}) as ctx:
+        with telemetry.track_command(
+            "identify", {"format": output_format, "enrich": not no_enrich}
+        ) as ctx:
             # Emit discrete feature events for funnel analysis
             telemetry.track_feature("identify", "format", output_format)
             if not no_enrich:
@@ -85,7 +87,9 @@ def identify(file: Path, output_format: str, no_enrich: bool, kb_path: Path | No
                 known_extensions.update(parser.extensions)
 
             if ext not in known_extensions:
-                telemetry.track_feature("identify", "unknown_extension", ext[:10] if ext else "none")
+                telemetry.track_feature(
+                    "identify", "unknown_extension", ext[:10] if ext else "none"
+                )
 
             for parser in parsers:
                 if ext in parser.extensions:

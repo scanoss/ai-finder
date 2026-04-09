@@ -6,7 +6,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .base import BaseAnalyzer, ComponentUsage, FunctionCall, RelationshipGraph
+from .base import BaseAnalyzer, ComponentUsage, RelationshipGraph
 from .go_analyzer import GoAnalyzer
 from .javascript_analyzer import JavaScriptAnalyzer
 from .python_analyzer import PythonAnalyzer
@@ -68,11 +68,15 @@ class ComponentGraph:
 
     def get_dependencies(self, node_id: str) -> list[str]:
         """Get all nodes that the given node depends on."""
-        return [e.target for e in self.edges if e.source == node_id and e.relationship == "dependsOn"]
+        return [
+            e.target for e in self.edges if e.source == node_id and e.relationship == "dependsOn"
+        ]
 
     def get_dependents(self, node_id: str) -> list[str]:
         """Get all nodes that depend on the given node."""
-        return [e.source for e in self.edges if e.target == node_id and e.relationship == "dependsOn"]
+        return [
+            e.source for e in self.edges if e.target == node_id and e.relationship == "dependsOn"
+        ]
 
     def to_dict(self) -> dict:
         """Convert graph to dictionary for serialization."""
@@ -150,7 +154,7 @@ class RelationshipAnalyzer:
             file_path = str(path)
 
             # Add file node
-            file_node = graph.add_node(file_path, "file")
+            graph.add_node(file_path, "file")
 
             for usage in result.usages:
                 component_id = usage.component_id
@@ -189,7 +193,10 @@ class RelationshipAnalyzer:
             file_path = str(path)
 
             for call in result.calls:
-                caller_key = f"{file_path}::{call.caller}" if call.caller != "<module>" else file_path
+                if call.caller != "<module>":
+                    caller_key = f"{file_path}::{call.caller}"
+                else:
+                    caller_key = file_path
                 callee_key = f"{file_path}::{call.callee}"
 
                 # If callee function uses AI components, caller transitively depends on them

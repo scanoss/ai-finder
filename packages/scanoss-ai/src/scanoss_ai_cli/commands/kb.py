@@ -86,7 +86,7 @@ def init(kb_path: Path | None) -> None:
     """Initialize the local knowledge base database."""
     from scanoss_ai_kb import Database
 
-    with telemetry.track_command("kb.init") as ctx:
+    with telemetry.track_command("kb.init"):
         db_path = kb_path if kb_path else _default_kb_path()
 
         try:
@@ -295,7 +295,9 @@ def lookup(purl: str, kb_path: Path | None, output_format: str) -> None:
                     if result.get("version"):
                         click.echo(f"Version: {result['version']}")
                     if result.get("category") or result.get("ai_category"):
-                        click.echo(f"Category: {result.get('category') or result.get('ai_category')}")
+                        click.echo(
+                            f"Category: {result.get('category') or result.get('ai_category')}"
+                        )
                     if result.get("architecture"):
                         click.echo(f"Arch:    {result['architecture']}")
                     if result.get("license"):

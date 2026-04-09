@@ -10,10 +10,9 @@ import click
 from scanoss_ai_scanner.output import CycloneDXFormatter, JSONFormatter, SPDXFormatter
 from scanoss_ai_scanner.scanner import Scanner
 
-from scanoss_ai_cli import __version__
+from scanoss_ai_cli import __version__, telemetry
 from scanoss_ai_cli.commands.identify import identify
 from scanoss_ai_cli.commands.kb import kb
-from scanoss_ai_cli import telemetry
 
 
 @click.group()
@@ -96,7 +95,12 @@ def scan(
         # Track command with telemetry (no file paths sent)
         with telemetry.track_command(
             "scan",
-            {"format": output_format, "quiet": quiet, "enrich": not no_enrich, "relationships": relationships},
+            {
+                "format": output_format,
+                "quiet": quiet,
+                "enrich": not no_enrich,
+                "relationships": relationships,
+            },
         ) as ctx:
             # Emit discrete feature events for funnel analysis
             telemetry.track_feature("scan", "format", output_format)
@@ -208,11 +212,16 @@ def scan(
                     ]
                     for finding in result.findings:
                         if finding.sdk_usage:
-                            lines.append(f"  SDK: {finding.sdk_usage.sdk} ({finding.file_path}:{finding.line})")
+                            sdk = finding.sdk_usage
+                            lines.append(f"  SDK: {sdk.sdk} ({finding.file_path}:{finding.line})")
                         elif finding.manifest_dep:
-                            lines.append(f"  Dep: {finding.manifest_dep.name} ({finding.file_path})")
+                            lines.append(
+                                f"  Dep: {finding.manifest_dep.name} ({finding.file_path})"
+                            )
                         elif finding.model_info:
-                            lines.append(f"  Model: {finding.file_path} ({finding.model_info.format})")
+                            lines.append(
+                                f"  Model: {finding.file_path} ({finding.model_info.format})"
+                            )
                     return "\n".join(lines)
 
             # Setup KB enricher (enabled by default)

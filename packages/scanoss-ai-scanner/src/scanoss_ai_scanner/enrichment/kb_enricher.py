@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import sqlite3
@@ -125,7 +126,7 @@ class KBEnricher:
             del cache[oldest_key]
         cache[key] = value
 
-    def __enter__(self) -> "KBEnricher":
+    def __enter__(self) -> KBEnricher:
         """Open database connection."""
         if self.db_path and self.db_path.exists():
             self._conn = sqlite3.connect(self.db_path)
@@ -141,10 +142,8 @@ class KBEnricher:
     def _track(self, event: str, data: dict) -> None:
         """Record telemetry signal."""
         if self._telemetry:
-            try:
+            with contextlib.suppress(Exception):
                 self._telemetry(event, data)
-            except Exception:
-                pass  # Never fail on telemetry
 
     def lookup_model(self, name: str) -> ModelEnrichment | None:
         """Look up model by name or partial match.
@@ -189,10 +188,8 @@ class KBEnricher:
                 if row:
                     datasets = None
                     if row["datasets"]:
-                        try:
+                        with contextlib.suppress(json.JSONDecodeError):
                             datasets = json.loads(row["datasets"])
-                        except json.JSONDecodeError:
-                            pass
 
                     self._track("enrichment.kb_hit", {"type": "model", "name": clean_name})
                     result = ModelEnrichment(
@@ -216,7 +213,9 @@ class KBEnricher:
         # Fallback to live HuggingFace API
         if self.enable_live_fallback:
             result = self._fetch_model_live(clean_name)
-            self._cache_set(self._model_cache, name, result)  # Cache even None to avoid repeated lookups
+            self._cache_set(
+                self._model_cache, name, result
+            )  # Cache even None to avoid repeated lookups
             return result
 
         self._cache_set(self._model_cache, name, None)
@@ -248,14 +247,19 @@ class KBEnricher:
                 )
             else:
                 # Model not found in HuggingFace
-                self._track("enrichment.model_not_found", {"source": "huggingface", "name": name[:50]})
+                self._track(
+                    "enrichment.model_not_found", {"source": "huggingface", "name": name[:50]}
+                )
         except Exception as e:
             error_category = _classify_fetch_error(e)
-            self._track("enrichment.live_fetch_failed", {
-                "type": "model",
-                "source": "huggingface",
-                "error_category": error_category,
-            })
+            self._track(
+                "enrichment.live_fetch_failed",
+                {
+                    "type": "model",
+                    "source": "huggingface",
+                    "error_category": error_category,
+                },
+            )
             logger.debug("HuggingFace live fetch failed: %s", e)
 
         return None
@@ -337,7 +341,9 @@ class KBEnricher:
                         author=result.author,
                     )
                 else:
-                    self._track("enrichment.package_not_found", {"source": "pypi", "name": name[:50]})
+                    self._track(
+                        "enrichment.package_not_found", {"source": "pypi", "name": name[:50]}
+                    )
 
             elif ecosystem == "npm":
                 from .npm import NpmEnricher
@@ -358,7 +364,9 @@ class KBEnricher:
                         author=result.author,
                     )
                 else:
-                    self._track("enrichment.package_not_found", {"source": "npm", "name": name[:50]})
+                    self._track(
+                        "enrichment.package_not_found", {"source": "npm", "name": name[:50]}
+                    )
 
             else:
                 # Unsupported ecosystem - track it
@@ -366,11 +374,14 @@ class KBEnricher:
 
         except Exception as e:
             error_category = _classify_fetch_error(e)
-            self._track("enrichment.live_fetch_failed", {
-                "type": "package",
-                "source": ecosystem,
-                "error_category": error_category,
-            })
+            self._track(
+                "enrichment.live_fetch_failed",
+                {
+                    "type": "package",
+                    "source": ecosystem,
+                    "error_category": error_category,
+                },
+            )
             logger.debug("Live package fetch failed for %s/%s: %s", ecosystem, name, e)
 
         return None

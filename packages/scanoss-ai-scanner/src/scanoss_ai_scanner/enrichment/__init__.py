@@ -1,9 +1,9 @@
 """SBOM enrichment via KB lookups and external APIs."""
 
 from .huggingface import HuggingFaceEnricher
-from .pypi import PyPIEnricher
-from .npm import NpmEnricher
 from .kb_enricher import KBEnricher, ModelEnrichment, PackageEnrichment
+from .npm import NpmEnricher
+from .pypi import PyPIEnricher
 
 __all__ = [
     "HuggingFaceEnricher",

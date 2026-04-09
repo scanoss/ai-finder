@@ -55,9 +55,7 @@ class RustDetector(BaseDetector):
         """Find line number for a match position."""
         return content[:match_start].count("\n") + 1
 
-    def detect(
-        self, content: str, path: Path, matcher: Any | None = None
-    ) -> Iterator[Finding]:
+    def detect(self, content: str, path: Path, matcher: Any | None = None) -> Iterator[Finding]:
         """Detect SDK usage in Rust file content.
 
         Args:

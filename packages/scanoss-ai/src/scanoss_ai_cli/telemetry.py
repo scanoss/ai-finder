@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 import os
 import time
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from pathlib import Path
 from typing import Any, Generator
 
@@ -55,9 +55,7 @@ def _is_disabled() -> bool:
         return True
     if os.environ.get("DO_NOT_TRACK") == "1":
         return True
-    if _check_config_opt_out():
-        return True
-    return False
+    return bool(_check_config_opt_out())
 
 
 def _get_client() -> Any:
@@ -95,10 +93,8 @@ def disable() -> None:
     _disabled_by_flag = True
     # Shutdown and reset any existing client
     if _client is not None:
-        try:
+        with suppress(Exception):
             _client.shutdown()
-        except Exception:
-            pass
         _client = None
 
 
@@ -193,6 +189,7 @@ def _classify_error(exception: Exception) -> str:
         # Check for specific OS errors
         if hasattr(exception, "errno"):
             import errno
+
             if exception.errno == errno.ENOSPC:
                 return "disk_full"
             if exception.errno == errno.ENOMEM:
@@ -265,10 +262,7 @@ def track_feature(command: str, feature: str, value: str | None = None) -> None:
     """
     client = _get_client()
     if client:
-        if value:
-            event_name = f"{command}.{feature}.{value}"
-        else:
-            event_name = f"{command}.{feature}"
+        event_name = f"{command}.{feature}.{value}" if value else f"{command}.{feature}"
         client.track(event_name)
 
 
@@ -312,8 +306,6 @@ def shutdown() -> None:
     """Shutdown the telemetry client, flushing any pending events."""
     global _client
     if _client is not None:
-        try:
+        with suppress(Exception):
             _client.shutdown()
-        except Exception:
-            pass
         _client = None

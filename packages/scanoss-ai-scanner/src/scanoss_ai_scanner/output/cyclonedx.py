@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
@@ -135,8 +136,8 @@ class CycloneDXFormatter:
                 "name": dep.name,
             }
             if dep.version:
-                # Clean version specifiers for CycloneDX
-                version = dep.version.lstrip(">=<~^=")
+                # Clean version specifiers for CycloneDX (strip leading operators)
+                version = re.sub(r"^[>=<~^]+", "", dep.version)
                 if version:
                     component["version"] = version
             # Generate PURL based on manifest type
@@ -196,9 +197,13 @@ class CycloneDXFormatter:
             if info.format:
                 properties.append({"name": "scanoss:model:format", "value": info.format})
             if info.quantization:
-                properties.append({"name": "scanoss:model:quantization", "value": info.quantization})
+                properties.append(
+                    {"name": "scanoss:model:quantization", "value": info.quantization}
+                )
             if info.parameter_count:
-                properties.append({"name": "scanoss:model:parameters", "value": str(info.parameter_count)})
+                properties.append(
+                    {"name": "scanoss:model:parameters", "value": str(info.parameter_count)}
+                )
             if properties:
                 component["properties"] = properties
 
@@ -209,7 +214,7 @@ class CycloneDXFormatter:
     def _enrich_components(
         self,
         components: dict[str, dict[str, Any]],
-        enricher: "KBEnricher",
+        enricher: KBEnricher,
     ) -> None:
         """Enrich components with KB metadata.
 
@@ -230,9 +235,7 @@ class CycloneDXFormatter:
 
                     # Add license if not present
                     if model_data.license and "licenses" not in component:
-                        component["licenses"] = [
-                            {"license": {"id": model_data.license}}
-                        ]
+                        component["licenses"] = [{"license": {"id": model_data.license}}]
 
                     # Update modelCard with KB data
                     model_card = component.get("modelCard", {})
@@ -251,22 +254,28 @@ class CycloneDXFormatter:
 
                     # Add properties for additional metadata
                     properties = component.get("properties", [])
-                    if model_data.parameter_count:
-                        if not any(p["name"] == "scanoss:model:parameters" for p in properties):
-                            properties.append({
+                    has_params = any(p["name"] == "scanoss:model:parameters" for p in properties)
+                    if model_data.parameter_count and not has_params:
+                        properties.append(
+                            {
                                 "name": "scanoss:model:parameters",
                                 "value": str(model_data.parameter_count),
-                            })
+                            }
+                        )
                     if model_data.source_url:
-                        properties.append({
-                            "name": "scanoss:model:source_url",
-                            "value": model_data.source_url,
-                        })
+                        properties.append(
+                            {
+                                "name": "scanoss:model:source_url",
+                                "value": model_data.source_url,
+                            }
+                        )
                     if model_data.base_model_purl:
-                        properties.append({
-                            "name": "scanoss:model:base_model",
-                            "value": model_data.base_model_purl,
-                        })
+                        properties.append(
+                            {
+                                "name": "scanoss:model:base_model",
+                                "value": model_data.base_model_purl,
+                            }
+                        )
                     if properties:
                         component["properties"] = properties
 
@@ -276,9 +285,7 @@ class CycloneDXFormatter:
                 if pkg_data:
                     # Add license if not present
                     if pkg_data.license and "licenses" not in component:
-                        component["licenses"] = [
-                            {"license": {"id": pkg_data.license}}
-                        ]
+                        component["licenses"] = [{"license": {"id": pkg_data.license}}]
 
                     # Add supplier/author
                     if pkg_data.author and "supplier" not in component:
@@ -291,17 +298,19 @@ class CycloneDXFormatter:
                     # Add external reference for homepage
                     if pkg_data.homepage:
                         ext_refs = component.get("externalReferences", [])
-                        ext_refs.append({
-                            "type": "website",
-                            "url": pkg_data.homepage,
-                        })
+                        ext_refs.append(
+                            {
+                                "type": "website",
+                                "url": pkg_data.homepage,
+                            }
+                        )
                         component["externalReferences"] = ext_refs
 
     def format(
         self,
         result: ScanResult,
-        graph: "ComponentGraph | None" = None,
-        enricher: "KBEnricher | None" = None,
+        graph: ComponentGraph | None = None,
+        enricher: KBEnricher | None = None,
     ) -> str:
         """Format scan result as CycloneDX SBOM.
 
@@ -378,7 +387,7 @@ class CycloneDXFormatter:
         return json.dumps(bom, indent=self.indent)
 
     def _build_file_components(
-        self, graph: "ComponentGraph", name_to_ref: dict[str, str]
+        self, graph: ComponentGraph, name_to_ref: dict[str, str]
     ) -> tuple[list[dict[str, Any]], dict[str, str]]:
         """Build file components from graph for files that use AI SDKs.
 
@@ -414,7 +423,7 @@ class CycloneDXFormatter:
         return file_components, updated_refs
 
     def _build_dependencies(
-        self, graph: "ComponentGraph", name_to_ref: dict[str, str]
+        self, graph: ComponentGraph, name_to_ref: dict[str, str]
     ) -> list[dict[str, Any]]:
         """Build CycloneDX dependencies from component graph.
 
