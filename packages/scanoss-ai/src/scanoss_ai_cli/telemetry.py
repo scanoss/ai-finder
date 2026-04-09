@@ -102,7 +102,6 @@ def track_cli_started() -> None:
     """Track CLI startup event."""
     client = _get_client()
     if client:
-        # Note: Don't use event_type parameter - it may filter events differently
         client.track(
             "cli.started",
             properties={"version": __version__},

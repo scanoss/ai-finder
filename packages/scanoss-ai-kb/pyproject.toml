@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "scanoss-ai-kb"
-version = "0.2.0"
+version = "0.2.2"
 description = "SCANOSS AI Knowledge Base library"
 license = {text = "Apache-2.0"}
 readme = "README.md"
