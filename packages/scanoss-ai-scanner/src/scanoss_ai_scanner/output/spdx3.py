@@ -91,16 +91,17 @@ class SPDX3Formatter:
         # Build a name->spdxId lookup
         name_to_id = {e["name"]: e["spdxId"] for e in elements if "name" in e}
 
-        # Add DEPENDS_ON relationships from graph edges
-        for from_node, to_node, edge_type in graph.edges:
-            from_id = name_to_id.get(from_node)
-            to_id = name_to_id.get(to_node)
+        # Add relationships from graph edges (ComponentEdge dataclass)
+        for edge in graph.edges:
+            from_id = name_to_id.get(edge.source)
+            to_id = name_to_id.get(edge.target)
 
             if from_id and to_id:
-                rel_type = "dependsOn" if edge_type == "imports" else "contains"
+                # Map graph relationship types to SPDX 3.0 relationship types
+                rel_type = edge.relationship  # Already "dependsOn" or "contains"
                 relationships.append({
                     "type": "Relationship",
-                    "spdxId": self._generate_spdx_id("rel", f"{from_node}-{to_node}"),
+                    "spdxId": self._generate_spdx_id("rel", f"{edge.source}-{edge.target}"),
                     "relationshipType": rel_type,
                     "from": from_id,
                     "to": [to_id],
