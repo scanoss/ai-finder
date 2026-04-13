@@ -78,4 +78,4 @@ For questions or concerns about this Code of Conduct, contact:
 
 ---
 
-Copyright (c) 2025-2026 SEMCL.ONE. All Rights Reserved.
+Copyright (c) 2026 SCANOSS. All Rights Reserved.

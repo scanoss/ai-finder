@@ -164,4 +164,4 @@ If you discover a security vulnerability, please follow our [Security Policy](SE
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
-Copyright (c) 2025 SCANOSS.
+Copyright (c) 2026 SCANOSS.
