@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .agents import AgentDetector
 from .base import BaseDetector
 from .cpp import CppDetector
 from .csharp import CSharpDetector
@@ -17,6 +18,7 @@ from .scala import ScalaDetector
 from .swift import SwiftDetector
 
 __all__ = [
+    "AgentDetector",
     "BaseDetector",
     "CppDetector",
     "CSharpDetector",
