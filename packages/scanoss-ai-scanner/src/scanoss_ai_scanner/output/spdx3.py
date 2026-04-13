@@ -113,8 +113,12 @@ class SPDX3Formatter:
             to_id = name_to_id.get(edge.target)
 
             if from_id and to_id:
-                # Map graph relationship types to SPDX 3.0 relationship types
-                rel_type = edge.relationship  # Already "dependsOn" or "contains"
+                # Map graph relationship types to SPDX 3.0 relationship types (uppercase)
+                rel_type_map = {
+                    "dependsOn": "DEPENDS_ON",
+                    "contains": "CONTAINS",
+                }
+                rel_type = rel_type_map.get(edge.relationship, edge.relationship.upper())
                 relationships.append({
                     "type": "Relationship",
                     "spdxId": self._generate_spdx_id("rel", f"{edge.source}-{edge.target}"),

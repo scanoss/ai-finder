@@ -215,7 +215,56 @@ class SPDX23Formatter:
 
             return package
 
+        # Handle Phase 2 types as packages
+        if finding.type in (
+            FindingType.AGENT,
+            FindingType.TOOL,
+            FindingType.EMBEDDING,
+            FindingType.VECTOR_STORE,
+            FindingType.PROMPT,
+            FindingType.GUARDRAIL,
+        ):
+            name = self._get_phase2_package_name(finding)
+            package = {
+                "SPDXID": f"SPDXRef-Package-{idx}",
+                "name": name,
+                "downloadLocation": "NOASSERTION",
+                "filesAnalyzed": False,
+            }
+            return package
+
+        # Handle DATASET
+        if finding.type == FindingType.DATASET and finding.dataset_info:
+            info = finding.dataset_info
+            name = info.name or f"{info.source}-dataset"
+            package = {
+                "SPDXID": f"SPDXRef-Package-{idx}",
+                "name": name,
+                "downloadLocation": "NOASSERTION",
+                "filesAnalyzed": False,
+                "comment": f"Dataset from {info.source}",
+            }
+            if info.split:
+                package["comment"] += f", split: {info.split}"
+            return package
+
         return None
+
+    def _get_phase2_package_name(self, finding: Finding) -> str:
+        """Get package name for Phase 2 finding types."""
+        if finding.agent_info:
+            return f"{finding.agent_info.framework}-agent"
+        if finding.embedding_info:
+            return f"{finding.embedding_info.provider}-embeddings"
+        if finding.vector_store_info:
+            return finding.vector_store_info.provider
+        if finding.tool_info:
+            return finding.tool_info.name
+        if finding.guardrail_info:
+            return finding.guardrail_info.framework
+        if finding.prompt_info:
+            return f"prompt-{finding.prompt_info.template_type}"
+        return "unknown-component"
 
     def _enrich_packages(
         self,
