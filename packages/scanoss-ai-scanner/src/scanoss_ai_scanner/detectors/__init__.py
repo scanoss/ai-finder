@@ -12,6 +12,7 @@ from .javascript import JavaScriptDetector
 from .kotlin import KotlinDetector
 from .php import PHPDetector
 from .python import PythonDetector
+from .rag import RAGDetector
 from .ruby import RubyDetector
 from .rust import RustDetector
 from .scala import ScalaDetector
@@ -28,6 +29,7 @@ __all__ = [
     "KotlinDetector",
     "PHPDetector",
     "PythonDetector",
+    "RAGDetector",
     "RubyDetector",
     "RustDetector",
     "ScalaDetector",
