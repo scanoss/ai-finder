@@ -65,6 +65,22 @@ class CycloneDXFormatter:
         """Generate a bom-ref for a component."""
         return f"pkg:{name.replace('/', '-').replace('@', '')}"
 
+    def _get_phase2_component_name(self, finding: Finding) -> str:
+        """Get component name for Phase 2 finding types."""
+        if finding.agent_info:
+            return f"{finding.agent_info.framework}-agent"
+        if finding.embedding_info:
+            return f"{finding.embedding_info.provider}-embeddings"
+        if finding.vector_store_info:
+            return finding.vector_store_info.provider
+        if finding.tool_info:
+            return finding.tool_info.name
+        if finding.guardrail_info:
+            return finding.guardrail_info.framework
+        if finding.prompt_info:
+            return f"prompt-{finding.prompt_info.template_type}"
+        return "unknown-component"
+
     def _infer_purl_type_from_sdk(self, sdk_name: str) -> str:
         """Infer PURL type from SDK name pattern.
 
@@ -296,6 +312,32 @@ class CycloneDXFormatter:
                 component["properties"] = properties
 
             return component
+
+        # Handle Phase 2 types as libraries
+        if finding.type in (
+            FindingType.AGENT,
+            FindingType.TOOL,
+            FindingType.EMBEDDING,
+            FindingType.VECTOR_STORE,
+            FindingType.PROMPT,
+            FindingType.GUARDRAIL,
+        ):
+            name = self._get_phase2_component_name(finding)
+            return {
+                "type": "library",
+                "name": name,
+                "bom-ref": self._generate_bom_ref(name),
+            }
+
+        # Handle DATASET as data component
+        if finding.type == FindingType.DATASET and finding.dataset_info:
+            info = finding.dataset_info
+            name = info.name or f"{info.source}-dataset"
+            return {
+                "type": "data",
+                "name": name,
+                "bom-ref": f"data:{name.replace('/', '-')}",
+            }
 
         return None
 

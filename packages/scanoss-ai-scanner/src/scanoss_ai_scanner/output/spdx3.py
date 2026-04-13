@@ -28,6 +28,22 @@ class SPDX3Formatter:
         safe_name = name.replace("/", "-").replace("@", "").replace(" ", "-")[:50]
         return f"urn:spdx:{prefix}-{safe_name}-{uuid.uuid4().hex[:8]}"
 
+    def _get_phase2_element_name(self, finding: Finding) -> str:
+        """Get element name for Phase 2 finding types."""
+        if finding.agent_info:
+            return f"{finding.agent_info.framework}-agent"
+        if finding.embedding_info:
+            return f"{finding.embedding_info.provider}-embeddings"
+        if finding.vector_store_info:
+            return finding.vector_store_info.provider
+        if finding.tool_info:
+            return finding.tool_info.name
+        if finding.guardrail_info:
+            return finding.guardrail_info.framework
+        if finding.prompt_info:
+            return f"prompt-{finding.prompt_info.template_type}"
+        return "unknown-component"
+
     def _create_document(self, doc_id: str, root_elements: list[str]) -> dict[str, Any]:
         return {
             "type": "SpdxDocument",
@@ -148,6 +164,37 @@ class SPDX3Formatter:
 
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
             return self._model_to_ai_package(finding, enricher)
+
+        # Handle DATASET as dataset_DatasetPackage
+        if finding.type == FindingType.DATASET and finding.dataset_info:
+            info = finding.dataset_info
+            name = info.name or f"{info.source}-dataset"
+            element: dict[str, Any] = {
+                "type": "dataset_DatasetPackage",
+                "spdxId": self._generate_spdx_id("dataset", name),
+                "name": name,
+                "dataset_datasetType": "text",
+            }
+            if info.split:
+                element["dataset_intendedUse"] = f"Model {info.split}ing"
+            return element
+
+        # Handle other Phase 2 types as software_Package
+        if finding.type in (
+            FindingType.AGENT,
+            FindingType.TOOL,
+            FindingType.EMBEDDING,
+            FindingType.VECTOR_STORE,
+            FindingType.PROMPT,
+            FindingType.GUARDRAIL,
+        ):
+            name = self._get_phase2_element_name(finding)
+            return {
+                "type": "software_Package",
+                "spdxId": self._generate_spdx_id("package", name),
+                "name": name,
+                "software_downloadLocation": "NOASSERTION",
+            }
 
         return None
 
