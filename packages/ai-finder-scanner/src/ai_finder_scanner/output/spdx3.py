@@ -78,7 +78,7 @@ class SPDX3Formatter:
         # Strip comparison operators
         for op in (">=", "<=", "==", "!=", ">", "<", "="):
             if v.startswith(op):
-                v = v[len(op):]
+                v = v[len(op) :]
                 break
         return v.strip()
 
@@ -202,9 +202,7 @@ class SPDX3Formatter:
         """Check if a value is a sentinel/placeholder that should be replaced."""
         return value in ("NOASSERTION", "", None)
 
-    def _merge_element_metadata(
-        self, existing: dict[str, Any], new: dict[str, Any]
-    ) -> None:
+    def _merge_element_metadata(self, existing: dict[str, Any], new: dict[str, Any]) -> None:
         """Merge metadata from new element into existing element.
 
         Args:
@@ -237,9 +235,7 @@ class SPDX3Formatter:
             new_comment = new["comment"]
             if new_comment and new_comment not in existing_comment:
                 existing["comment"] = (
-                    f"{existing_comment}; {new_comment}"
-                    if existing_comment
-                    else new_comment
+                    f"{existing_comment}; {new_comment}" if existing_comment else new_comment
                 )
 
         # Merge hyperparameters for AI packages
@@ -273,11 +269,13 @@ class SPDX3Formatter:
             if "::" not in file_path:
                 # Normalize path for cross-platform consistency
                 normalized_path = self._normalize_path(file_path)
-                file_elements.append({
-                    "type": "software_File",
-                    "spdxId": self._generate_stable_spdx_id("file", normalized_path),
-                    "name": normalized_path,
-                })
+                file_elements.append(
+                    {
+                        "type": "software_File",
+                        "spdxId": self._generate_stable_spdx_id("file", normalized_path),
+                        "name": normalized_path,
+                    }
+                )
 
         return file_elements
 
@@ -314,13 +312,15 @@ class SPDX3Formatter:
 
             if from_id and to_id:
                 rel_type = valid_rel_types[edge.relationship]
-                relationships.append({
-                    "type": "Relationship",
-                    "spdxId": self._generate_spdx_id("rel", f"{edge.source}-{edge.target}"),
-                    "relationshipType": rel_type,
-                    "from": from_id,
-                    "to": [to_id],
-                })
+                relationships.append(
+                    {
+                        "type": "Relationship",
+                        "spdxId": self._generate_spdx_id("rel", f"{edge.source}-{edge.target}"),
+                        "relationshipType": rel_type,
+                        "from": from_id,
+                        "to": [to_id],
+                    }
+                )
 
         return relationships
 
@@ -442,9 +442,7 @@ class SPDX3Formatter:
                 existing_comment = element.get("comment", "")
                 author_comment = f"Author: {pkg_data.author}"
                 element["comment"] = (
-                    f"{existing_comment}; {author_comment}"
-                    if existing_comment
-                    else author_comment
+                    f"{existing_comment}; {author_comment}" if existing_comment else author_comment
                 )
 
             # Add description

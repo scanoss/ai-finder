@@ -63,7 +63,7 @@ class DatasetDetector:
 
         for match in re.finditer(r"^.*$", content, re.MULTILINE):
             line = match.group()
-            line_num = content[:match.start()].count("\n") + 1
+            line_num = content[: match.start()].count("\n") + 1
 
             for pattern in self.PATTERNS:
                 if pattern.pattern.search(line):

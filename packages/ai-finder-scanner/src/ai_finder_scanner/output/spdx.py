@@ -80,9 +80,7 @@ class SPDX23Formatter:
             return "nuget"
         return "pypi"
 
-    def _build_purl(
-        self, purl_type: str, name: str, version: str | None = None
-    ) -> str:
+    def _build_purl(self, purl_type: str, name: str, version: str | None = None) -> str:
         """Build a valid PURL with proper encoding.
 
         Args:

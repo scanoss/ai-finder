@@ -60,7 +60,7 @@ class ToolsDetector:
 
         for match in re.finditer(r"^.*$", content, re.MULTILINE):
             line = match.group()
-            line_num = content[:match.start()].count("\n") + 1
+            line_num = content[: match.start()].count("\n") + 1
 
             for tool_pattern in self.PATTERNS:
                 if tool_pattern.pattern.search(line):

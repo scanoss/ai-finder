@@ -29,16 +29,16 @@ def search(query: str) -> str:
         assert findings[0].type == FindingType.TOOL
 
     def test_detect_structured_tool(self, detector: ToolsDetector) -> None:
-        code = '''
+        code = """
 from langchain.tools import StructuredTool
 calculator = StructuredTool.from_function(calculate)
-'''
+"""
         findings = list(detector.detect(code, Path("tools.py")))
 
         assert len(findings) >= 1
 
     def test_detect_openai_function_calling(self, detector: ToolsDetector) -> None:
-        code = '''
+        code = """
 tools = [
     {
         "type": "function",
@@ -48,16 +48,16 @@ tools = [
         }
     }
 ]
-'''
+"""
         findings = list(detector.detect(code, Path("functions.py")))
 
         assert len(findings) >= 1
 
     def test_no_false_positives(self, detector: ToolsDetector) -> None:
-        code = '''
+        code = """
 import requests
 response = requests.get("https://api.example.com")
-'''
+"""
         findings = list(detector.detect(code, Path("app.py")))
 
         assert len(findings) == 0

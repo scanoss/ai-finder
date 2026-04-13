@@ -10,9 +10,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "packages/ai-finder-kb/src
 
 from ai_finder_kb.database import Database
 
-SEED_DB_PATH = (
-    Path(__file__).parent.parent / "packages/ai-finder-kb/src/ai_finder_kb/data/seed.db"
-)
+SEED_DB_PATH = Path(__file__).parent.parent / "packages/ai-finder-kb/src/ai_finder_kb/data/seed.db"
 
 # SDK patterns by language/ecosystem
 SDKS = [
