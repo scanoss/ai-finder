@@ -55,8 +55,8 @@ class SPDX3Formatter:
         return {
             "type": "Tool",
             "spdxId": tool_id,
-            "name": "scanoss-ai",
-            "software_packageVersion": __version__,
+            "name": f"scanoss-ai-{__version__}",
+            "description": f"SCANOSS AI Scanner version {__version__}",
         }
 
     def _create_document(
@@ -87,34 +87,35 @@ class SPDX3Formatter:
         tool_id = tool_agent["spdxId"]
         elements.append(tool_agent)
 
-        # Build elements with deduplication (like SPDX 2.3)
-        elements_by_name: dict[str, dict[str, Any]] = {}
+        # Build elements with deduplication by (type, name) to avoid
+        # incorrectly merging different element types that share a name
+        elements_by_key: dict[tuple[str, str], dict[str, Any]] = {}
 
         for finding in result.findings:
             element = self._finding_to_element(finding, enricher)
             if not element:
                 continue
 
+            # Key by (type, name) to keep different element types separate
+            elem_type = element["type"]
             name = element["name"]
-            existing = elements_by_name.get(name)
+            key = (elem_type, name)
+            existing = elements_by_key.get(key)
 
             if existing is None:
                 # First time seeing this element
-                elements_by_name[name] = element
-            elif (
-                "software_packageVersion" not in existing
-                and "software_packageVersion" in element
-            ):
-                # Existing has no version but new one does - update
-                existing["software_packageVersion"] = element["software_packageVersion"]
+                elements_by_key[key] = element
+            else:
+                # Merge metadata from new element into existing
+                self._merge_element_metadata(existing, element)
 
         # Convert dict to list and collect root elements
-        for element in elements_by_name.values():
+        for element in elements_by_key.values():
             elements.append(element)
             root_elements.append(element["spdxId"])
 
         # Build name->spdxId lookup for relationships
-        name_to_id = {e["name"]: e["spdxId"] for e in elements_by_name.values()}
+        name_to_id = {e["name"]: e["spdxId"] for e in elements_by_key.values()}
 
         # Add file elements and relationships from graph if available
         if graph:
@@ -141,6 +142,46 @@ class SPDX3Formatter:
         }
 
         return json.dumps(spdx, indent=self.indent)
+
+    def _merge_element_metadata(
+        self, existing: dict[str, Any], new: dict[str, Any]
+    ) -> None:
+        """Merge metadata from new element into existing element.
+
+        Args:
+            existing: Existing element dict (modified in place).
+            new: New element with potentially additional metadata.
+        """
+        # Fields to merge if missing in existing
+        merge_fields = [
+            "software_packageVersion",
+            "software_declaredLicense",
+            "software_downloadLocation",
+            "summary",
+            "comment",
+            "ai_domain",
+            "ai_typeOfModel",
+            "dataset_datasetType",
+            "dataset_intendedUse",
+        ]
+
+        for field in merge_fields:
+            if field not in existing and field in new:
+                existing[field] = new[field]
+            elif field == "comment" and field in new:
+                # Append comments rather than replace
+                existing_comment = existing.get("comment", "")
+                new_comment = new[field]
+                if new_comment and new_comment not in existing_comment:
+                    existing["comment"] = (
+                        f"{existing_comment}; {new_comment}"
+                        if existing_comment
+                        else new_comment
+                    )
+
+        # Merge hyperparameters for AI packages
+        if "ai_hyperparameter" in new and "ai_hyperparameter" not in existing:
+            existing["ai_hyperparameter"] = new["ai_hyperparameter"]
 
     def _build_file_elements(
         self,
