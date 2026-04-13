@@ -39,6 +39,32 @@ def sample_result() -> ScanResult:
     )
 
 
+@pytest.fixture
+def model_file_result() -> ScanResult:
+    """Create a scan result with a model file finding."""
+    from scanoss_ai_scanner.models import ModelInfo
+
+    findings = [
+        Finding(
+            type=FindingType.MODEL_FILE,
+            file_path="models/llama-3-8b.gguf",
+            confidence=1.0,
+            model_info=ModelInfo(
+                format="gguf",
+                architecture="llama",
+                parameter_count=8000000000,
+                quantization="Q4_K_M",
+            ),
+        ),
+    ]
+    return ScanResult(
+        root_path="/test/project",
+        findings=findings,
+        files_scanned=5,
+        duration_ms=50,
+    )
+
+
 class TestSPDX3Formatter:
     def test_format_returns_valid_json(self, sample_result: ScanResult) -> None:
         formatter = SPDX3Formatter()
@@ -72,3 +98,39 @@ class TestSPDX3Formatter:
         assert doc is not None
         assert "spdxId" in doc
         assert "creationInfo" in doc
+
+    def test_format_model_as_ai_package(self, model_file_result: ScanResult) -> None:
+        formatter = SPDX3Formatter()
+        output = formatter.format(model_file_result)
+        data = json.loads(output)
+
+        # Find AIPackage in graph
+        ai_pkg = next(
+            (e for e in data["@graph"] if e.get("type") == "ai_AIPackage"),
+            None,
+        )
+        assert ai_pkg is not None
+        assert ai_pkg["name"] == "llama-3-8b.gguf"
+        assert ai_pkg["ai_typeOfModel"] == "llama"
+        assert ai_pkg["ai_domain"] == "text-generation"
+        assert ai_pkg["ai_autonomyType"] == "assistive"
+
+    def test_format_model_has_hyperparameters(self, model_file_result: ScanResult) -> None:
+        formatter = SPDX3Formatter()
+        output = formatter.format(model_file_result)
+        data = json.loads(output)
+
+        ai_pkg = next(
+            (e for e in data["@graph"] if e.get("type") == "ai_AIPackage"),
+            None,
+        )
+        assert ai_pkg is not None
+        assert "ai_hyperparameter" in ai_pkg
+
+        # Check parameter_count hyperparameter
+        param_count = next(
+            (h for h in ai_pkg["ai_hyperparameter"] if h["name"] == "parameter_count"),
+            None,
+        )
+        assert param_count is not None
+        assert param_count["value"] == "8000000000"
