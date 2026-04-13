@@ -1,13 +1,20 @@
 """Tests for scanner data models."""
 
 from scanoss_ai_scanner.models import (
+    AgentInfo,
     AIComponent,
+    DatasetInfo,
+    EmbeddingInfo,
     Finding,
     FindingType,
+    GuardrailInfo,
     ManifestDep,
     ModelInfo,
+    PromptInfo,
     ScanResult,
     SDKUsage,
+    ToolInfo,
+    VectorStoreInfo,
 )
 
 
@@ -91,13 +98,11 @@ class TestAIComponent:
 
 class TestAgentInfo:
     def test_create_agent_info(self) -> None:
-        from scanoss_ai_scanner.models import AgentInfo
         info = AgentInfo(framework="langchain", agent_type="react")
         assert info.framework == "langchain"
         assert info.agent_type == "react"
 
     def test_agent_info_minimal(self) -> None:
-        from scanoss_ai_scanner.models import AgentInfo
         info = AgentInfo(framework="crewai")
         assert info.framework == "crewai"
         assert info.agent_type is None
@@ -105,7 +110,6 @@ class TestAgentInfo:
 
 class TestToolInfo:
     def test_create_tool_info(self) -> None:
-        from scanoss_ai_scanner.models import ToolInfo
         info = ToolInfo(name="search", description="Search the web")
         assert info.name == "search"
         assert info.description == "Search the web"
@@ -113,7 +117,6 @@ class TestToolInfo:
 
 class TestEmbeddingInfo:
     def test_create_embedding_info(self) -> None:
-        from scanoss_ai_scanner.models import EmbeddingInfo
         info = EmbeddingInfo(provider="openai", model="text-embedding-3-small")
         assert info.provider == "openai"
         assert info.model == "text-embedding-3-small"
@@ -121,7 +124,6 @@ class TestEmbeddingInfo:
 
 class TestVectorStoreInfo:
     def test_create_vector_store_info(self) -> None:
-        from scanoss_ai_scanner.models import VectorStoreInfo
         info = VectorStoreInfo(provider="chroma", collection_name="docs")
         assert info.provider == "chroma"
         assert info.collection_name == "docs"
@@ -129,7 +131,6 @@ class TestVectorStoreInfo:
 
 class TestPromptInfo:
     def test_create_prompt_info(self) -> None:
-        from scanoss_ai_scanner.models import PromptInfo
         info = PromptInfo(template_type="system", variables=["name", "context"])
         assert info.template_type == "system"
         assert info.variables == ["name", "context"]
@@ -137,7 +138,6 @@ class TestPromptInfo:
 
 class TestGuardrailInfo:
     def test_create_guardrail_info(self) -> None:
-        from scanoss_ai_scanner.models import GuardrailInfo
         info = GuardrailInfo(framework="nemoguardrails", guardrail_type="input")
         assert info.framework == "nemoguardrails"
         assert info.guardrail_type == "input"
@@ -145,7 +145,6 @@ class TestGuardrailInfo:
 
 class TestDatasetInfo:
     def test_create_dataset_info(self) -> None:
-        from scanoss_ai_scanner.models import DatasetInfo
         info = DatasetInfo(source="huggingface", name="squad", split="train")
         assert info.source == "huggingface"
         assert info.name == "squad"
