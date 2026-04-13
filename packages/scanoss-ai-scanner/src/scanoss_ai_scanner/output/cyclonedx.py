@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class CycloneDXFormatter:
     """Format scan results as CycloneDX SBOM."""
 
-    SPEC_VERSION = "1.5"
+    SPEC_VERSION = "1.6"
     BOM_FORMAT = "CycloneDX"
 
     # Manifest file to PURL type mapping

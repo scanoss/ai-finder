@@ -151,6 +151,13 @@ class TestCycloneDXFormatter:
         components_with_purl = [c for c in data["components"] if "purl" in c]
         assert len(components_with_purl) >= 1
 
+    def test_format_spec_version_1_6(self, sample_result: ScanResult) -> None:
+        formatter = CycloneDXFormatter()
+        output = formatter.format(sample_result)
+        data = json.loads(output)
+
+        assert data["specVersion"] == "1.6"
+
     def test_format_empty_result(self) -> None:
         result = ScanResult(
             root_path="/empty",
