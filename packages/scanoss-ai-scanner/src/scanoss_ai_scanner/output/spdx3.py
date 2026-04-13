@@ -69,23 +69,29 @@ class SPDX3Formatter:
     def _finding_to_element(self, finding: Finding) -> dict[str, Any] | None:
         if finding.type == FindingType.SDK_USAGE and finding.sdk_usage:
             sdk = finding.sdk_usage
-            return {
+            element: dict[str, Any] = {
                 "type": "software_Package",
                 "spdxId": self._generate_spdx_id("package", sdk.sdk),
                 "name": sdk.sdk,
-                "software_packageVersion": sdk.version,
                 "software_downloadLocation": "NOASSERTION",
             }
+            # Only include version if present (null is invalid in SPDX 3.0)
+            if sdk.version:
+                element["software_packageVersion"] = sdk.version
+            return element
 
         if finding.type == FindingType.MANIFEST_DEP and finding.manifest_dep:
             dep = finding.manifest_dep
-            return {
+            element = {
                 "type": "software_Package",
                 "spdxId": self._generate_spdx_id("package", dep.name),
                 "name": dep.name,
-                "software_packageVersion": dep.version,
                 "software_downloadLocation": "NOASSERTION",
             }
+            # Only include version if present (null is invalid in SPDX 3.0)
+            if dep.version:
+                element["software_packageVersion"] = dep.version
+            return element
 
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
             return self._model_to_ai_package(finding)
