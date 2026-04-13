@@ -1,0 +1,138 @@
+"""SPDX 3.0 SBOM output formatter."""
+
+from __future__ import annotations
+
+import json
+import uuid
+from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any
+
+from .. import __version__
+from ..models import Finding, FindingType, ScanResult
+
+if TYPE_CHECKING:
+    from ..analyzers.graph import ComponentGraph
+    from ..enrichment.kb_enricher import KBEnricher
+
+
+class SPDX3Formatter:
+    """Format scan results as SPDX 3.0 SBOM."""
+
+    SPDX_VERSION = "3.0.1"
+    CONTEXT_URL = "https://spdx.github.io/spdx-spec/v3.0.1/rdf/spdx-context.jsonld"
+
+    def __init__(self, indent: int | None = 2) -> None:
+        self.indent = indent
+
+    def _generate_spdx_id(self, prefix: str, name: str) -> str:
+        safe_name = name.replace("/", "-").replace("@", "").replace(" ", "-")[:50]
+        return f"urn:spdx:{prefix}-{safe_name}-{uuid.uuid4().hex[:8]}"
+
+    def _create_document(self, doc_id: str, root_elements: list[str]) -> dict[str, Any]:
+        return {
+            "type": "SpdxDocument",
+            "spdxId": doc_id,
+            "creationInfo": {
+                "created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "createdBy": [f"urn:spdx:tool-scanoss-ai-{__version__}"],
+                "specVersion": self.SPDX_VERSION,
+            },
+            "rootElement": root_elements,
+        }
+
+    def format(
+        self,
+        result: ScanResult,
+        graph: ComponentGraph | None = None,
+        enricher: KBEnricher | None = None,
+    ) -> str:
+        elements: list[dict[str, Any]] = []
+        root_elements: list[str] = []
+
+        for finding in result.findings:
+            element = self._finding_to_element(finding)
+            if element:
+                elements.append(element)
+                root_elements.append(element["spdxId"])
+
+        doc_id = f"urn:spdx:document-{uuid.uuid4().hex[:12]}"
+        doc = self._create_document(doc_id, root_elements)
+        elements.insert(0, doc)
+
+        spdx: dict[str, Any] = {
+            "@context": self.CONTEXT_URL,
+            "@graph": elements,
+        }
+
+        return json.dumps(spdx, indent=self.indent)
+
+    def _finding_to_element(self, finding: Finding) -> dict[str, Any] | None:
+        if finding.type == FindingType.SDK_USAGE and finding.sdk_usage:
+            sdk = finding.sdk_usage
+            return {
+                "type": "software_Package",
+                "spdxId": self._generate_spdx_id("package", sdk.sdk),
+                "name": sdk.sdk,
+                "software_packageVersion": sdk.version,
+                "software_downloadLocation": "NOASSERTION",
+            }
+
+        if finding.type == FindingType.MANIFEST_DEP and finding.manifest_dep:
+            dep = finding.manifest_dep
+            return {
+                "type": "software_Package",
+                "spdxId": self._generate_spdx_id("package", dep.name),
+                "name": dep.name,
+                "software_packageVersion": dep.version,
+                "software_downloadLocation": "NOASSERTION",
+            }
+
+        if finding.type == FindingType.MODEL_FILE and finding.model_info:
+            return self._model_to_ai_package(finding)
+
+        return None
+
+    def _model_to_ai_package(self, finding: Finding) -> dict[str, Any]:
+        info = finding.model_info
+        filename = finding.file_path.split("/")[-1]
+
+        element: dict[str, Any] = {
+            "type": "ai_AIPackage",
+            "spdxId": self._generate_spdx_id("ai-package", filename),
+            "name": filename,
+            "ai_autonomyType": "assistive",
+        }
+
+        if info:
+            if info.architecture:
+                element["ai_typeOfModel"] = info.architecture
+            element["ai_domain"] = self._infer_domain(info.architecture)
+
+            hyperparams = []
+            if info.parameter_count:
+                hyperparams.append({"name": "parameter_count", "value": str(info.parameter_count)})
+            if info.quantization:
+                hyperparams.append({"name": "quantization", "value": info.quantization})
+            if hyperparams:
+                element["ai_hyperparameter"] = hyperparams
+
+        return element
+
+    def _infer_domain(self, architecture: str | None) -> str:
+        if not architecture:
+            return "NOASSERTION"
+
+        arch_lower = architecture.lower()
+
+        if any(p in arch_lower for p in ["llama", "gpt", "mistral", "phi", "gemma"]):
+            return "text-generation"
+        if any(p in arch_lower for p in ["bert", "embed"]):
+            return "embedding"
+        if any(p in arch_lower for p in ["whisper", "wav2vec"]):
+            return "speech-to-text"
+        if any(p in arch_lower for p in ["stable-diffusion", "sdxl"]):
+            return "image-generation"
+        if any(p in arch_lower for p in ["resnet", "vgg", "yolo"]):
+            return "image-classification"
+
+        return "NOASSERTION"
