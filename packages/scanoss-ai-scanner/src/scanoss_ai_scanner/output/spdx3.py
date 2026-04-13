@@ -28,10 +28,29 @@ class SPDX3Formatter:
         safe_name = name.replace("/", "-").replace("@", "").replace(" ", "-")[:50]
         return f"urn:spdx:{prefix}-{safe_name}-{uuid.uuid4().hex[:8]}"
 
-    def _generate_stable_spdx_id(self, prefix: str, name: str) -> str:
-        """Generate a stable (deterministic) SPDX ID for deduplication."""
+    def _generate_stable_spdx_id(self, prefix: str, name: str, version: str = "") -> str:
+        """Generate a stable (deterministic) SPDX ID for deduplication.
+
+        Args:
+            prefix: Element type prefix (e.g., "package", "ai-package").
+            name: Element name.
+            version: Optional version string to include in ID.
+
+        Returns:
+            Deterministic SPDX ID that includes version when provided.
+        """
         safe_name = name.replace("/", "-").replace("@", "").replace(" ", "-")[:50]
+        if version:
+            safe_version = version.replace("/", "-").replace("@", "").replace(" ", "-")[:20]
+            return f"urn:spdx:{prefix}-{safe_name}-{safe_version}"
         return f"urn:spdx:{prefix}-{safe_name}"
+
+    def _normalize_path(self, path: str) -> str:
+        """Normalize file path for cross-platform consistency.
+
+        Converts Windows backslashes to forward slashes.
+        """
+        return path.replace("\\", "/")
 
     def _get_phase2_element_name(self, finding: Finding) -> str:
         """Get element name for Phase 2 finding types."""
@@ -206,7 +225,7 @@ class SPDX3Formatter:
 
         Args:
             graph: Component relationship graph.
-            name_to_id: Mapping of component names to SPDX IDs.
+            name_to_id: Mapping of component names/spdxIds to SPDX IDs.
 
         Returns:
             List of software_File elements.
@@ -222,10 +241,12 @@ class SPDX3Formatter:
         for file_path in sorted(ai_files):
             # Only include actual file paths, not function paths
             if "::" not in file_path:
+                # Normalize path for cross-platform consistency
+                normalized_path = self._normalize_path(file_path)
                 file_elements.append({
                     "type": "software_File",
-                    "spdxId": self._generate_stable_spdx_id("file", file_path),
-                    "name": file_path,
+                    "spdxId": self._generate_stable_spdx_id("file", normalized_path),
+                    "name": normalized_path,
                 })
 
         return file_elements
@@ -280,9 +301,10 @@ class SPDX3Formatter:
     ) -> dict[str, Any] | None:
         if finding.type == FindingType.SDK_USAGE and finding.sdk_usage:
             sdk = finding.sdk_usage
+            version = sdk.version or ""
             element: dict[str, Any] = {
                 "type": "software_Package",
-                "spdxId": self._generate_stable_spdx_id("package", sdk.sdk),
+                "spdxId": self._generate_stable_spdx_id("package", sdk.sdk, version),
                 "name": sdk.sdk,
                 "software_downloadLocation": "NOASSERTION",
             }
@@ -296,9 +318,10 @@ class SPDX3Formatter:
 
         if finding.type == FindingType.MANIFEST_DEP and finding.manifest_dep:
             dep = finding.manifest_dep
+            version = dep.version or ""
             element = {
                 "type": "software_Package",
-                "spdxId": self._generate_stable_spdx_id("package", dep.name),
+                "spdxId": self._generate_stable_spdx_id("package", dep.name, version),
                 "name": dep.name,
                 "software_downloadLocation": "NOASSERTION",
             }
@@ -410,7 +433,8 @@ class SPDX3Formatter:
         info = finding.model_info
         # Use full path to avoid collisions between models with same filename
         # in different directories (e.g., models/v1/model.bin vs models/v2/model.bin)
-        model_path = finding.file_path
+        # Normalize path for cross-platform consistency (Windows backslashes → forward slashes)
+        model_path = self._normalize_path(finding.file_path)
         filename = model_path.split("/")[-1]
 
         element: dict[str, Any] = {
