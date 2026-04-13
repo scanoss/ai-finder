@@ -177,6 +177,40 @@ class TestCycloneDXFormatter:
         components_with_purl = [c for c in data["components"] if "purl" in c]
         assert len(components_with_purl) >= 1
 
+    def test_format_purl_scoped_npm_package(self) -> None:
+        """Test that scoped npm packages get properly encoded PURLs."""
+        findings = [
+            Finding(
+                type=FindingType.MANIFEST_DEP,
+                file_path="package.json",
+                line=5,
+                confidence=1.0,
+                manifest_dep=ManifestDep(
+                    name="@anthropic-ai/sdk",
+                    version="^1.0.0",
+                    manifest_file="package.json",
+                ),
+            ),
+        ]
+        result = ScanResult(
+            root_path="/test",
+            findings=findings,
+            files_scanned=1,
+            duration_ms=10,
+        )
+        formatter = CycloneDXFormatter()
+        output = formatter.format(result)
+        data = json.loads(output)
+
+        # Find the scoped package
+        pkg = next((c for c in data["components"] if "anthropic" in c["name"]), None)
+        assert pkg is not None
+        # PURL should have namespace/name format: pkg:npm/namespace/name@version
+        # The leading @ from @anthropic-ai/sdk is removed and split into namespace/name
+        assert pkg["purl"] == "pkg:npm/anthropic-ai/sdk@1.0.0"
+        # Verify the PURL starts correctly (no @scope/ pattern)
+        assert pkg["purl"].startswith("pkg:npm/anthropic-ai/")
+
     def test_format_spec_version_1_6(self, sample_result: ScanResult) -> None:
         formatter = CycloneDXFormatter()
         output = formatter.format(sample_result)

@@ -7,6 +7,7 @@ import re
 import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
+from urllib.parse import quote
 
 from .. import __version__
 from ..models import Finding, FindingType, ScanResult
@@ -107,6 +108,46 @@ class CycloneDXFormatter:
         # Default to pypi
         return "pypi"
 
+    def _build_purl(
+        self, purl_type: str, name: str, version: str | None = None
+    ) -> str:
+        """Build a valid PURL with proper encoding.
+
+        Args:
+            purl_type: PURL type (pypi, npm, golang, etc.)
+            name: Package name (may include scope for npm)
+            version: Optional version string
+
+        Returns:
+            Valid PURL string per https://github.com/package-url/purl-spec
+        """
+        # Handle npm scoped packages: @scope/name -> namespace/name
+        if purl_type == "npm" and name.startswith("@"):
+            # Split @scope/name into namespace and name
+            parts = name[1:].split("/", 1)
+            if len(parts) == 2:
+                namespace = quote(parts[0], safe="")
+                pkg_name = quote(parts[1], safe="")
+                purl = f"pkg:{purl_type}/{namespace}/{pkg_name}"
+            else:
+                # Malformed scope, encode as-is
+                purl = f"pkg:{purl_type}/{quote(name, safe='')}"
+        elif purl_type == "golang":
+            # Go modules use path-like names, encode slashes
+            purl = f"pkg:{purl_type}/{quote(name, safe='/')}"
+        else:
+            # Standard packages: encode special characters
+            purl = f"pkg:{purl_type}/{quote(name, safe='')}"
+
+        # Append version if present
+        if version:
+            # Clean version (strip leading operators like >=, ~, ^)
+            clean_version = re.sub(r"^[>=<~^]+", "", version)
+            if clean_version:
+                purl = f"{purl}@{quote(clean_version, safe='')}"
+
+        return purl
+
     def _infer_learning_type(self, architecture: str | None) -> str:
         """Infer learning type from model architecture."""
         if not architecture:
@@ -163,9 +204,9 @@ class CycloneDXFormatter:
             }
             if sdk.version:
                 component["version"] = sdk.version
-            # Generate PURL based on SDK name pattern
+            # Generate PURL with proper encoding
             purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
-            component["purl"] = f"pkg:{purl_type}/{sdk.sdk}"
+            component["purl"] = self._build_purl(purl_type, sdk.sdk, sdk.version)
             return component
 
         if finding.type == FindingType.MANIFEST_DEP and finding.manifest_dep:
@@ -179,9 +220,9 @@ class CycloneDXFormatter:
                 version = re.sub(r"^[>=<~^]+", "", dep.version)
                 if version:
                     component["version"] = version
-            # Generate PURL based on manifest type
+            # Generate PURL with proper encoding
             purl_type = self._infer_purl_type_from_manifest(dep.manifest_file)
-            component["purl"] = f"pkg:{purl_type}/{dep.name}"
+            component["purl"] = self._build_purl(purl_type, dep.name, dep.version)
             return component
 
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
