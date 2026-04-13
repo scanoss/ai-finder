@@ -6,12 +6,12 @@ import sys
 from pathlib import Path
 
 # Add the package to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "packages/scanoss-ai-kb/src"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "packages/ai-finder-kb/src"))
 
-from scanoss_ai_kb.database import Database
+from ai_finder_kb.database import Database
 
 SEED_DB_PATH = (
-    Path(__file__).parent.parent / "packages/scanoss-ai-kb/src/scanoss_ai_kb/data/seed.db"
+    Path(__file__).parent.parent / "packages/ai-finder-kb/src/ai_finder_kb/data/seed.db"
 )
 
 # SDK patterns by language/ecosystem

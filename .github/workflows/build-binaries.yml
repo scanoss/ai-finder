@@ -48,37 +48,37 @@ jobs:
 
       - name: Build binary
         run: |
-          uv run pyinstaller scanoss-ai.spec --clean
+          uv run pyinstaller ai-finder.spec --clean
 
       - name: Rename binary (Unix)
         if: runner.os != 'Windows'
         run: |
-          mv dist/scanoss-ai dist/scanoss-ai-${{ matrix.platform }}
+          mv dist/ai-finder dist/ai-finder-${{ matrix.platform }}
 
       - name: Rename binary (Windows)
         if: runner.os == 'Windows'
         run: |
-          move dist\scanoss-ai.exe dist\scanoss-ai-${{ matrix.platform }}.exe
+          move dist\ai-finder.exe dist\ai-finder-${{ matrix.platform }}.exe
 
       - name: Test binary (Unix)
         if: runner.os != 'Windows'
         run: |
-          chmod +x dist/scanoss-ai-${{ matrix.platform }}
-          ./dist/scanoss-ai-${{ matrix.platform }} --version
-          ./dist/scanoss-ai-${{ matrix.platform }} --help
+          chmod +x dist/ai-finder-${{ matrix.platform }}
+          ./dist/ai-finder-${{ matrix.platform }} --version
+          ./dist/ai-finder-${{ matrix.platform }} --help
 
       - name: Test binary (Windows)
         if: runner.os == 'Windows'
         run: |
-          .\dist\scanoss-ai-${{ matrix.platform }}.exe --version
-          .\dist\scanoss-ai-${{ matrix.platform }}.exe --help
+          .\dist\ai-finder-${{ matrix.platform }}.exe --version
+          .\dist\ai-finder-${{ matrix.platform }}.exe --help
         continue-on-error: true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: scanoss-ai-${{ matrix.platform }}
-          path: dist/scanoss-ai-${{ matrix.platform }}*
+          name: ai-finder-${{ matrix.platform }}
+          path: dist/ai-finder-${{ matrix.platform }}*
           if-no-files-found: error
 
   release:
@@ -93,7 +93,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: binaries
-          pattern: scanoss-ai-*
+          pattern: ai-finder-*
           merge-multiple: true
 
       - name: Create checksums

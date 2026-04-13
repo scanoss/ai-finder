@@ -9,10 +9,168 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "scanoss-ai",
-    "scanoss-ai-kb",
-    "scanoss-ai-scanner",
-    "scanoss-ai-workspace",
+    "ai-finder",
+    "ai-finder-kb",
+    "ai-finder-scanner",
+    "ai-finder-workspace",
+]
+
+[[package]]
+name = "ai-finder"
+version = "0.2.11"
+source = { editable = "packages/ai-finder" }
+dependencies = [
+    { name = "ai-finder-kb" },
+    { name = "ai-finder-scanner" },
+    { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "click", version = "8.3.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest-cov", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "ai-finder-kb", editable = "packages/ai-finder-kb" },
+    { name = "ai-finder-scanner", editable = "packages/ai-finder-scanner" },
+    { name = "click", specifier = ">=8.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
+]
+provides-extras = ["dev"]
+
+[[package]]
+name = "ai-finder-kb"
+version = "0.2.11"
+source = { editable = "packages/ai-finder-kb" }
+dependencies = [
+    { name = "osslili", marker = "python_full_version >= '3.9'" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest-cov", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "osslili", marker = "python_full_version >= '3.9'", specifier = ">=1.6" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
+]
+provides-extras = ["dev"]
+
+[[package]]
+name = "ai-finder-scanner"
+version = "0.2.11"
+source = { editable = "packages/ai-finder-scanner" }
+dependencies = [
+    { name = "ai-finder-kb" },
+    { name = "python-levenshtein", version = "0.25.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "python-levenshtein", version = "0.27.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "python-levenshtein", version = "0.27.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "python-tlsh" },
+    { name = "pyyaml" },
+    { name = "requests", version = "2.32.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "requests", version = "2.32.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "requests", version = "2.33.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
+    { name = "tqdm" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest-cov", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "pytest-mock", version = "3.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest-mock", version = "3.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+]
+relationships = [
+    { name = "tree-sitter", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-c-sharp", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-cpp", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-go", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-java", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-javascript", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-php", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-python", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-ruby", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-rust", marker = "python_full_version >= '3.10'" },
+    { name = "tree-sitter-typescript", marker = "python_full_version >= '3.10'" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "ai-finder-kb", editable = "packages/ai-finder-kb" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
+    { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.10" },
+    { name = "python-levenshtein", specifier = ">=0.25.1" },
+    { name = "python-tlsh", specifier = ">=4.5.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
+    { name = "requests", specifier = ">=2.28" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0" },
+    { name = "tqdm", specifier = ">=4.65" },
+    { name = "tree-sitter", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.22" },
+    { name = "tree-sitter-c-sharp", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+    { name = "tree-sitter-cpp", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+    { name = "tree-sitter-go", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+    { name = "tree-sitter-java", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+    { name = "tree-sitter-javascript", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+    { name = "tree-sitter-php", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.22" },
+    { name = "tree-sitter-python", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+    { name = "tree-sitter-ruby", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+    { name = "tree-sitter-rust", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+    { name = "tree-sitter-typescript", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
+]
+provides-extras = ["relationships", "dev"]
+
+[[package]]
+name = "ai-finder-workspace"
+version = "0.0.0"
+source = { virtual = "." }
+
+[package.dev-dependencies]
+dev = [
+    { name = "mypy", version = "1.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "mypy", version = "1.19.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "mypy", version = "1.20.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest-cov", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "pytest-mock", version = "3.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pytest-mock", version = "3.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "ruff" },
+    { name = "types-requests", version = "2.32.0.20241016", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "types-requests", version = "2.32.4.20260107", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
+    { name = "types-requests", version = "2.33.0.20260408", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+]
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=1.0.0" },
+    { name = "pytest", specifier = ">=7.0.0" },
+    { name = "pytest-cov", specifier = ">=4.0.0" },
+    { name = "pytest-mock", specifier = ">=3.10.0" },
+    { name = "ruff", specifier = ">=0.4.0" },
+    { name = "types-requests", specifier = ">=2.31.0" },
 ]
 
 [[package]]
@@ -1897,164 +2055,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/88/3d/1364fcde8656962782aa9ea93c92d98682b1ecec2f184e625a965ad3b4a6/ruff-0.15.9-py3-none-win32.whl", hash = "sha256:bde6ff36eaf72b700f32b7196088970bf8fdb2b917b7accd8c371bfc0fd573ec", size = 10583382, upload-time = "2026-04-02T18:17:04.261Z" },
     { url = "https://files.pythonhosted.org/packages/4c/56/5c7084299bd2cacaa07ae63a91c6f4ba66edc08bf28f356b24f6b717c799/ruff-0.15.9-py3-none-win_amd64.whl", hash = "sha256:45a70921b80e1c10cf0b734ef09421f71b5aa11d27404edc89d7e8a69505e43d", size = 11744969, upload-time = "2026-04-02T18:16:59.611Z" },
     { url = "https://files.pythonhosted.org/packages/03/36/76704c4f312257d6dbaae3c959add2a622f63fcca9d864659ce6d8d97d3d/ruff-0.15.9-py3-none-win_arm64.whl", hash = "sha256:0694e601c028fd97dc5c6ee244675bc241aeefced7ef80cd9c6935a871078f53", size = 11005870, upload-time = "2026-04-02T18:17:15.773Z" },
-]
-
-[[package]]
-name = "scanoss-ai"
-version = "0.2.11"
-source = { editable = "packages/scanoss-ai" }
-dependencies = [
-    { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "click", version = "8.3.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "scanoss-ai-kb" },
-    { name = "scanoss-ai-scanner" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest-cov", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "click", specifier = ">=8.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
-    { name = "scanoss-ai-kb", editable = "packages/scanoss-ai-kb" },
-    { name = "scanoss-ai-scanner", editable = "packages/scanoss-ai-scanner" },
-]
-provides-extras = ["dev"]
-
-[[package]]
-name = "scanoss-ai-kb"
-version = "0.2.11"
-source = { editable = "packages/scanoss-ai-kb" }
-dependencies = [
-    { name = "osslili", marker = "python_full_version >= '3.9'" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest-cov", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "osslili", marker = "python_full_version >= '3.9'", specifier = ">=1.6" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
-]
-provides-extras = ["dev"]
-
-[[package]]
-name = "scanoss-ai-scanner"
-version = "0.2.11"
-source = { editable = "packages/scanoss-ai-scanner" }
-dependencies = [
-    { name = "python-levenshtein", version = "0.25.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "python-levenshtein", version = "0.27.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "python-levenshtein", version = "0.27.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "python-tlsh" },
-    { name = "pyyaml" },
-    { name = "requests", version = "2.32.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "requests", version = "2.32.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "requests", version = "2.33.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "scanoss-ai-kb" },
-    { name = "tomli", marker = "python_full_version < '3.11'" },
-    { name = "tqdm" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest-cov", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-    { name = "pytest-mock", version = "3.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest-mock", version = "3.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-]
-relationships = [
-    { name = "tree-sitter", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-c-sharp", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-cpp", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-go", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-java", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-javascript", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-php", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-python", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-ruby", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-rust", marker = "python_full_version >= '3.10'" },
-    { name = "tree-sitter-typescript", marker = "python_full_version >= '3.10'" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
-    { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.10" },
-    { name = "python-levenshtein", specifier = ">=0.25.1" },
-    { name = "python-tlsh", specifier = ">=4.5.0" },
-    { name = "pyyaml", specifier = ">=6.0" },
-    { name = "requests", specifier = ">=2.28" },
-    { name = "scanoss-ai-kb", editable = "packages/scanoss-ai-kb" },
-    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0" },
-    { name = "tqdm", specifier = ">=4.65" },
-    { name = "tree-sitter", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.22" },
-    { name = "tree-sitter-c-sharp", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-    { name = "tree-sitter-cpp", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-    { name = "tree-sitter-go", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-    { name = "tree-sitter-java", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-    { name = "tree-sitter-javascript", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-    { name = "tree-sitter-php", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.22" },
-    { name = "tree-sitter-python", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-    { name = "tree-sitter-ruby", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-    { name = "tree-sitter-rust", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-    { name = "tree-sitter-typescript", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
-]
-provides-extras = ["relationships", "dev"]
-
-[[package]]
-name = "scanoss-ai-workspace"
-version = "0.0.0"
-source = { virtual = "." }
-
-[package.dev-dependencies]
-dev = [
-    { name = "mypy", version = "1.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "mypy", version = "1.19.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "mypy", version = "1.20.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest-cov", version = "7.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-    { name = "pytest-mock", version = "3.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pytest-mock", version = "3.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
-    { name = "ruff" },
-    { name = "types-requests", version = "2.32.0.20241016", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "types-requests", version = "2.32.4.20260107", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
-    { name = "types-requests", version = "2.33.0.20260408", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-]
-
-[package.metadata]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "mypy", specifier = ">=1.0.0" },
-    { name = "pytest", specifier = ">=7.0.0" },
-    { name = "pytest-cov", specifier = ">=4.0.0" },
-    { name = "pytest-mock", specifier = ">=3.10.0" },
-    { name = "ruff", specifier = ">=0.4.0" },
-    { name = "types-requests", specifier = ">=2.31.0" },
 ]
 
 [[package]]

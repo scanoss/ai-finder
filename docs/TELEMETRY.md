@@ -1,10 +1,10 @@
 # Telemetry
 
-scanoss-ai collects anonymous usage data to help improve the tool. This document describes what data is collected, why we collect it, how to opt out, and our privacy commitments.
+ai-finder collects anonymous usage data to help improve the tool. This document describes what data is collected, why we collect it, how to opt out, and our privacy commitments.
 
 ## Why We Track
 
-Telemetry helps us understand how scanoss-ai is used in the real world so we can make better decisions about product development.
+Telemetry helps us understand how ai-finder is used in the real world so we can make better decisions about product development.
 
 ### What We Learn
 
@@ -53,14 +53,14 @@ Disable telemetry using any of these methods:
 ### CLI Flag (per-session)
 
 ```bash
-scanoss-ai --no-telemetry scan /path/to/project
+ai-finder --no-telemetry scan /path/to/project
 ```
 
 ### Environment Variables
 
 ```bash
-# SCANOSS-specific
-export SCANOSS_AI_TELEMETRY=0
+# AI Finder-specific
+export AI_FINDER_TELEMETRY=0
 
 # Universal opt-out standard (https://consoledonottrack.com/)
 export DO_NOT_TRACK=1
@@ -68,7 +68,7 @@ export DO_NOT_TRACK=1
 
 ### Config File (persistent)
 
-Create `~/.scanoss-ai/config.json`:
+Create `~/.ai-finder/config.json`:
 
 ```json
 {
@@ -291,7 +291,7 @@ Plus a generic `error` event with properties for detailed analysis:
 
 ## Implementation
 
-Telemetry is implemented in `packages/scanoss-ai/src/scanoss_ai_cli/telemetry.py`. Key design decisions:
+Telemetry is implemented in `packages/ai-finder/src/ai_finder_cli/telemetry.py`. Key design decisions:
 
 1. **Fail-closed**: If the config file is unreadable or the telemetry library fails to initialize, telemetry is disabled.
 
@@ -309,4 +309,4 @@ Telemetry is implemented in `packages/scanoss-ai/src/scanoss_ai_cli/telemetry.py
 
 ## Questions?
 
-If you have questions about telemetry or privacy, please open an issue at https://github.com/scanoss/scanoss-ai/issues.
+If you have questions about telemetry or privacy, please open an issue at https://github.com/scanoss/ai-finder/issues.

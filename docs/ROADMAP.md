@@ -1,4 +1,4 @@
-# SCANOSS AI Roadmap
+# AI Finder Roadmap
 
 ## v0.1.x - MVP (COMPLETE)
 
