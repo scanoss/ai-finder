@@ -107,6 +107,21 @@ class CycloneDXFormatter:
         # Default to pypi
         return "pypi"
 
+    def _infer_learning_type(self, architecture: str | None) -> str:
+        """Infer learning type from model architecture."""
+        if not architecture:
+            return "supervised"
+
+        arch_lower = architecture.lower()
+
+        if "embed" in arch_lower or "bert" in arch_lower:
+            return "self-supervised"
+
+        if "rl" in arch_lower or "ppo" in arch_lower or "dqn" in arch_lower:
+            return "reinforcement-learning"
+
+        return "supervised"
+
     def _finding_to_component(self, finding: Finding) -> dict[str, Any] | None:
         """Convert a finding to a CycloneDX component.
 
@@ -155,6 +170,9 @@ class CycloneDXFormatter:
 
             # Build modelCard per CycloneDX 1.5 ML-BOM spec
             model_params: dict[str, Any] = {}
+
+            # Add learningType as first item in model_params
+            model_params["learningType"] = self._infer_learning_type(info.architecture)
 
             # Map our architecture to CycloneDX modelArchitecture
             if info.architecture:

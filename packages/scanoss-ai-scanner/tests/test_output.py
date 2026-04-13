@@ -100,6 +100,32 @@ class TestJSONFormatter:
         assert "\n" in output
 
 
+@pytest.fixture
+def model_file_result() -> ScanResult:
+    """Create a scan result with a model file finding."""
+    from scanoss_ai_scanner.models import ModelInfo
+
+    findings = [
+        Finding(
+            type=FindingType.MODEL_FILE,
+            file_path="models/llama-3-8b.gguf",
+            confidence=1.0,
+            model_info=ModelInfo(
+                format="gguf",
+                architecture="llama",
+                parameter_count=8000000000,
+                quantization="Q4_K_M",
+            ),
+        ),
+    ]
+    return ScanResult(
+        root_path="/test/project",
+        findings=findings,
+        files_scanned=5,
+        duration_ms=50,
+    )
+
+
 class TestCycloneDXFormatter:
     def test_format_returns_valid_json(self, sample_result: ScanResult) -> None:
         formatter = CycloneDXFormatter()
@@ -170,6 +196,20 @@ class TestCycloneDXFormatter:
         data = json.loads(output)
 
         assert data["components"] == []
+
+    def test_format_model_has_learning_type(self, model_file_result: ScanResult) -> None:
+        formatter = CycloneDXFormatter()
+        output = formatter.format(model_file_result)
+        data = json.loads(output)
+
+        model_comp = next(
+            (c for c in data["components"] if c["type"] == "machine-learning-model"),
+            None,
+        )
+        assert model_comp is not None
+        assert "modelCard" in model_comp
+        assert "modelParameters" in model_comp["modelCard"]
+        assert model_comp["modelCard"]["modelParameters"].get("learningType") == "supervised"
 
 
 class TestSPDX23Formatter:
