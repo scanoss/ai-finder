@@ -221,11 +221,20 @@ class SPDX23Formatter:
                 name = finding.ai_component.name
             else:
                 name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
+            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
             package = {
                 "SPDXID": f"SPDXRef-Package-{idx}",
                 "name": name,
                 "downloadLocation": "NOASSERTION",
                 "filesAnalyzed": False,
+                "comment": f"MCP {mcp_role}",
+                "externalRefs": [
+                    {
+                        "referenceCategory": "OTHER",
+                        "referenceType": "scanoss-mcp-role",
+                        "referenceLocator": mcp_role,
+                    }
+                ],
             }
             return package
 

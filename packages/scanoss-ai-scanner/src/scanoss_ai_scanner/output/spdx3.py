@@ -72,9 +72,21 @@ class SPDX3Formatter:
                 elements.append(element)
                 root_elements.append(element["spdxId"])
 
-        # Add relationships from graph if available
+        # Add file elements and relationships from graph if available
         if graph and len(elements) > 0:
-            relationships = self._build_relationships(graph, elements)
+            # Build name->spdxId lookup for existing elements
+            name_to_id = {e["name"]: e["spdxId"] for e in elements if "name" in e}
+
+            # Add file elements for files that contain AI components
+            file_elements = self._build_file_elements(graph, name_to_id)
+            elements.extend(file_elements)
+
+            # Update name_to_id with file elements
+            for elem in file_elements:
+                name_to_id[elem["name"]] = elem["spdxId"]
+
+            # Build relationships using updated name_to_id
+            relationships = self._build_relationships_with_lookup(graph, name_to_id)
             elements.extend(relationships)
 
         doc_id = f"urn:spdx:document-{uuid.uuid4().hex[:12]}"
@@ -88,24 +100,54 @@ class SPDX3Formatter:
 
         return json.dumps(spdx, indent=self.indent)
 
-    def _build_relationships(
+    def _build_file_elements(
         self,
         graph: ComponentGraph,
-        elements: list[dict[str, Any]],
+        name_to_id: dict[str, str],
+    ) -> list[dict[str, Any]]:
+        """Build SPDX 3.0 File elements for files that contain AI components.
+
+        Args:
+            graph: Component relationship graph.
+            name_to_id: Mapping of component names to SPDX IDs.
+
+        Returns:
+            List of software_File elements.
+        """
+        file_elements: list[dict[str, Any]] = []
+
+        # Find files that contain AI SDK usage
+        ai_files: set[str] = set()
+        for edge in graph.edges:
+            if edge.relationship == "contains" and edge.target in name_to_id:
+                ai_files.add(edge.source)
+
+        for file_path in sorted(ai_files):
+            # Only include actual file paths, not function paths
+            if "::" not in file_path:
+                file_elements.append({
+                    "type": "software_File",
+                    "spdxId": self._generate_spdx_id("file", file_path),
+                    "name": file_path,
+                })
+
+        return file_elements
+
+    def _build_relationships_with_lookup(
+        self,
+        graph: ComponentGraph,
+        name_to_id: dict[str, str],
     ) -> list[dict[str, Any]]:
         """Build SPDX 3.0 Relationship elements from graph.
 
         Args:
             graph: Component relationship graph.
-            elements: List of already-created elements.
+            name_to_id: Mapping of component names to SPDX IDs.
 
         Returns:
             List of Relationship elements.
         """
         relationships: list[dict[str, Any]] = []
-
-        # Build a name->spdxId lookup
-        name_to_id = {e["name"]: e["spdxId"] for e in elements if "name" in e}
 
         # Add relationships from graph edges (ComponentEdge dataclass)
         for edge in graph.edges:
@@ -189,11 +231,13 @@ class SPDX3Formatter:
                 name = finding.ai_component.name
             else:
                 name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
+            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
             return {
                 "type": "software_Package",
                 "spdxId": self._generate_spdx_id("package", name),
                 "name": name,
                 "software_downloadLocation": "NOASSERTION",
+                "summary": f"MCP {mcp_role}",
             }
 
         # Handle other Phase 2 types as software_Package

@@ -319,10 +319,14 @@ class CycloneDXFormatter:
                 name = finding.ai_component.name
             else:
                 name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
+            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
             return {
                 "type": "library",
                 "name": name,
                 "bom-ref": self._generate_bom_ref(name),
+                "properties": [
+                    {"name": "scanoss:mcp:role", "value": mcp_role},
+                ],
             }
 
         # Handle Phase 2 types as libraries
