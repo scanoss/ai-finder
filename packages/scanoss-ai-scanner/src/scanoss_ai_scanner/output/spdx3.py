@@ -87,19 +87,20 @@ class SPDX3Formatter:
         tool_id = tool_agent["spdxId"]
         elements.append(tool_agent)
 
-        # Build elements with deduplication by (type, name) to avoid
-        # incorrectly merging different element types that share a name
-        elements_by_key: dict[tuple[str, str], dict[str, Any]] = {}
+        # Build elements with deduplication by (type, name, version) to avoid
+        # incorrectly merging different versions or element types
+        elements_by_key: dict[tuple[str, str, str], dict[str, Any]] = {}
 
         for finding in result.findings:
             element = self._finding_to_element(finding, enricher)
             if not element:
                 continue
 
-            # Key by (type, name) to keep different element types separate
+            # Key by (type, name, version) to keep different versions separate
             elem_type = element["type"]
             name = element["name"]
-            key = (elem_type, name)
+            version = element.get("software_packageVersion", "")
+            key = (elem_type, name, version)
             existing = elements_by_key.get(key)
 
             if existing is None:
@@ -114,8 +115,13 @@ class SPDX3Formatter:
             elements.append(element)
             root_elements.append(element["spdxId"])
 
-        # Build name->spdxId lookup for relationships
-        name_to_id = {e["name"]: e["spdxId"] for e in elements_by_key.values()}
+        # Build spdxId lookup for relationships - use spdxId as key to avoid
+        # collisions when different element types share the same name
+        name_to_id: dict[str, str] = {}
+        for element in elements_by_key.values():
+            name_to_id[element["name"]] = element["spdxId"]
+            # Also add by spdxId for direct lookups
+            name_to_id[element["spdxId"]] = element["spdxId"]
 
         # Add file elements and relationships from graph if available
         if graph:
@@ -402,12 +408,15 @@ class SPDX3Formatter:
         enricher: KBEnricher | None = None,
     ) -> dict[str, Any]:
         info = finding.model_info
-        filename = finding.file_path.split("/")[-1]
+        # Use full path to avoid collisions between models with same filename
+        # in different directories (e.g., models/v1/model.bin vs models/v2/model.bin)
+        model_path = finding.file_path
+        filename = model_path.split("/")[-1]
 
         element: dict[str, Any] = {
             "type": "ai_AIPackage",
-            "spdxId": self._generate_stable_spdx_id("ai-package", filename),
-            "name": filename,
+            "spdxId": self._generate_stable_spdx_id("ai-package", model_path),
+            "name": model_path,
             "ai_autonomyType": "assistive",
         }
 

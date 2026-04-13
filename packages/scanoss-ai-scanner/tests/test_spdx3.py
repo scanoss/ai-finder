@@ -110,7 +110,9 @@ class TestSPDX3Formatter:
             None,
         )
         assert ai_pkg is not None
-        assert ai_pkg["name"] == "llama-3-8b.gguf"
+        # Model name now uses full path to avoid collisions between
+        # models with same filename in different directories
+        assert ai_pkg["name"] == "models/llama-3-8b.gguf"
         assert ai_pkg["ai_typeOfModel"] == "llama"
         assert ai_pkg["ai_domain"] == "text-generation"
         assert ai_pkg["ai_autonomyType"] == "assistive"
