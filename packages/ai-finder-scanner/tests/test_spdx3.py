@@ -8,7 +8,6 @@ import pytest
 from ai_finder_scanner.models import (
     Finding,
     FindingType,
-    ManifestDep,
     ScanResult,
     SDKUsage,
 )

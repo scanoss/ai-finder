@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from click.testing import CliRunner
 from ai_finder_cli import __version__
 from ai_finder_cli.main import main
+from click.testing import CliRunner
 
 
 @pytest.fixture

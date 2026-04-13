@@ -6,8 +6,8 @@ import json
 import struct
 from pathlib import Path
 
-from click.testing import CliRunner
 from ai_finder_cli.commands.identify import identify
+from click.testing import CliRunner
 
 
 class TestIdentifyCommand:

@@ -10,8 +10,8 @@ import click
 from ai_finder_scanner.output import (
     CycloneDXFormatter,
     JSONFormatter,
-    SPDX23Formatter,
     SPDX3Formatter,
+    SPDX23Formatter,
 )
 from ai_finder_scanner.scanner import Scanner
 
@@ -125,7 +125,9 @@ def scan(
 
     # Validate spdx_version is provided when format is spdx
     if output_format == "spdx" and spdx_version is None:
-        raise click.UsageError("SPDX format requires --spdx-version (2.3 or 3.0), or use --spdx-v2 / --spdx-v3")
+        raise click.UsageError(
+            "SPDX format requires --spdx-version (2.3 or 3.0), or use --spdx-v2 / --spdx-v3"
+        )
 
     try:
         # Track command with telemetry (no file paths sent)

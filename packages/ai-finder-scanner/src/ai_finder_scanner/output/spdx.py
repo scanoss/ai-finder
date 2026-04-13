@@ -258,17 +258,17 @@ class SPDX23Formatter:
 
         # Handle DATASET
         if finding.type == FindingType.DATASET and finding.dataset_info:
-            info = finding.dataset_info
-            name = info.name or f"{info.source}-dataset"
+            ds_info = finding.dataset_info
+            ds_name = ds_info.name or f"{ds_info.source}-dataset"
             package = {
                 "SPDXID": f"SPDXRef-Package-{idx}",
-                "name": name,
+                "name": ds_name,
                 "downloadLocation": "NOASSERTION",
                 "filesAnalyzed": False,
-                "comment": f"Dataset from {info.source}",
+                "comment": f"Dataset from {ds_info.source}",
             }
-            if info.split:
-                package["comment"] += f", split: {info.split}"
+            if ds_info.split:
+                package["comment"] += f", split: {ds_info.split}"
             return package
 
         return None

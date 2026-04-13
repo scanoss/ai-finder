@@ -64,7 +64,9 @@ class RAGDetector:
         """
         return frozenset({".py"})
 
-    def detect(self, content: str, path: Path | str, matcher: Any | None = None) -> Iterator[Finding]:
+    def detect(
+        self, content: str, path: Path | str, matcher: Any | None = None
+    ) -> Iterator[Finding]:
         """Detect embeddings and vector stores in code.
 
         Args:
@@ -101,17 +103,17 @@ class RAGDetector:
                     break
 
             # Check vector stores
-            for pattern in self.VECTOR_STORE_PATTERNS:
-                if pattern.pattern.search(line):
-                    if pattern.provider not in seen_vector_stores:
-                        seen_vector_stores.add(pattern.provider)
+            for vs_pattern in self.VECTOR_STORE_PATTERNS:
+                if vs_pattern.pattern.search(line):
+                    if vs_pattern.provider not in seen_vector_stores:
+                        seen_vector_stores.add(vs_pattern.provider)
                         yield Finding(
                             type=FindingType.VECTOR_STORE,
                             file_path=path_str,
                             confidence=0.9,
                             line=line_num,
                             vector_store_info=VectorStoreInfo(
-                                provider=pattern.provider,
+                                provider=vs_pattern.provider,
                             ),
                         )
                     break

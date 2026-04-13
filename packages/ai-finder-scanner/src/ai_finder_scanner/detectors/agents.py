@@ -30,7 +30,10 @@ class AgentDetector:
             "langchain",
         ),
         AgentPattern(
-            re.compile(r"create_react_agent|create_openai_functions_agent|AgentExecutor", re.IGNORECASE),
+            re.compile(
+                r"create_react_agent|create_openai_functions_agent|AgentExecutor",
+                re.IGNORECASE,
+            ),
             "langchain",
             "react",
         ),
@@ -41,7 +44,10 @@ class AgentDetector:
         ),
         # AutoGen
         AgentPattern(
-            re.compile(r"from\s+autogen\s+import|autogen\.AssistantAgent|autogen\.UserProxyAgent", re.IGNORECASE),
+            re.compile(
+                r"from\s+autogen\s+import|autogen\.AssistantAgent|autogen\.UserProxyAgent",
+                re.IGNORECASE,
+            ),
             "autogen",
         ),
         # LangGraph
@@ -64,7 +70,9 @@ class AgentDetector:
         """Find line number for a match position."""
         return content[:match_start].count("\n") + 1
 
-    def detect(self, content: str, path: Path | str, matcher: Any | None = None) -> Iterator[Finding]:
+    def detect(
+        self, content: str, path: Path | str, matcher: Any | None = None
+    ) -> Iterator[Finding]:
         """Detect agent usage in code.
 
         Args:

@@ -42,7 +42,9 @@ class ToolsDetector:
         """Find line number for a match position."""
         return content[:match_start].count("\n") + 1
 
-    def detect(self, content: str, path: Path | str, matcher: Any | None = None) -> Iterator[Finding]:
+    def detect(
+        self, content: str, path: Path | str, matcher: Any | None = None
+    ) -> Iterator[Finding]:
         """Detect tool usage in code.
 
         Args:

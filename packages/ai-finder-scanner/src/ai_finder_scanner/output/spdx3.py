@@ -368,17 +368,17 @@ class SPDX3Formatter:
 
         # Handle DATASET as dataset_DatasetPackage
         if finding.type == FindingType.DATASET and finding.dataset_info:
-            info = finding.dataset_info
-            name = info.name or f"{info.source}-dataset"
-            element: dict[str, Any] = {
+            ds_info = finding.dataset_info
+            ds_name = ds_info.name or f"{ds_info.source}-dataset"
+            dataset_element: dict[str, Any] = {
                 "type": "dataset_DatasetPackage",
-                "spdxId": self._generate_stable_spdx_id("dataset", name),
-                "name": name,
+                "spdxId": self._generate_stable_spdx_id("dataset", ds_name),
+                "name": ds_name,
                 "dataset_datasetType": "text",
             }
-            if info.split:
-                element["dataset_intendedUse"] = f"Model {info.split}ing"
-            return element
+            if ds_info.split:
+                dataset_element["dataset_intendedUse"] = f"Model {ds_info.split}ing"
+            return dataset_element
 
         # Handle MCP types as software_Package
         if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):

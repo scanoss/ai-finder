@@ -4,8 +4,8 @@ from ai_finder_scanner.cache import ScanCache
 from ai_finder_scanner.discovery import FileDiscovery
 from ai_finder_scanner.license import OSSLILI_AVAILABLE, LicenseDetector, detect_license
 from ai_finder_scanner.models import (
-    AIComponent,
     AgentInfo,
+    AIComponent,
     DatasetInfo,
     EmbeddingInfo,
     Finding,

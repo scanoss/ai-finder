@@ -347,12 +347,12 @@ class CycloneDXFormatter:
 
         # Handle DATASET as data component
         if finding.type == FindingType.DATASET and finding.dataset_info:
-            info = finding.dataset_info
-            name = info.name or f"{info.source}-dataset"
+            ds_info = finding.dataset_info
+            ds_name = ds_info.name or f"{ds_info.source}-dataset"
             return {
                 "type": "data",
-                "name": name,
-                "bom-ref": f"data:{name.replace('/', '-')}",
+                "name": ds_name,
+                "bom-ref": f"data:{ds_name.replace('/', '-')}",
             }
 
         return None

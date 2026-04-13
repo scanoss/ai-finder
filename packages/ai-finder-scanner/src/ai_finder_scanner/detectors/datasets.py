@@ -45,7 +45,9 @@ class DatasetDetector:
         """File extensions this detector handles."""
         return frozenset({".py"})
 
-    def detect(self, content: str, path: Path | str, matcher: Any | None = None) -> Iterator[Finding]:
+    def detect(
+        self, content: str, path: Path | str, matcher: Any | None = None
+    ) -> Iterator[Finding]:
         """Detect dataset usage in code.
 
         Args:
