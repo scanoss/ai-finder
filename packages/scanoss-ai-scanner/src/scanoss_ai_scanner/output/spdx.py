@@ -215,6 +215,20 @@ class SPDX23Formatter:
 
             return package
 
+        # Handle MCP types
+        if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):
+            if finding.ai_component:
+                name = finding.ai_component.name
+            else:
+                name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
+            package = {
+                "SPDXID": f"SPDXRef-Package-{idx}",
+                "name": name,
+                "downloadLocation": "NOASSERTION",
+                "filesAnalyzed": False,
+            }
+            return package
+
         # Handle Phase 2 types as packages
         if finding.type in (
             FindingType.AGENT,

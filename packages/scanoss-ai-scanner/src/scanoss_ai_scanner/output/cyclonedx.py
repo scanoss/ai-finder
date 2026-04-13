@@ -313,6 +313,18 @@ class CycloneDXFormatter:
 
             return component
 
+        # Handle MCP types
+        if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):
+            if finding.ai_component:
+                name = finding.ai_component.name
+            else:
+                name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
+            return {
+                "type": "library",
+                "name": name,
+                "bom-ref": self._generate_bom_ref(name),
+            }
+
         # Handle Phase 2 types as libraries
         if finding.type in (
             FindingType.AGENT,

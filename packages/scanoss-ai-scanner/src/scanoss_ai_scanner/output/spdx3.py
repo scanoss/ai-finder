@@ -183,6 +183,19 @@ class SPDX3Formatter:
                 element["dataset_intendedUse"] = f"Model {info.split}ing"
             return element
 
+        # Handle MCP types as software_Package
+        if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):
+            if finding.ai_component:
+                name = finding.ai_component.name
+            else:
+                name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
+            return {
+                "type": "software_Package",
+                "spdxId": self._generate_spdx_id("package", name),
+                "name": name,
+                "software_downloadLocation": "NOASSERTION",
+            }
+
         # Handle other Phase 2 types as software_Package
         if finding.type in (
             FindingType.AGENT,
