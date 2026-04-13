@@ -136,3 +136,54 @@ class TestSPDX3Formatter:
         )
         assert param_count is not None
         assert param_count["value"] == "8000000000"
+
+    def test_normalize_version(self) -> None:
+        formatter = SPDX3Formatter()
+        # v prefix
+        assert formatter._normalize_version("v1.0.0") == "1.0.0"
+        assert formatter._normalize_version("V2.3.4") == "2.3.4"
+        # Semver range prefixes
+        assert formatter._normalize_version("^1.2.3") == "1.2.3"
+        assert formatter._normalize_version("~1.2.3") == "1.2.3"
+        # Comparison operators
+        assert formatter._normalize_version(">=2.0.0") == "2.0.0"
+        assert formatter._normalize_version("==1.0.0") == "1.0.0"
+        assert formatter._normalize_version(">3.0") == "3.0"
+        # Whitespace
+        assert formatter._normalize_version("  1.0.0  ") == "1.0.0"
+        # No change needed
+        assert formatter._normalize_version("1.2.3") == "1.2.3"
+
+    def test_versioned_spdx_id_includes_normalized_version(self) -> None:
+        """Test that spdxId includes normalized version for deduplication."""
+        findings = [
+            Finding(
+                type=FindingType.SDK_USAGE,
+                file_path="main.py",
+                line=1,
+                confidence=1.0,
+                sdk_usage=SDKUsage(
+                    sdk="openai",
+                    import_statement="import openai",
+                    version="^1.0.0",  # Has semver prefix
+                ),
+            ),
+        ]
+        result = ScanResult(
+            root_path="/test/project",
+            findings=findings,
+            files_scanned=1,
+            duration_ms=10,
+        )
+        formatter = SPDX3Formatter()
+        output = formatter.format(result)
+        data = json.loads(output)
+
+        pkg = next(
+            (e for e in data["@graph"] if e.get("type") == "software_Package"),
+            None,
+        )
+        assert pkg is not None
+        # Version should be normalized in spdxId (^1.0.0 → 1.0.0)
+        assert "1.0.0" in pkg["spdxId"]
+        assert "^" not in pkg["spdxId"]

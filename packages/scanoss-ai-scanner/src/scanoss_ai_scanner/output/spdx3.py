@@ -41,7 +41,9 @@ class SPDX3Formatter:
         """
         safe_name = name.replace("/", "-").replace("@", "").replace(" ", "-")[:50]
         if version:
-            safe_version = version.replace("/", "-").replace("@", "").replace(" ", "-")[:20]
+            # Normalize version before using in ID (v1.0.0 → 1.0.0, ^1.2.3 → 1.2.3)
+            normalized = self._normalize_version(version)
+            safe_version = normalized.replace("/", "-").replace("@", "").replace(" ", "-")[:20]
             return f"urn:spdx:{prefix}-{safe_name}-{safe_version}"
         return f"urn:spdx:{prefix}-{safe_name}"
 
@@ -51,6 +53,34 @@ class SPDX3Formatter:
         Converts Windows backslashes to forward slashes.
         """
         return path.replace("\\", "/")
+
+    def _normalize_version(self, version: str) -> str:
+        """Normalize version string for consistent deduplication.
+
+        Handles common variations:
+        - Strip leading 'v' or 'V' prefix (v1.0.0 → 1.0.0)
+        - Strip semver range prefixes (^1.0.0 → 1.0.0, ~1.2.3 → 1.2.3)
+        - Strip comparison operators (>=2.0 → 2.0, ==1.0 → 1.0)
+        - Strip whitespace
+
+        Args:
+            version: Raw version string.
+
+        Returns:
+            Normalized version string.
+        """
+        v = version.strip()
+        # Strip leading v/V prefix
+        if v.startswith(("v", "V")) and len(v) > 1 and v[1].isdigit():
+            v = v[1:]
+        # Strip semver range prefixes
+        v = v.lstrip("^~")
+        # Strip comparison operators
+        for op in (">=", "<=", "==", "!=", ">", "<", "="):
+            if v.startswith(op):
+                v = v[len(op):]
+                break
+        return v.strip()
 
     def _get_phase2_element_name(self, finding: Finding) -> str:
         """Get element name for Phase 2 finding types."""
