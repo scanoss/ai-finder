@@ -122,6 +122,30 @@ class CycloneDXFormatter:
 
         return "supervised"
 
+    def _infer_io_format(
+        self, architecture: str | None
+    ) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+        """Infer input/output formats from model architecture."""
+        if not architecture:
+            return [{"format": "string"}], [{"format": "string"}]
+
+        arch_lower = architecture.lower()
+
+        # Image models
+        if any(p in arch_lower for p in ["resnet", "vgg", "yolo", "vit", "clip"]):
+            return [{"format": "image"}], [{"format": "tensor"}]
+
+        # Audio models
+        if any(p in arch_lower for p in ["whisper", "wav2vec"]):
+            return [{"format": "audio"}], [{"format": "string"}]
+
+        # Multimodal
+        if "llava" in arch_lower or "clip" in arch_lower:
+            return [{"format": "string"}, {"format": "image"}], [{"format": "string"}]
+
+        # Default: text-to-text (LLMs)
+        return [{"format": "string"}], [{"format": "string"}]
+
     def _finding_to_component(self, finding: Finding) -> dict[str, Any] | None:
         """Convert a finding to a CycloneDX component.
 
@@ -173,6 +197,11 @@ class CycloneDXFormatter:
 
             # Add learningType as first item in model_params
             model_params["learningType"] = self._infer_learning_type(info.architecture)
+
+            # Add inputs/outputs based on architecture
+            inputs, outputs = self._infer_io_format(info.architecture)
+            model_params["inputs"] = inputs
+            model_params["outputs"] = outputs
 
             # Map our architecture to CycloneDX modelArchitecture
             if info.architecture:

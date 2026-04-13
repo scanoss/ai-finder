@@ -211,6 +211,24 @@ class TestCycloneDXFormatter:
         assert "modelParameters" in model_comp["modelCard"]
         assert model_comp["modelCard"]["modelParameters"].get("learningType") == "supervised"
 
+    def test_format_model_has_inputs_outputs(self, model_file_result: ScanResult) -> None:
+        formatter = CycloneDXFormatter()
+        output = formatter.format(model_file_result)
+        data = json.loads(output)
+
+        model_comp = next(
+            (c for c in data["components"] if c["type"] == "machine-learning-model"),
+            None,
+        )
+        assert model_comp is not None
+        model_params = model_comp["modelCard"]["modelParameters"]
+
+        # LLMs should have string inputs/outputs
+        assert "inputs" in model_params
+        assert "outputs" in model_params
+        assert model_params["inputs"] == [{"format": "string"}]
+        assert model_params["outputs"] == [{"format": "string"}]
+
 
 class TestSPDX23Formatter:
     def test_format_returns_valid_json(self, sample_result: ScanResult) -> None:
