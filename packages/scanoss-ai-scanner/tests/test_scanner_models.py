@@ -18,6 +18,15 @@ class TestFindingType:
         assert FindingType.MODEL_FILE.value == "model_file"
         assert FindingType.MCP_SERVER.value == "mcp_server"
         assert FindingType.AI_COMPONENT.value == "ai_component"
+        # New Phase 2 types
+        assert FindingType.MCP_CLIENT.value == "mcp_client"
+        assert FindingType.AGENT.value == "agent"
+        assert FindingType.TOOL.value == "tool"
+        assert FindingType.EMBEDDING.value == "embedding"
+        assert FindingType.VECTOR_STORE.value == "vector_store"
+        assert FindingType.PROMPT.value == "prompt"
+        assert FindingType.GUARDRAIL.value == "guardrail"
+        assert FindingType.DATASET.value == "dataset"
 
 
 class TestSDKUsage:

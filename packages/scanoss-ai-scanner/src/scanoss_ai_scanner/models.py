@@ -9,11 +9,22 @@ from enum import Enum
 class FindingType(Enum):
     """Types of findings detected by the scanner."""
 
+    # Core types
     SDK_USAGE = "sdk_usage"
     MANIFEST_DEP = "manifest_dep"
     MODEL_FILE = "model_file"
     MCP_SERVER = "mcp_server"
     AI_COMPONENT = "ai_component"
+
+    # Phase 2: Agentic AI types
+    MCP_CLIENT = "mcp_client"
+    AGENT = "agent"
+    TOOL = "tool"
+    EMBEDDING = "embedding"
+    VECTOR_STORE = "vector_store"
+    PROMPT = "prompt"
+    GUARDRAIL = "guardrail"
+    DATASET = "dataset"
 
 
 @dataclass
