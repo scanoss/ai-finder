@@ -16,8 +16,8 @@ if TYPE_CHECKING:
     from ..enrichment.kb_enricher import KBEnricher
 
 
-class SPDXFormatter:
-    """Format scan results as SPDX SBOM."""
+class SPDX23Formatter:
+    """Format scan results as SPDX 2.3 SBOM."""
 
     SPDX_VERSION = "SPDX-2.3"
     DATA_LICENSE = "CC0-1.0"

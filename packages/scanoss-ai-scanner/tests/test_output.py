@@ -14,7 +14,7 @@ from scanoss_ai_scanner.models import (
 )
 from scanoss_ai_scanner.output.cyclonedx import CycloneDXFormatter
 from scanoss_ai_scanner.output.json_output import JSONFormatter
-from scanoss_ai_scanner.output.spdx import SPDXFormatter
+from scanoss_ai_scanner.output.spdx import SPDX23Formatter
 
 
 @pytest.fixture
@@ -165,16 +165,16 @@ class TestCycloneDXFormatter:
         assert data["components"] == []
 
 
-class TestSPDXFormatter:
+class TestSPDX23Formatter:
     def test_format_returns_valid_json(self, sample_result: ScanResult) -> None:
-        formatter = SPDXFormatter()
+        formatter = SPDX23Formatter()
         output = formatter.format(sample_result)
 
         data = json.loads(output)
         assert isinstance(data, dict)
 
     def test_format_has_spdx_structure(self, sample_result: ScanResult) -> None:
-        formatter = SPDXFormatter()
+        formatter = SPDX23Formatter()
         output = formatter.format(sample_result)
         data = json.loads(output)
 
@@ -186,7 +186,7 @@ class TestSPDXFormatter:
         assert "relationships" in data
 
     def test_format_includes_packages(self, sample_result: ScanResult) -> None:
-        formatter = SPDXFormatter()
+        formatter = SPDX23Formatter()
         output = formatter.format(sample_result)
         data = json.loads(output)
 
@@ -199,7 +199,7 @@ class TestSPDXFormatter:
         assert "name" in package
 
     def test_format_includes_purl_in_external_refs(self, sample_result: ScanResult) -> None:
-        formatter = SPDXFormatter()
+        formatter = SPDX23Formatter()
         output = formatter.format(sample_result)
         data = json.loads(output)
 
@@ -219,7 +219,7 @@ class TestSPDXFormatter:
             files_scanned=0,
             duration_ms=0,
         )
-        formatter = SPDXFormatter()
+        formatter = SPDX23Formatter()
         output = formatter.format(result)
         data = json.loads(output)
 
