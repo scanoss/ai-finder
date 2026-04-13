@@ -138,10 +138,21 @@ class Finding:
     file_path: str
     confidence: float
     line: int | None = None
+
+    # Core types
     sdk_usage: SDKUsage | None = None
     manifest_dep: ManifestDep | None = None
     model_info: ModelInfo | None = None
     ai_component: AIComponent | None = None
+
+    # Phase 2: Agentic AI types
+    agent_info: AgentInfo | None = None
+    tool_info: ToolInfo | None = None
+    embedding_info: EmbeddingInfo | None = None
+    vector_store_info: VectorStoreInfo | None = None
+    prompt_info: PromptInfo | None = None
+    guardrail_info: GuardrailInfo | None = None
+    dataset_info: DatasetInfo | None = None
 
 
 @dataclass

@@ -196,6 +196,52 @@ class TestFinding:
         assert finding.manifest_dep is not None
         assert finding.manifest_dep.name == "langchain"
 
+    def test_create_agent_finding(self) -> None:
+        finding = Finding(
+            type=FindingType.AGENT,
+            file_path="agent.py",
+            confidence=0.9,
+            line=10,
+            agent_info=AgentInfo(framework="langchain", agent_type="react"),
+        )
+        assert finding.type == FindingType.AGENT
+        assert finding.agent_info is not None
+        assert finding.agent_info.framework == "langchain"
+
+    def test_create_embedding_finding(self) -> None:
+        finding = Finding(
+            type=FindingType.EMBEDDING,
+            file_path="rag.py",
+            confidence=0.95,
+            line=25,
+            embedding_info=EmbeddingInfo(provider="openai", model="text-embedding-3-small"),
+        )
+        assert finding.type == FindingType.EMBEDDING
+        assert finding.embedding_info is not None
+        assert finding.embedding_info.provider == "openai"
+
+    def test_create_vector_store_finding(self) -> None:
+        finding = Finding(
+            type=FindingType.VECTOR_STORE,
+            file_path="rag.py",
+            confidence=0.95,
+            line=30,
+            vector_store_info=VectorStoreInfo(provider="chroma"),
+        )
+        assert finding.type == FindingType.VECTOR_STORE
+        assert finding.vector_store_info is not None
+
+    def test_create_dataset_finding(self) -> None:
+        finding = Finding(
+            type=FindingType.DATASET,
+            file_path="train.py",
+            confidence=0.9,
+            line=5,
+            dataset_info=DatasetInfo(source="huggingface", name="squad"),
+        )
+        assert finding.type == FindingType.DATASET
+        assert finding.dataset_info is not None
+
 
 class TestScanResult:
     def test_create_scan_result(self) -> None:
