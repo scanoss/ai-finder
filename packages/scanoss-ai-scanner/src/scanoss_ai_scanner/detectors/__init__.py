@@ -6,6 +6,7 @@ from .agents import AgentDetector
 from .base import BaseDetector
 from .cpp import CppDetector
 from .csharp import CSharpDetector
+from .datasets import DatasetDetector
 from .go import GoDetector
 from .java import JavaDetector
 from .javascript import JavaScriptDetector
@@ -24,6 +25,7 @@ __all__ = [
     "BaseDetector",
     "CppDetector",
     "CSharpDetector",
+    "DatasetDetector",
     "GoDetector",
     "JavaDetector",
     "JavaScriptDetector",
