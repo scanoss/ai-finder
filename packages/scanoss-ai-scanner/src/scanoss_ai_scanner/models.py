@@ -64,6 +64,64 @@ class AIComponent:
 
 
 @dataclass
+class AgentInfo:
+    """Agent finding details."""
+
+    framework: str  # langchain, crewai, autogen, langgraph
+    agent_type: str | None = None  # react, plan-and-execute, conversational
+
+
+@dataclass
+class ToolInfo:
+    """Tool finding details."""
+
+    name: str
+    description: str | None = None
+    parameters: list[str] | None = None
+
+
+@dataclass
+class EmbeddingInfo:
+    """Embedding finding details."""
+
+    provider: str  # openai, cohere, huggingface
+    model: str | None = None  # text-embedding-3-small, etc.
+
+
+@dataclass
+class VectorStoreInfo:
+    """Vector store finding details."""
+
+    provider: str  # chroma, pinecone, faiss, qdrant, weaviate
+    collection_name: str | None = None
+
+
+@dataclass
+class PromptInfo:
+    """Prompt template finding details."""
+
+    template_type: str  # system, user, chat, few-shot
+    variables: list[str] | None = None
+
+
+@dataclass
+class GuardrailInfo:
+    """Guardrail finding details."""
+
+    framework: str  # nemoguardrails, guardrails-ai, custom
+    guardrail_type: str | None = None  # input, output, content-filter
+
+
+@dataclass
+class DatasetInfo:
+    """Dataset finding details."""
+
+    source: str  # huggingface, local, url
+    name: str | None = None
+    split: str | None = None  # train, test, validation
+
+
+@dataclass
 class LicenseInfo:
     """Detected license information."""
 
