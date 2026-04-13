@@ -1,6 +1,6 @@
 # scanoss-ai
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
 > AI artifact scanner for supply chain security and compliance
@@ -162,6 +162,6 @@ If you discover a security vulnerability, please follow our [Security Policy](SE
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
-Copyright (c) 2025-2026 SCANOSS. All Rights Reserved.
+Copyright (c) 2025 SCANOSS.

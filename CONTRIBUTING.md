@@ -198,10 +198,10 @@ Fixes #456
 
 ## Contributor License Agreement
 
-By contributing to this project, you agree that your contributions will be licensed under the Apache License 2.0. You also certify that:
+By contributing to this project, you agree that your contributions will be licensed under the MIT License. You also certify that:
 
 - You created the contribution or have the right to submit it
-- You grant SEMCL.ONE and the community the right to use your contribution under the Apache License 2.0
+- You grant SCANOSS and the community the right to use your contribution under the MIT License
 - Your contribution does not violate any third-party rights
 
 For significant contributions, you may be asked to sign a formal Contributor License Agreement (CLA).

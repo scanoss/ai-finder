@@ -8,7 +8,7 @@
 
 | Advantage | SCANOSS AI | Most Competitors |
 |-----------|------------|------------------|
-| **Open Source** | Apache 2.0 licensed, CLI + library | SaaS-only, closed source |
+| **Open Source** | MIT licensed, CLI + library | SaaS-only, closed source |
 | **Language Coverage** | 12 languages | Python-focused (most) |
 | **Model Formats** | 12 formats (GGUF, SafeTensors, ONNX, etc.) | Limited or none |
 | **Dual SBOM Output** | CycloneDX 1.5 + SPDX 2.3 | Usually single format |
