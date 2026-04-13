@@ -81,9 +81,10 @@ class SPDX3Formatter:
             file_elements = self._build_file_elements(graph, name_to_id)
             elements.extend(file_elements)
 
-            # Update name_to_id with file elements
+            # Update name_to_id with file elements and add to root_elements
             for elem in file_elements:
                 name_to_id[elem["name"]] = elem["spdxId"]
+                root_elements.append(elem["spdxId"])
 
             # Build relationships using updated name_to_id
             relationships = self._build_relationships_with_lookup(graph, name_to_id)
@@ -238,6 +239,13 @@ class SPDX3Formatter:
                 "name": name,
                 "software_downloadLocation": "NOASSERTION",
                 "summary": f"MCP {mcp_role}",
+                # Machine-readable MCP role identifier
+                "externalIdentifier": [
+                    {
+                        "externalIdentifierType": "other",
+                        "identifier": f"scanoss:mcp:role:{mcp_role}",
+                    }
+                ],
             }
 
         # Handle other Phase 2 types as software_Package
