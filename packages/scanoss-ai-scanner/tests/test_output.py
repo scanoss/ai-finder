@@ -290,3 +290,42 @@ class TestSPDX23Formatter:
 
         assert data["packages"] == []
         assert data["relationships"] == []
+
+
+class TestGetFormatter:
+    def test_get_formatter_cyclonedx(self) -> None:
+        from scanoss_ai_scanner.output import get_formatter
+
+        formatter = get_formatter("cyclonedx")
+        assert isinstance(formatter, CycloneDXFormatter)
+
+    def test_get_formatter_json(self) -> None:
+        from scanoss_ai_scanner.output import get_formatter
+
+        formatter = get_formatter("json")
+        assert isinstance(formatter, JSONFormatter)
+
+    def test_get_formatter_spdx_23(self) -> None:
+        from scanoss_ai_scanner.output import get_formatter
+
+        formatter = get_formatter("spdx", spdx_version="2.3")
+        assert isinstance(formatter, SPDX23Formatter)
+
+    def test_get_formatter_spdx_30(self) -> None:
+        from scanoss_ai_scanner.output import get_formatter
+        from scanoss_ai_scanner.output.spdx3 import SPDX3Formatter
+
+        formatter = get_formatter("spdx", spdx_version="3.0")
+        assert isinstance(formatter, SPDX3Formatter)
+
+    def test_get_formatter_spdx_requires_version(self) -> None:
+        from scanoss_ai_scanner.output import get_formatter
+
+        with pytest.raises(ValueError, match="requires --spdx-version"):
+            get_formatter("spdx")
+
+    def test_get_formatter_unknown_format(self) -> None:
+        from scanoss_ai_scanner.output import get_formatter
+
+        with pytest.raises(ValueError, match="Unknown format"):
+            get_formatter("unknown")
