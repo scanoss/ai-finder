@@ -23,7 +23,7 @@ Organizations deploying AI face a critical blind spot: **they don't know what AI
 
 | Differentiator | SCANOSS AI | Competitors |
 |----------------|------------|-------------|
-| **Open Source** | Apache 2.0 | Closed SaaS |
+| **Open Source** | MIT | Closed SaaS |
 | **Language Coverage** | 12 languages | Python-focused |
 | **Model Parsing** | 12 formats | Limited/None |
 | **Dual SBOM Output** | CycloneDX + SPDX | Single format |

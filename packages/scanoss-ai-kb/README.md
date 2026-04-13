@@ -22,4 +22,4 @@ result = matcher.match_sdk("openai")
 
 ## License
 
-Apache-2.0
+MIT

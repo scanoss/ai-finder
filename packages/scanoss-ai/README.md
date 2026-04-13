@@ -30,4 +30,4 @@ This tool collects anonymous usage telemetry. See [TELEMETRY.md](../../docs/TELE
 
 ## License
 
-Apache-2.0
+MIT
