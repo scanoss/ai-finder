@@ -28,6 +28,11 @@ class SPDX3Formatter:
         safe_name = name.replace("/", "-").replace("@", "").replace(" ", "-")[:50]
         return f"urn:spdx:{prefix}-{safe_name}-{uuid.uuid4().hex[:8]}"
 
+    def _generate_stable_spdx_id(self, prefix: str, name: str) -> str:
+        """Generate a stable (deterministic) SPDX ID for deduplication."""
+        safe_name = name.replace("/", "-").replace("@", "").replace(" ", "-")[:50]
+        return f"urn:spdx:{prefix}-{safe_name}"
+
     def _get_phase2_element_name(self, finding: Finding) -> str:
         """Get element name for Phase 2 finding types."""
         if finding.agent_info:
@@ -44,13 +49,25 @@ class SPDX3Formatter:
             return f"prompt-{finding.prompt_info.template_type}"
         return "unknown-component"
 
-    def _create_document(self, doc_id: str, root_elements: list[str]) -> dict[str, Any]:
+    def _create_tool_agent(self) -> dict[str, Any]:
+        """Create the Tool agent element for createdBy reference."""
+        tool_id = f"urn:spdx:tool-scanoss-ai-{__version__}"
+        return {
+            "type": "Tool",
+            "spdxId": tool_id,
+            "name": "scanoss-ai",
+            "software_packageVersion": __version__,
+        }
+
+    def _create_document(
+        self, doc_id: str, root_elements: list[str], tool_id: str
+    ) -> dict[str, Any]:
         return {
             "type": "SpdxDocument",
             "spdxId": doc_id,
             "creationInfo": {
                 "created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "createdBy": [f"urn:spdx:tool-scanoss-ai-{__version__}"],
+                "createdBy": [tool_id],
                 "specVersion": self.SPDX_VERSION,
             },
             "rootElement": root_elements,
@@ -64,34 +81,58 @@ class SPDX3Formatter:
     ) -> str:
         elements: list[dict[str, Any]] = []
         root_elements: list[str] = []
-        relationships: list[dict[str, Any]] = []
+
+        # Create the tool agent first (fixes dangling createdBy reference)
+        tool_agent = self._create_tool_agent()
+        tool_id = tool_agent["spdxId"]
+        elements.append(tool_agent)
+
+        # Build elements with deduplication (like SPDX 2.3)
+        elements_by_name: dict[str, dict[str, Any]] = {}
 
         for finding in result.findings:
             element = self._finding_to_element(finding, enricher)
-            if element:
-                elements.append(element)
-                root_elements.append(element["spdxId"])
+            if not element:
+                continue
+
+            name = element["name"]
+            existing = elements_by_name.get(name)
+
+            if existing is None:
+                # First time seeing this element
+                elements_by_name[name] = element
+            elif (
+                "software_packageVersion" not in existing
+                and "software_packageVersion" in element
+            ):
+                # Existing has no version but new one does - update
+                existing["software_packageVersion"] = element["software_packageVersion"]
+
+        # Convert dict to list and collect root elements
+        for element in elements_by_name.values():
+            elements.append(element)
+            root_elements.append(element["spdxId"])
+
+        # Build name->spdxId lookup for relationships
+        name_to_id = {e["name"]: e["spdxId"] for e in elements_by_name.values()}
 
         # Add file elements and relationships from graph if available
-        if graph and len(elements) > 0:
-            # Build name->spdxId lookup for existing elements
-            name_to_id = {e["name"]: e["spdxId"] for e in elements if "name" in e}
-
+        if graph:
             # Add file elements for files that contain AI components
             file_elements = self._build_file_elements(graph, name_to_id)
             elements.extend(file_elements)
 
-            # Update name_to_id with file elements and add to root_elements
+            # Update name_to_id with file elements (files NOT added to rootElement)
             for elem in file_elements:
                 name_to_id[elem["name"]] = elem["spdxId"]
-                root_elements.append(elem["spdxId"])
 
             # Build relationships using updated name_to_id
+            # Only include supported SPDX 3.0 relationship types
             relationships = self._build_relationships_with_lookup(graph, name_to_id)
             elements.extend(relationships)
 
         doc_id = f"urn:spdx:document-{uuid.uuid4().hex[:12]}"
-        doc = self._create_document(doc_id, root_elements)
+        doc = self._create_document(doc_id, root_elements, tool_id)
         elements.insert(0, doc)
 
         spdx: dict[str, Any] = {
@@ -128,7 +169,7 @@ class SPDX3Formatter:
             if "::" not in file_path:
                 file_elements.append({
                     "type": "software_File",
-                    "spdxId": self._generate_spdx_id("file", file_path),
+                    "spdxId": self._generate_stable_spdx_id("file", file_path),
                     "name": file_path,
                 })
 
@@ -150,18 +191,23 @@ class SPDX3Formatter:
         """
         relationships: list[dict[str, Any]] = []
 
+        # Only include valid SPDX 3.0 relationship types
+        valid_rel_types = {
+            "dependsOn": "DEPENDS_ON",
+            "contains": "CONTAINS",
+        }
+
         # Add relationships from graph edges (ComponentEdge dataclass)
         for edge in graph.edges:
+            # Skip unsupported relationship types (like "calls")
+            if edge.relationship not in valid_rel_types:
+                continue
+
             from_id = name_to_id.get(edge.source)
             to_id = name_to_id.get(edge.target)
 
             if from_id and to_id:
-                # Map graph relationship types to SPDX 3.0 relationship types (uppercase)
-                rel_type_map = {
-                    "dependsOn": "DEPENDS_ON",
-                    "contains": "CONTAINS",
-                }
-                rel_type = rel_type_map.get(edge.relationship, edge.relationship.upper())
+                rel_type = valid_rel_types[edge.relationship]
                 relationships.append({
                     "type": "Relationship",
                     "spdxId": self._generate_spdx_id("rel", f"{edge.source}-{edge.target}"),
@@ -181,7 +227,7 @@ class SPDX3Formatter:
             sdk = finding.sdk_usage
             element: dict[str, Any] = {
                 "type": "software_Package",
-                "spdxId": self._generate_spdx_id("package", sdk.sdk),
+                "spdxId": self._generate_stable_spdx_id("package", sdk.sdk),
                 "name": sdk.sdk,
                 "software_downloadLocation": "NOASSERTION",
             }
@@ -197,7 +243,7 @@ class SPDX3Formatter:
             dep = finding.manifest_dep
             element = {
                 "type": "software_Package",
-                "spdxId": self._generate_spdx_id("package", dep.name),
+                "spdxId": self._generate_stable_spdx_id("package", dep.name),
                 "name": dep.name,
                 "software_downloadLocation": "NOASSERTION",
             }
@@ -218,7 +264,7 @@ class SPDX3Formatter:
             name = info.name or f"{info.source}-dataset"
             element: dict[str, Any] = {
                 "type": "dataset_DatasetPackage",
-                "spdxId": self._generate_spdx_id("dataset", name),
+                "spdxId": self._generate_stable_spdx_id("dataset", name),
                 "name": name,
                 "dataset_datasetType": "text",
             }
@@ -235,17 +281,14 @@ class SPDX3Formatter:
             mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
             return {
                 "type": "software_Package",
-                "spdxId": self._generate_spdx_id("package", name),
+                "spdxId": self._generate_stable_spdx_id("package", name),
                 "name": name,
                 "software_downloadLocation": "NOASSERTION",
-                "summary": f"MCP {mcp_role}",
-                # Machine-readable MCP role identifier
-                "externalIdentifier": [
-                    {
-                        "externalIdentifierType": "other",
-                        "identifier": f"scanoss:mcp:role:{mcp_role}",
-                    }
-                ],
+                # Human-readable description
+                "summary": f"Model Context Protocol (MCP) {mcp_role}",
+                # Machine-readable: use comment with structured format
+                # (SPDX 3.0 externalIdentifier requires vocabulary compliance)
+                "comment": f"scanoss:mcp:role={mcp_role}",
             }
 
         # Handle other Phase 2 types as software_Package
@@ -260,7 +303,7 @@ class SPDX3Formatter:
             name = self._get_phase2_element_name(finding)
             return {
                 "type": "software_Package",
-                "spdxId": self._generate_spdx_id("package", name),
+                "spdxId": self._generate_stable_spdx_id("package", name),
                 "name": name,
                 "software_downloadLocation": "NOASSERTION",
             }
@@ -286,9 +329,15 @@ class SPDX3Formatter:
             if pkg_data.license:
                 element["software_declaredLicense"] = pkg_data.license
 
-            # Add supplier as originatedBy
+            # Add supplier info in comment (avoids dangling agent reference)
             if pkg_data.author:
-                element["originatedBy"] = [f"urn:spdx:agent-{pkg_data.author.replace(' ', '-')[:30]}"]
+                existing_comment = element.get("comment", "")
+                author_comment = f"Author: {pkg_data.author}"
+                element["comment"] = (
+                    f"{existing_comment}; {author_comment}"
+                    if existing_comment
+                    else author_comment
+                )
 
             # Add description
             if pkg_data.summary:
@@ -308,7 +357,7 @@ class SPDX3Formatter:
 
         element: dict[str, Any] = {
             "type": "ai_AIPackage",
-            "spdxId": self._generate_spdx_id("ai-package", filename),
+            "spdxId": self._generate_stable_spdx_id("ai-package", filename),
             "name": filename,
             "ai_autonomyType": "assistive",
         }
