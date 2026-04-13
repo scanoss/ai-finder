@@ -17,6 +17,7 @@ from .ruby import RubyDetector
 from .rust import RustDetector
 from .scala import ScalaDetector
 from .swift import SwiftDetector
+from .tools import ToolsDetector
 
 __all__ = [
     "AgentDetector",
@@ -34,4 +35,5 @@ __all__ = [
     "RustDetector",
     "ScalaDetector",
     "SwiftDetector",
+    "ToolsDetector",
 ]
