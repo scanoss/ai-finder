@@ -299,14 +299,14 @@ class CycloneDXFormatter:
             # Add properties for additional metadata not in modelCard
             properties = []
             if info.format:
-                properties.append({"name": "scanoss:model:format", "value": info.format})
+                properties.append({"name": "ai-finder:model:format", "value": info.format})
             if info.quantization:
                 properties.append(
-                    {"name": "scanoss:model:quantization", "value": info.quantization}
+                    {"name": "ai-finder:model:quantization", "value": info.quantization}
                 )
             if info.parameter_count:
                 properties.append(
-                    {"name": "scanoss:model:parameters", "value": str(info.parameter_count)}
+                    {"name": "ai-finder:model:parameters", "value": str(info.parameter_count)}
                 )
             if properties:
                 component["properties"] = properties
@@ -325,7 +325,7 @@ class CycloneDXFormatter:
                 "name": name,
                 "bom-ref": self._generate_bom_ref(name),
                 "properties": [
-                    {"name": "scanoss:mcp:role", "value": mcp_role},
+                    {"name": "ai-finder:mcp:role", "value": mcp_role},
                 ],
             }
 
@@ -400,25 +400,25 @@ class CycloneDXFormatter:
 
                     # Add properties for additional metadata
                     properties = component.get("properties", [])
-                    has_params = any(p["name"] == "scanoss:model:parameters" for p in properties)
+                    has_params = any(p["name"] == "ai-finder:model:parameters" for p in properties)
                     if model_data.parameter_count and not has_params:
                         properties.append(
                             {
-                                "name": "scanoss:model:parameters",
+                                "name": "ai-finder:model:parameters",
                                 "value": str(model_data.parameter_count),
                             }
                         )
                     if model_data.source_url:
                         properties.append(
                             {
-                                "name": "scanoss:model:source_url",
+                                "name": "ai-finder:model:source_url",
                                 "value": model_data.source_url,
                             }
                         )
                     if model_data.base_model_purl:
                         properties.append(
                             {
-                                "name": "scanoss:model:base_model",
+                                "name": "ai-finder:model:base_model",
                                 "value": model_data.base_model_purl,
                             }
                         )

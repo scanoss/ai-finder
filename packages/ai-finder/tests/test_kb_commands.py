@@ -23,7 +23,7 @@ class TestKbInit:
     def test_kb_init_default_path(self, tmp_path: Path, monkeypatch) -> None:
         runner = CliRunner()
         # Set env var to use temp path
-        monkeypatch.setenv("SCANOSS_KB_PATH", str(tmp_path / "default.db"))
+        monkeypatch.setenv("AI_FINDER_KB_PATH", str(tmp_path / "default.db"))
 
         result = runner.invoke(kb, ["init"])
 

@@ -105,7 +105,7 @@ class SPDX3Formatter:
             "type": "agent_Tool",
             "spdxId": tool_id,
             "name": f"ai-finder-{__version__}",
-            "description": f"SCANOSS AI Scanner version {__version__}",
+            "description": f"AI Finder Scanner version {__version__}",
         }
 
     def _create_document(
@@ -396,7 +396,7 @@ class SPDX3Formatter:
                 "summary": f"Model Context Protocol (MCP) {mcp_role}",
                 # Machine-readable: use comment with structured format
                 # (SPDX 3.0 externalIdentifier requires vocabulary compliance)
-                "comment": f"scanoss:mcp:role={mcp_role}",
+                "comment": f"ai-finder:mcp:role={mcp_role}",
             }
 
         # Handle other Phase 2 types as software_Package

@@ -231,7 +231,7 @@ class SPDX23Formatter:
                 "externalRefs": [
                     {
                         "referenceCategory": "OTHER",
-                        "referenceType": "scanoss-mcp-role",
+                        "referenceType": "ai-finder-mcp-role",
                         "referenceLocator": mcp_role,
                     }
                 ],

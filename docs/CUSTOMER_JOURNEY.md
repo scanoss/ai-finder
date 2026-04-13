@@ -6,7 +6,7 @@ This document maps the complete user journey through ai-finder, showing all entr
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         SCANOSS-AI USER JOURNEYS                             │
+│                         AI-FINDER USER JOURNEYS                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │   ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐          │

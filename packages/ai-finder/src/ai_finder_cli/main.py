@@ -80,7 +80,7 @@ def main(ctx: click.Context, no_telemetry: bool) -> None:
     "--kb-path",
     default=None,
     type=click.Path(path_type=Path),
-    envvar="SCANOSS_KB_PATH",
+    envvar="AI_FINDER_KB_PATH",
     help="Path to KB database (default: ~/.ai-finder/kb/ai-finder.db)",
 )
 @click.option(
@@ -257,7 +257,7 @@ def scan(
                 else:
                     # Text format - simple summary
                     lines = [
-                        "SCANOSS AI Scan Results",
+                        "AI Finder Scan Results",
                         "=======================",
                         f"Path: {result.root_path}",
                         f"Files scanned: {result.files_scanned}",

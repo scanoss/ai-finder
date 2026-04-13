@@ -1,4 +1,4 @@
-"""SCANOSS AI Scanner library."""
+"""AI Finder Scanner library."""
 
 from ai_finder_scanner.cache import ScanCache
 from ai_finder_scanner.discovery import FileDiscovery

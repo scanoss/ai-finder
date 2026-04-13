@@ -1,4 +1,4 @@
-"""SQLite database operations for SCANOSS AI KB."""
+"""SQLite database operations for AI Finder KB."""
 
 import sqlite3
 from pathlib import Path

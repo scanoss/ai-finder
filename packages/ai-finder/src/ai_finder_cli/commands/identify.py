@@ -44,7 +44,7 @@ def _compute_sha256(file_path: Path) -> str:
     "--kb-path",
     default=None,
     type=click.Path(path_type=Path),
-    envvar="SCANOSS_KB_PATH",
+    envvar="AI_FINDER_KB_PATH",
     help="Path to KB database (default: ~/.ai-finder/kb/ai-finder.db)",
 )
 def identify(file: Path, output_format: str, no_enrich: bool, kb_path: Path | None) -> None:

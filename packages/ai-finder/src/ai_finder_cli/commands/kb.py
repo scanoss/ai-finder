@@ -13,8 +13,8 @@ from ai_finder_cli import telemetry
 
 
 def _default_kb_path() -> Path:
-    """Return the default KB database path, respecting SCANOSS_KB_PATH env var."""
-    env_path = os.environ.get("SCANOSS_KB_PATH")
+    """Return the default KB database path, respecting AI_FINDER_KB_PATH env var."""
+    env_path = os.environ.get("AI_FINDER_KB_PATH")
     if env_path:
         return Path(env_path).expanduser()
     return Path("~/.ai-finder/kb/ai-finder.db").expanduser()
@@ -111,7 +111,7 @@ def kb() -> None:
     "--kb-path",
     default=None,
     type=click.Path(path_type=Path),
-    help="Path to KB database (default: ~/.ai-finder/kb/ai-finder.db or SCANOSS_KB_PATH)",
+    help="Path to KB database (default: ~/.ai-finder/kb/ai-finder.db or AI_FINDER_KB_PATH)",
 )
 def init(kb_path: Path | None) -> None:
     """Initialize the local knowledge base database."""

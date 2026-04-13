@@ -1,4 +1,4 @@
-"""SCANOSS AI Knowledge Base library."""
+"""AI Finder Knowledge Base library."""
 
 from pathlib import Path
 from typing import Any, Optional

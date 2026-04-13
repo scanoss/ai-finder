@@ -12,7 +12,7 @@ from ai_finder_scanner.cache import ScanCache
 class TestScanCache:
     @pytest.fixture
     def cache_dir(self, tmp_path: Path) -> Path:
-        cache = tmp_path / ".scanoss-cache"
+        cache = tmp_path / ".ai-finder-cache"
         cache.mkdir()
         return cache
 

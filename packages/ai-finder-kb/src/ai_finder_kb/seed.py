@@ -1,4 +1,4 @@
-"""Seed data for SCANOSS AI Knowledge Base."""
+"""Seed data for AI Finder Knowledge Base."""
 
 import json
 from pathlib import Path

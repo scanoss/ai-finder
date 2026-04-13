@@ -27,7 +27,7 @@ class TestCLI:
     def test_help(self, runner: CliRunner) -> None:
         result = runner.invoke(main, ["--help"])
         assert result.exit_code == 0
-        assert "SCANOSS AI" in result.output or "scanoss" in result.output.lower()
+        assert "AI Finder" in result.output 
 
     def test_version(self, runner: CliRunner) -> None:
         result = runner.invoke(main, ["--version"])
