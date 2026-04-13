@@ -1,4 +1,4 @@
-# SCANOSS AI Roadmap
+# AI Finder Roadmap
 
 ## v0.1.x - MVP (COMPLETE)
 
@@ -39,7 +39,7 @@
 - SPDX DEPENDS_ON/CONTAINS relationships
 - DataFlowGraph for tracking AI component output propagation
 - Taint tracking (variables holding AI SDK outputs)
-- **Anonymous telemetry** (opt-out via --no-telemetry, SCANOSS_AI_TELEMETRY=0, DO_NOT_TRACK=1, or config file)
+- **Anonymous telemetry** (opt-out via --no-telemetry, AI_FINDER_TELEMETRY=0, DO_NOT_TRACK=1, or config file)
 
 **Test Coverage:** 91% (325 tests)
 

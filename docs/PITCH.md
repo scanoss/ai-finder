@@ -1,4 +1,4 @@
-# SCANOSS AI - Executive Pitch
+# AI Finder - Executive Pitch
 
 ## The Problem
 
@@ -6,7 +6,7 @@ Organizations deploying AI face a critical blind spot: **they don't know what AI
 
 ## The Solution
 
-**SCANOSS AI** is an open-source AI artifact scanner that automatically discovers and documents AI components in your codebase—generating standards-compliant AI Bills of Materials (AIBOMs) for compliance and security.
+**AI Finder** is an open-source AI artifact scanner that automatically discovers and documents AI components in your codebase—generating standards-compliant AI Bills of Materials (AIBOMs) for compliance and security.
 
 ## What We Detect
 
@@ -17,11 +17,11 @@ Organizations deploying AI face a critical blind spot: **they don't know what AI
 | **Dependencies** | AI packages in 11 package managers (PyPI, npm, Cargo, Maven, etc.) |
 | **MCP Servers** | Model Context Protocol integrations and agent tools |
 
-## Why SCANOSS AI?
+## Why AI Finder?
 
 ### vs. Snyk, Mend.io, Cycode, Cranium
 
-| Differentiator | SCANOSS AI | Competitors |
+| Differentiator | AI Finder | Competitors |
 |----------------|------------|-------------|
 | **Open Source** | MIT | Closed SaaS |
 | **Language Coverage** | 12 languages | Python-focused |

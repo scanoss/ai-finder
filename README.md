@@ -1,4 +1,4 @@
-# scanoss-ai
+# ai-finder
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -7,7 +7,7 @@
 
 ## About
 
-**scanoss-ai** detects AI/ML artifacts in codebases for:
+**ai-finder** detects AI/ML artifacts in codebases for:
 
 - **Supply Chain Security** - Identify AI models, SDKs, and dependencies
 - **EU AI Act Compliance** - Generate SBOM reports for regulatory requirements
@@ -76,27 +76,27 @@ Generated SBOMs are compliant with major standards:
 
 ### Standalone Binary (Recommended)
 
-Download the pre-built binary for your platform from [GitHub Releases](https://github.com/scanoss/scanoss-ai/releases):
+Download the pre-built binary for your platform from [GitHub Releases](https://github.com/scanoss/ai-finder/releases):
 
 | Platform | Binary |
 |----------|--------|
-| macOS (Apple Silicon) | `scanoss-ai-macos-arm64` |
-| macOS (Intel) | `scanoss-ai-macos-x64` |
-| Linux (x86_64) | `scanoss-ai-linux-x64` |
-| Windows | `scanoss-ai-windows-x64.exe` |
+| macOS (Apple Silicon) | `ai-finder-macos-arm64` |
+| macOS (Intel) | `ai-finder-macos-x64` |
+| Linux (x86_64) | `ai-finder-linux-x64` |
+| Windows | `ai-finder-windows-x64.exe` |
 
 ```bash
 # macOS - remove quarantine attribute first
-xattr -d com.apple.quarantine scanoss-ai-macos-arm64
-chmod +x scanoss-ai-macos-arm64
-./scanoss-ai-macos-arm64 --version
+xattr -d com.apple.quarantine ai-finder-macos-arm64
+chmod +x ai-finder-macos-arm64
+./ai-finder-macos-arm64 --version
 
 # Linux
-chmod +x scanoss-ai-linux-x64
-./scanoss-ai-linux-x64 --version
+chmod +x ai-finder-linux-x64
+./ai-finder-linux-x64 --version
 
 # Windows
-scanoss-ai-windows-x64.exe --version
+ai-finder-windows-x64.exe --version
 ```
 
 > **Note (macOS):** The binary is not yet Apple-signed. macOS Gatekeeper will show a warning on first run. Use the `xattr` command above to remove the quarantine flag, or right-click the file and select "Open" to bypass.
@@ -106,29 +106,29 @@ No Python installation required - all dependencies are bundled.
 ### From PyPI
 
 ```bash
-pip install scanoss-ai
+pip install ai-finder
 ```
 
 ## Usage
 
 ```bash
 # Scan a directory
-scanoss-ai scan /path/to/project
+ai-finder scan /path/to/project
 
 # Generate SBOM (CycloneDX)
-scanoss-ai scan /path/to/project -f cyclonedx -o sbom.json
+ai-finder scan /path/to/project -f cyclonedx -o sbom.json
 
 # Generate SBOM (SPDX)
-scanoss-ai scan /path/to/project -f spdx -o sbom.spdx.json
+ai-finder scan /path/to/project -f spdx -o sbom.spdx.json
 
 # Identify a model file
-scanoss-ai identify model.gguf
+ai-finder identify model.gguf
 
 # Initialize local KB
-scanoss-ai kb init
+ai-finder kb init
 
 # Lookup model by PURL
-scanoss-ai kb lookup pkg:huggingface/TinyLlama/TinyLlama-1.1B-Chat-v1.0
+ai-finder kb lookup pkg:huggingface/TinyLlama/TinyLlama-1.1B-Chat-v1.0
 ```
 
 ## Telemetry
@@ -139,8 +139,8 @@ This tool collects anonymous usage telemetry. See [docs/TELEMETRY.md](docs/TELEM
 
 ```bash
 # Clone repository
-git clone https://github.com/scanoss/scanoss-ai.git
-cd scanoss-ai
+git clone https://github.com/scanoss/ai-finder.git
+cd ai-finder
 
 # Install with uv
 uv sync --all-packages --all-extras
@@ -164,4 +164,4 @@ If you discover a security vulnerability, please follow our [Security Policy](SE
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
-Copyright (c) 2025 SCANOSS.
+Copyright (c) 2026 SCANOSS.

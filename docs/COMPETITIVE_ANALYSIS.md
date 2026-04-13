@@ -1,12 +1,12 @@
-# SCANOSS AI - Competitive Analysis & Product Overview
+# AI Finder - Competitive Analysis & Product Overview
 
 ## Executive Summary
 
-**SCANOSS AI** is an open-source AI artifact scanner for software supply chain security and EU AI Act compliance. It detects AI/ML components in codebases—SDKs, models, agents, and MCP servers—and generates standards-compliant SBOMs (CycloneDX, SPDX).
+**AI Finder** is an open-source AI artifact scanner for software supply chain security and EU AI Act compliance. It detects AI/ML components in codebases—SDKs, models, agents, and MCP servers—and generates standards-compliant SBOMs (CycloneDX, SPDX).
 
 ### Key Differentiators
 
-| Advantage | SCANOSS AI | Most Competitors |
+| Advantage | AI Finder | Most Competitors |
 |-----------|------------|------------------|
 | **Open Source** | MIT licensed, CLI + library | SaaS-only, closed source |
 | **Language Coverage** | 12 languages | Python-focused (most) |
@@ -18,7 +18,7 @@
 
 ---
 
-## Why SCANOSS AI?
+## Why AI Finder?
 
 1. **Open Source First** - No vendor lock-in, audit the code yourself
 2. **Broadest Coverage** - 12 languages, 12 model formats, 11 package managers
@@ -29,7 +29,7 @@
 
 ---
 
-## What SCANOSS AI Detects
+## What AI Finder Detects
 
 ### 1. SDK/Library Detection (12 Languages)
 
@@ -124,7 +124,7 @@
 
 ## Competitive Comparison
 
-| Capability | SCANOSS AI | Snyk | Mend.io | Cycode | Cranium | Cisco |
+| Capability | AI Finder | Snyk | Mend.io | Cycode | Cranium | Cisco |
 |------------|------------|------|---------|--------|---------|-------|
 | **Open Source** | Yes | No | No | No | No | No |
 | **Languages** | 12 | Python* | Multi | Multi | Multi | Python* |
@@ -209,9 +209,9 @@
 
 ## EU AI Act Compliance
 
-SCANOSS AI supports EU AI Act compliance through:
+AI Finder supports EU AI Act compliance through:
 
-| Requirement | SCANOSS AI Capability |
+| Requirement | AI Finder Capability |
 |-------------|----------------------|
 | AI System Inventory | SDK, model, and agent detection |
 | Component Transparency | SBOM generation (CycloneDX/SPDX) |
