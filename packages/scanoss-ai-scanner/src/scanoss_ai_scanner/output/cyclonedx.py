@@ -7,6 +7,7 @@ import re
 import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
+from urllib.parse import quote
 
 from .. import __version__
 from ..models import Finding, FindingType, ScanResult
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 class CycloneDXFormatter:
     """Format scan results as CycloneDX SBOM."""
 
-    SPEC_VERSION = "1.5"
+    SPEC_VERSION = "1.6"
     BOM_FORMAT = "CycloneDX"
 
     # Manifest file to PURL type mapping
@@ -64,6 +65,22 @@ class CycloneDXFormatter:
         """Generate a bom-ref for a component."""
         return f"pkg:{name.replace('/', '-').replace('@', '')}"
 
+    def _get_phase2_component_name(self, finding: Finding) -> str:
+        """Get component name for Phase 2 finding types."""
+        if finding.agent_info:
+            return f"{finding.agent_info.framework}-agent"
+        if finding.embedding_info:
+            return f"{finding.embedding_info.provider}-embeddings"
+        if finding.vector_store_info:
+            return finding.vector_store_info.provider
+        if finding.tool_info:
+            return finding.tool_info.name
+        if finding.guardrail_info:
+            return finding.guardrail_info.framework
+        if finding.prompt_info:
+            return f"prompt-{finding.prompt_info.template_type}"
+        return "unknown-component"
+
     def _infer_purl_type_from_sdk(self, sdk_name: str) -> str:
         """Infer PURL type from SDK name pattern.
 
@@ -107,6 +124,85 @@ class CycloneDXFormatter:
         # Default to pypi
         return "pypi"
 
+    def _build_purl(
+        self, purl_type: str, name: str, version: str | None = None
+    ) -> str:
+        """Build a valid PURL with proper encoding.
+
+        Args:
+            purl_type: PURL type (pypi, npm, golang, etc.)
+            name: Package name (may include scope for npm)
+            version: Optional version string
+
+        Returns:
+            Valid PURL string per https://github.com/package-url/purl-spec
+        """
+        # Handle npm scoped packages: @scope/name -> namespace/name
+        if purl_type == "npm" and name.startswith("@"):
+            # Split @scope/name into namespace and name
+            parts = name[1:].split("/", 1)
+            if len(parts) == 2:
+                namespace = quote(parts[0], safe="")
+                pkg_name = quote(parts[1], safe="")
+                purl = f"pkg:{purl_type}/{namespace}/{pkg_name}"
+            else:
+                # Malformed scope, encode as-is
+                purl = f"pkg:{purl_type}/{quote(name, safe='')}"
+        elif purl_type == "golang":
+            # Go modules use path-like names, encode slashes
+            purl = f"pkg:{purl_type}/{quote(name, safe='/')}"
+        else:
+            # Standard packages: encode special characters
+            purl = f"pkg:{purl_type}/{quote(name, safe='')}"
+
+        # Append version if present
+        if version:
+            # Clean version (strip leading operators like >=, ~, ^)
+            clean_version = re.sub(r"^[>=<~^]+", "", version)
+            if clean_version:
+                purl = f"{purl}@{quote(clean_version, safe='')}"
+
+        return purl
+
+    def _infer_learning_type(self, architecture: str | None) -> str:
+        """Infer learning type from model architecture."""
+        if not architecture:
+            return "supervised"
+
+        arch_lower = architecture.lower()
+
+        if "embed" in arch_lower or "bert" in arch_lower:
+            return "self-supervised"
+
+        if "rl" in arch_lower or "ppo" in arch_lower or "dqn" in arch_lower:
+            return "reinforcement-learning"
+
+        return "supervised"
+
+    def _infer_io_format(
+        self, architecture: str | None
+    ) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+        """Infer input/output formats from model architecture."""
+        if not architecture:
+            return [{"format": "string"}], [{"format": "string"}]
+
+        arch_lower = architecture.lower()
+
+        # Image models
+        if any(p in arch_lower for p in ["resnet", "vgg", "yolo", "vit", "clip"]):
+            return [{"format": "image"}], [{"format": "tensor"}]
+
+        # Audio models
+        if any(p in arch_lower for p in ["whisper", "wav2vec"]):
+            return [{"format": "audio"}], [{"format": "string"}]
+
+        # Multimodal
+        if "llava" in arch_lower or "clip" in arch_lower:
+            return [{"format": "string"}, {"format": "image"}], [{"format": "string"}]
+
+        # Default: text-to-text (LLMs)
+        return [{"format": "string"}], [{"format": "string"}]
+
     def _finding_to_component(self, finding: Finding) -> dict[str, Any] | None:
         """Convert a finding to a CycloneDX component.
 
@@ -124,9 +220,9 @@ class CycloneDXFormatter:
             }
             if sdk.version:
                 component["version"] = sdk.version
-            # Generate PURL based on SDK name pattern
+            # Generate PURL with proper encoding
             purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
-            component["purl"] = f"pkg:{purl_type}/{sdk.sdk}"
+            component["purl"] = self._build_purl(purl_type, sdk.sdk, sdk.version)
             return component
 
         if finding.type == FindingType.MANIFEST_DEP and finding.manifest_dep:
@@ -140,9 +236,9 @@ class CycloneDXFormatter:
                 version = re.sub(r"^[>=<~^]+", "", dep.version)
                 if version:
                     component["version"] = version
-            # Generate PURL based on manifest type
+            # Generate PURL with proper encoding
             purl_type = self._infer_purl_type_from_manifest(dep.manifest_file)
-            component["purl"] = f"pkg:{purl_type}/{dep.name}"
+            component["purl"] = self._build_purl(purl_type, dep.name, dep.version)
             return component
 
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
@@ -155,6 +251,14 @@ class CycloneDXFormatter:
 
             # Build modelCard per CycloneDX 1.5 ML-BOM spec
             model_params: dict[str, Any] = {}
+
+            # Add learningType as first item in model_params
+            model_params["learningType"] = self._infer_learning_type(info.architecture)
+
+            # Add inputs/outputs based on architecture
+            inputs, outputs = self._infer_io_format(info.architecture)
+            model_params["inputs"] = inputs
+            model_params["outputs"] = outputs
 
             # Map our architecture to CycloneDX modelArchitecture
             if info.architecture:
@@ -208,6 +312,48 @@ class CycloneDXFormatter:
                 component["properties"] = properties
 
             return component
+
+        # Handle MCP types
+        if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):
+            if finding.ai_component:
+                name = finding.ai_component.name
+            else:
+                name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
+            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
+            return {
+                "type": "library",
+                "name": name,
+                "bom-ref": self._generate_bom_ref(name),
+                "properties": [
+                    {"name": "scanoss:mcp:role", "value": mcp_role},
+                ],
+            }
+
+        # Handle Phase 2 types as libraries
+        if finding.type in (
+            FindingType.AGENT,
+            FindingType.TOOL,
+            FindingType.EMBEDDING,
+            FindingType.VECTOR_STORE,
+            FindingType.PROMPT,
+            FindingType.GUARDRAIL,
+        ):
+            name = self._get_phase2_component_name(finding)
+            return {
+                "type": "library",
+                "name": name,
+                "bom-ref": self._generate_bom_ref(name),
+            }
+
+        # Handle DATASET as data component
+        if finding.type == FindingType.DATASET and finding.dataset_info:
+            info = finding.dataset_info
+            name = info.name or f"{info.source}-dataset"
+            return {
+                "type": "data",
+                "name": name,
+                "bom-ref": f"data:{name.replace('/', '-')}",
+            }
 
         return None
 

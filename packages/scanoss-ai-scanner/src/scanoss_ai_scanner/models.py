@@ -9,11 +9,22 @@ from enum import Enum
 class FindingType(Enum):
     """Types of findings detected by the scanner."""
 
+    # Core types
     SDK_USAGE = "sdk_usage"
     MANIFEST_DEP = "manifest_dep"
     MODEL_FILE = "model_file"
     MCP_SERVER = "mcp_server"
     AI_COMPONENT = "ai_component"
+
+    # Phase 2: Agentic AI types
+    MCP_CLIENT = "mcp_client"
+    AGENT = "agent"
+    TOOL = "tool"
+    EMBEDDING = "embedding"
+    VECTOR_STORE = "vector_store"
+    PROMPT = "prompt"
+    GUARDRAIL = "guardrail"
+    DATASET = "dataset"
 
 
 @dataclass
@@ -53,6 +64,64 @@ class AIComponent:
 
 
 @dataclass
+class AgentInfo:
+    """Agent finding details."""
+
+    framework: str  # langchain, crewai, autogen, langgraph
+    agent_type: str | None = None  # react, plan-and-execute, conversational
+
+
+@dataclass
+class ToolInfo:
+    """Tool finding details."""
+
+    name: str
+    description: str | None = None
+    parameters: list[str] | None = None
+
+
+@dataclass
+class EmbeddingInfo:
+    """Embedding finding details."""
+
+    provider: str  # openai, cohere, huggingface
+    model: str | None = None  # text-embedding-3-small, etc.
+
+
+@dataclass
+class VectorStoreInfo:
+    """Vector store finding details."""
+
+    provider: str  # chroma, pinecone, faiss, qdrant, weaviate
+    collection_name: str | None = None
+
+
+@dataclass
+class PromptInfo:
+    """Prompt template finding details."""
+
+    template_type: str  # system, user, chat, few-shot
+    variables: list[str] | None = None
+
+
+@dataclass
+class GuardrailInfo:
+    """Guardrail finding details."""
+
+    framework: str  # nemoguardrails, guardrails-ai, custom
+    guardrail_type: str | None = None  # input, output, content-filter
+
+
+@dataclass
+class DatasetInfo:
+    """Dataset finding details."""
+
+    source: str  # huggingface, local, url
+    name: str | None = None
+    split: str | None = None  # train, test, validation
+
+
+@dataclass
 class LicenseInfo:
     """Detected license information."""
 
@@ -69,10 +138,21 @@ class Finding:
     file_path: str
     confidence: float
     line: int | None = None
+
+    # Core types
     sdk_usage: SDKUsage | None = None
     manifest_dep: ManifestDep | None = None
     model_info: ModelInfo | None = None
     ai_component: AIComponent | None = None
+
+    # Phase 2: Agentic AI types
+    agent_info: AgentInfo | None = None
+    tool_info: ToolInfo | None = None
+    embedding_info: EmbeddingInfo | None = None
+    vector_store_info: VectorStoreInfo | None = None
+    prompt_info: PromptInfo | None = None
+    guardrail_info: GuardrailInfo | None = None
+    dataset_info: DatasetInfo | None = None
 
 
 @dataclass

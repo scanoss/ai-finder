@@ -7,6 +7,7 @@ import re
 import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
+from urllib.parse import quote
 
 from .. import __version__
 from ..models import Finding, FindingType, ScanResult
@@ -16,8 +17,8 @@ if TYPE_CHECKING:
     from ..enrichment.kb_enricher import KBEnricher
 
 
-class SPDXFormatter:
-    """Format scan results as SPDX SBOM."""
+class SPDX23Formatter:
+    """Format scan results as SPDX 2.3 SBOM."""
 
     SPDX_VERSION = "SPDX-2.3"
     DATA_LICENSE = "CC0-1.0"
@@ -79,6 +80,41 @@ class SPDXFormatter:
             return "nuget"
         return "pypi"
 
+    def _build_purl(
+        self, purl_type: str, name: str, version: str | None = None
+    ) -> str:
+        """Build a valid PURL with proper encoding.
+
+        Args:
+            purl_type: PURL type (pypi, npm, golang, etc.)
+            name: Package name (may include scope for npm)
+            version: Optional version string
+
+        Returns:
+            Valid PURL string per https://github.com/package-url/purl-spec
+        """
+        # Handle npm scoped packages: @scope/name -> namespace/name
+        if purl_type == "npm" and name.startswith("@"):
+            parts = name[1:].split("/", 1)
+            if len(parts) == 2:
+                namespace = quote(parts[0], safe="")
+                pkg_name = quote(parts[1], safe="")
+                purl = f"pkg:{purl_type}/{namespace}/{pkg_name}"
+            else:
+                purl = f"pkg:{purl_type}/{quote(name, safe='')}"
+        elif purl_type == "golang":
+            purl = f"pkg:{purl_type}/{quote(name, safe='/')}"
+        else:
+            purl = f"pkg:{purl_type}/{quote(name, safe='')}"
+
+        # Append version if present
+        if version:
+            clean_version = re.sub(r"^[>=<~^]+", "", version)
+            if clean_version:
+                purl = f"{purl}@{quote(clean_version, safe='')}"
+
+        return purl
+
     def _finding_to_package(self, finding: Finding, idx: int) -> dict[str, Any] | None:
         """Convert a finding to an SPDX package.
 
@@ -99,13 +135,13 @@ class SPDXFormatter:
             }
             if sdk.version:
                 package["versionInfo"] = sdk.version
-            # Add external ref for PURL
+            # Add external ref for PURL with proper encoding
             purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
             package["externalRefs"] = [
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": f"pkg:{purl_type}/{sdk.sdk}",
+                    "referenceLocator": self._build_purl(purl_type, sdk.sdk, sdk.version),
                 }
             ]
             return package
@@ -122,13 +158,13 @@ class SPDXFormatter:
                 version = re.sub(r"^[>=<~^]+", "", dep.version)
                 if version:
                     package["versionInfo"] = version
-            # Generate PURL based on manifest type
+            # Generate PURL with proper encoding
             purl_type = self._infer_purl_type_from_manifest(dep.manifest_file)
             package["externalRefs"] = [
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": f"pkg:{purl_type}/{dep.name}",
+                    "referenceLocator": self._build_purl(purl_type, dep.name, dep.version),
                 }
             ]
             return package
@@ -179,7 +215,79 @@ class SPDXFormatter:
 
             return package
 
+        # Handle MCP types
+        if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):
+            if finding.ai_component:
+                name = finding.ai_component.name
+            else:
+                name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
+            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
+            package = {
+                "SPDXID": f"SPDXRef-Package-{idx}",
+                "name": name,
+                "downloadLocation": "NOASSERTION",
+                "filesAnalyzed": False,
+                "comment": f"MCP {mcp_role}",
+                "externalRefs": [
+                    {
+                        "referenceCategory": "OTHER",
+                        "referenceType": "scanoss-mcp-role",
+                        "referenceLocator": mcp_role,
+                    }
+                ],
+            }
+            return package
+
+        # Handle Phase 2 types as packages
+        if finding.type in (
+            FindingType.AGENT,
+            FindingType.TOOL,
+            FindingType.EMBEDDING,
+            FindingType.VECTOR_STORE,
+            FindingType.PROMPT,
+            FindingType.GUARDRAIL,
+        ):
+            name = self._get_phase2_package_name(finding)
+            package = {
+                "SPDXID": f"SPDXRef-Package-{idx}",
+                "name": name,
+                "downloadLocation": "NOASSERTION",
+                "filesAnalyzed": False,
+            }
+            return package
+
+        # Handle DATASET
+        if finding.type == FindingType.DATASET and finding.dataset_info:
+            info = finding.dataset_info
+            name = info.name or f"{info.source}-dataset"
+            package = {
+                "SPDXID": f"SPDXRef-Package-{idx}",
+                "name": name,
+                "downloadLocation": "NOASSERTION",
+                "filesAnalyzed": False,
+                "comment": f"Dataset from {info.source}",
+            }
+            if info.split:
+                package["comment"] += f", split: {info.split}"
+            return package
+
         return None
+
+    def _get_phase2_package_name(self, finding: Finding) -> str:
+        """Get package name for Phase 2 finding types."""
+        if finding.agent_info:
+            return f"{finding.agent_info.framework}-agent"
+        if finding.embedding_info:
+            return f"{finding.embedding_info.provider}-embeddings"
+        if finding.vector_store_info:
+            return finding.vector_store_info.provider
+        if finding.tool_info:
+            return finding.tool_info.name
+        if finding.guardrail_info:
+            return finding.guardrail_info.framework
+        if finding.prompt_info:
+            return f"prompt-{finding.prompt_info.template_type}"
+        return "unknown-component"
 
     def _enrich_packages(
         self,

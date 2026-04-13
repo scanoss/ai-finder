@@ -7,7 +7,12 @@ import sys
 from pathlib import Path
 
 import click
-from scanoss_ai_scanner.output import CycloneDXFormatter, JSONFormatter, SPDXFormatter
+from scanoss_ai_scanner.output import (
+    CycloneDXFormatter,
+    JSONFormatter,
+    SPDX23Formatter,
+    SPDX3Formatter,
+)
 from scanoss_ai_scanner.scanner import Scanner
 
 from scanoss_ai_cli import __version__, telemetry
@@ -78,6 +83,27 @@ def main(ctx: click.Context, no_telemetry: bool) -> None:
     envvar="SCANOSS_KB_PATH",
     help="Path to KB database (default: ~/.scanoss-ai/kb/scanoss-ai.db)",
 )
+@click.option(
+    "--spdx-version",
+    type=click.Choice(["2.3", "3.0"]),
+    default=None,
+    help="SPDX version (required when format is 'spdx')",
+)
+@click.option(
+    "--spdx-v2",
+    "spdx_version_alias",
+    is_flag=True,
+    flag_value="2.3",
+    default=None,
+    help="Shortcut for --spdx-version 2.3",
+)
+@click.option(
+    "--spdx-v3",
+    "spdx_version_alias",
+    is_flag=True,
+    flag_value="3.0",
+    help="Shortcut for --spdx-version 3.0",
+)
 def scan(
     path: Path,
     output_format: str,
@@ -86,11 +112,21 @@ def scan(
     relationships: bool,
     no_enrich: bool,
     kb_path: Path | None,
+    spdx_version: str | None,
+    spdx_version_alias: str | None,
 ) -> None:
     """Scan a directory for AI artifacts.
 
     PATH is the directory to scan.
     """
+    # Resolve spdx_version from alias if provided
+    if spdx_version_alias and not spdx_version:
+        spdx_version = spdx_version_alias
+
+    # Validate spdx_version is provided when format is spdx
+    if output_format == "spdx" and spdx_version is None:
+        raise click.UsageError("SPDX format requires --spdx-version (2.3 or 3.0), or use --spdx-v2 / --spdx-v3")
+
     try:
         # Track command with telemetry (no file paths sent)
         with telemetry.track_command(
@@ -214,7 +250,10 @@ def scan(
                 elif output_format == "cyclonedx":
                     return CycloneDXFormatter().format(result, graph, enricher)
                 elif output_format == "spdx":
-                    return SPDXFormatter().format(result, graph, enricher)
+                    if spdx_version == "2.3":
+                        return SPDX23Formatter().format(result, graph, enricher)
+                    else:  # 3.0
+                        return SPDX3Formatter().format(result, graph, enricher)
                 else:
                     # Text format - simple summary
                     lines = [
