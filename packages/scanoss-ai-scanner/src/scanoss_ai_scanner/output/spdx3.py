@@ -53,7 +53,7 @@ class SPDX3Formatter:
         """Create the Tool agent element for createdBy reference."""
         tool_id = f"urn:spdx:tool-scanoss-ai-{__version__}"
         return {
-            "type": "Tool",
+            "type": "agent_Tool",
             "spdxId": tool_id,
             "name": f"scanoss-ai-{__version__}",
             "description": f"SCANOSS AI Scanner version {__version__}",
@@ -143,6 +143,10 @@ class SPDX3Formatter:
 
         return json.dumps(spdx, indent=self.indent)
 
+    def _is_sentinel_value(self, value: Any) -> bool:
+        """Check if a value is a sentinel/placeholder that should be replaced."""
+        return value in ("NOASSERTION", "", None)
+
     def _merge_element_metadata(
         self, existing: dict[str, Any], new: dict[str, Any]
     ) -> None:
@@ -152,13 +156,12 @@ class SPDX3Formatter:
             existing: Existing element dict (modified in place).
             new: New element with potentially additional metadata.
         """
-        # Fields to merge if missing in existing
+        # Fields to merge - replace if missing OR if existing has sentinel value
         merge_fields = [
             "software_packageVersion",
             "software_declaredLicense",
             "software_downloadLocation",
             "summary",
-            "comment",
             "ai_domain",
             "ai_typeOfModel",
             "dataset_datasetType",
@@ -166,18 +169,23 @@ class SPDX3Formatter:
         ]
 
         for field in merge_fields:
-            if field not in existing and field in new:
-                existing[field] = new[field]
-            elif field == "comment" and field in new:
-                # Append comments rather than replace
-                existing_comment = existing.get("comment", "")
-                new_comment = new[field]
-                if new_comment and new_comment not in existing_comment:
-                    existing["comment"] = (
-                        f"{existing_comment}; {new_comment}"
-                        if existing_comment
-                        else new_comment
-                    )
+            new_value = new.get(field)
+            if new_value and not self._is_sentinel_value(new_value):
+                existing_value = existing.get(field)
+                # Replace if missing or existing is a sentinel
+                if field not in existing or self._is_sentinel_value(existing_value):
+                    existing[field] = new_value
+
+        # Special handling for comments - always append
+        if "comment" in new:
+            existing_comment = existing.get("comment", "")
+            new_comment = new["comment"]
+            if new_comment and new_comment not in existing_comment:
+                existing["comment"] = (
+                    f"{existing_comment}; {new_comment}"
+                    if existing_comment
+                    else new_comment
+                )
 
         # Merge hyperparameters for AI packages
         if "ai_hyperparameter" in new and "ai_hyperparameter" not in existing:
