@@ -2,7 +2,7 @@
 
 import sqlite3
 from pathlib import Path
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 
 SCHEMA_VERSION = 1
 
@@ -49,7 +49,7 @@ class Database:
         assert self._conn is not None
         return self._conn
 
-    def execute(self, sql: str, params: Tuple[Any, ...] = ()) -> sqlite3.Cursor:
+    def execute(self, sql: str, params: tuple[Any, ...] = ()) -> sqlite3.Cursor:
         """Execute SQL statement."""
         return self.conn.execute(sql, params)
 

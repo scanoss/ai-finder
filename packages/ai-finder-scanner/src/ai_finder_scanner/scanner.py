@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict
+from typing import TYPE_CHECKING, Any, Callable
 
 from .detectors import (
     CppDetector,
@@ -63,7 +63,7 @@ ProgressCallback = Callable[[int, int, str], None]
 
 # Telemetry callback: (event_name, properties) -> None
 # Uses Dict for Python 3.8 runtime compatibility (type aliases are evaluated eagerly)
-TelemetryCallback = Callable[[str, Dict[str, Any]], None]
+TelemetryCallback = Callable[[str, dict[str, Any]], None]
 
 logger = logging.getLogger(__name__)
 
