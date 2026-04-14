@@ -23,10 +23,10 @@
 | JavaScript/TypeScript | OpenAI, Anthropic, LangChain, Vercel AI SDK |
 | Go | go-openai, go-anthropic |
 | Rust | async-openai, anthropic-rs |
-| Java | openai-java, LangChain4j, Spring AI |
-| And more... | Ruby, PHP, C#, C++, Swift, Scala |
+| Java/Kotlin | openai-java, LangChain4j, Spring AI |
+| And more... | Ruby, PHP, C#, C++, Swift, Scala, Kotlin |
 
-### AI Package Detection (116+ packages)
+### AI Package Detection (134+ packages)
 
 Comprehensive detection across categories:
 
@@ -52,8 +52,9 @@ requirements.txt, pyproject.toml, package.json, go.mod, Cargo.toml, pom.xml, bui
 ### Output Formats
 
 - **JSON** - Machine-readable findings
-- **CycloneDX 1.5** - OWASP SBOM format with ML-BOM support
+- **CycloneDX 1.6** - OWASP SBOM format with ML-BOM support
 - **SPDX 2.3** - Linux Foundation SBOM format
+- **SPDX 3.0** - Latest SPDX specification with JSON-LD
 
 ## SBOM Compliance
 
