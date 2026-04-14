@@ -21,7 +21,7 @@ from typing import Any, Generator
 from ai_finder_cli import __version__
 
 # Ingest key for ai-finder project
-_INGEST_KEY = "wk_OSB2Ub_s6Ye3My4blHnNJ62AJ2f-yW6RBF61XofwAAg"
+_INGEST_KEY = "ik_eOC-YBXtnuNN-jbNSjgcr0p2ppDUPHSRxABcIrCC-d0"
 _PROJECT_SLUG = "ai-finder"
 
 # Global telemetry client (lazily initialized)
