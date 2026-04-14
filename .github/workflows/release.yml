@@ -113,7 +113,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: python-packages
           path: dist/
@@ -134,13 +134,13 @@ jobs:
 
     steps:
       - name: Download Python packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: python-packages
           path: dist/
 
       - name: Download provenance
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: "*.intoto.jsonl"
           path: provenance/
@@ -173,7 +173,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: python-packages
           path: dist/
