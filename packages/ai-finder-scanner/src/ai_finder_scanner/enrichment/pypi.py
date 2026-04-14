@@ -84,6 +84,9 @@ class PyPIEnricher:
             if license_id:
                 license_id = self._map_to_spdx(license_id)
 
+        # Get author - try multiple fields
+        author = self._extract_author(info)
+
         return PyPIPackageInfo(
             name=name,
             purl=purl,
@@ -91,8 +94,50 @@ class PyPIEnricher:
             license=license_id,
             summary=info.get("summary"),
             homepage=info.get("home_page") or info.get("project_url"),
-            author=info.get("author"),
+            author=author,
         )
+
+    def _extract_author(self, info: dict) -> str | None:
+        """Extract author name from PyPI info.
+
+        Tries multiple fields since modern packages (PEP 621) often use
+        author_email in format "Name <email>" instead of separate author field.
+        """
+        # Try author field first
+        if info.get("author"):
+            return info["author"]
+
+        # Try to extract from author_email ("Name <email>" format)
+        author_email = info.get("author_email")
+        if author_email:
+            name = self._parse_name_from_email(author_email)
+            if name:
+                return name
+
+        # Try maintainer fields as fallback
+        if info.get("maintainer"):
+            return info["maintainer"]
+
+        maintainer_email = info.get("maintainer_email")
+        if maintainer_email:
+            name = self._parse_name_from_email(maintainer_email)
+            if name:
+                return name
+
+        return None
+
+    def _parse_name_from_email(self, email_field: str) -> str | None:
+        """Parse name from 'Name <email>' format."""
+        if not email_field:
+            return None
+
+        # Handle "Name <email>" format
+        if "<" in email_field and ">" in email_field:
+            name = email_field.split("<")[0].strip()
+            if name:
+                return name
+
+        return None
 
     def _map_to_spdx(self, license_text: str) -> str | None:
         """Map license text to SPDX identifier."""
