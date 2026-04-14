@@ -1,6 +1,6 @@
-# Contributing to [Project Name]
+# Contributing to AI Finder
 
-Thank you for your interest in contributing to [Project Name]! We welcome contributions from the community.
+Thank you for your interest in contributing to AI Finder! We welcome contributions from the community.
 
 ## Table of Contents
 
@@ -29,16 +29,16 @@ See our [Code of Conduct](CODE_OF_CONDUCT.md) for more details.
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/your-username/[project-name].git
-   cd [project-name]
+   git clone https://github.com/your-username/ai-finder.git
+   cd ai-finder
    ```
 3. **Add upstream remote**:
    ```bash
-   git remote add upstream https://github.com/semclone/[project-name].git
+   git remote add upstream https://github.com/scanoss/ai-finder.git
    ```
 4. **Install dependencies**:
    ```bash
-   npm install
+   uv sync --all-packages --all-extras
    ```
 5. **Create a branch** for your work:
    ```bash
@@ -50,7 +50,7 @@ See our [Code of Conduct](CODE_OF_CONDUCT.md) for more details.
 ### Reporting Bugs
 
 Before creating a bug report:
-- Check the [existing issues](https://github.com/semclone/[project-name]/issues) to avoid duplicates
+- Check the [existing issues](https://github.com/scanoss/ai-finder/issues) to avoid duplicates
 - Collect information about the bug (version, OS, error messages, etc.)
 
 When filing a bug report, include:
@@ -97,12 +97,12 @@ We welcome code contributions for:
 
 5. **Run tests** to ensure nothing breaks:
    ```bash
-   npm test
+   uv run pytest
    ```
 
 6. **Run linter**:
    ```bash
-   npm run lint
+   uv run ruff check .
    ```
 
 7. **Commit your changes** following commit guidelines
@@ -212,8 +212,8 @@ If you have questions about contributing, please:
 - Check existing documentation
 - Search closed issues
 - Ask in GitHub Discussions
-- Contact us at contact@semcl.one
+- Open an issue at https://github.com/scanoss/ai-finder/issues
 
 ---
 
-Thank you for contributing to [Project Name] and the SEMCL.ONE ecosystem!
+Thank you for contributing to AI Finder!

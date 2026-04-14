@@ -34,7 +34,7 @@ This Code of Conduct applies within all project spaces, including the repository
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at legal@semcl.one. All complaints will be reviewed and investigated promptly and fairly.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at legal@scanoss.com. All complaints will be reviewed and investigated promptly and fairly.
 
 All project team members are obligated to respect the privacy and security of the reporter of any incident.
 
@@ -73,8 +73,8 @@ This Code of Conduct is adapted from the Contributor Covenant, version 2.1.
 ## Contact
 
 For questions or concerns about this Code of Conduct, contact:
-- Email: legal@semcl.one
-- General inquiries: contact@semcl.one
+- Email: legal@scanoss.com
+- General inquiries: contact@scanoss.com
 
 ---
 
