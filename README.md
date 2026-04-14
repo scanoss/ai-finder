@@ -1,7 +1,7 @@
 # ai-finder
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
 > AI artifact scanner for supply chain security and compliance
 
@@ -133,7 +133,21 @@ ai-finder kb lookup pkg:huggingface/TinyLlama/TinyLlama-1.1B-Chat-v1.0
 
 ## Telemetry
 
-This tool collects anonymous usage telemetry. See [docs/TELEMETRY.md](docs/TELEMETRY.md) for details and opt-out instructions.
+This tool collects anonymous usage telemetry to help improve the product. No file paths, code content, or scan targets are collected.
+
+**Disable telemetry:**
+```bash
+# Per-session
+ai-finder --no-telemetry scan .
+
+# Environment variable
+export AI_FINDER_TELEMETRY=0
+
+# Or use the standard
+export DO_NOT_TRACK=1
+```
+
+See [docs/TELEMETRY.md](docs/TELEMETRY.md) for full details on what is collected.
 
 ## Development
 
