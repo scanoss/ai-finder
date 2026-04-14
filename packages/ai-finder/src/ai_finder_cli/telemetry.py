@@ -20,8 +20,8 @@ from typing import Any, Generator
 
 from ai_finder_cli import __version__
 
-# Write key for ai-finder project
-_WRITE_KEY = "wk_OSB2Ub_s6Ye3My4blHnNJ62AJ2f-yW6RBF61XofwAAg"
+# Ingest key for ai-finder project
+_INGEST_KEY = "wk_OSB2Ub_s6Ye3My4blHnNJ62AJ2f-yW6RBF61XofwAAg"
 _PROJECT_SLUG = "ai-finder"
 
 # Global telemetry client (lazily initialized)
@@ -72,7 +72,7 @@ def _get_client() -> Any:
         from ptelemetry import Telemetry
 
         _client = Telemetry(
-            write_key=_WRITE_KEY,
+            write_key=_INGEST_KEY,
             project_slug=_PROJECT_SLUG,
         )
         return _client
