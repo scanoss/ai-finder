@@ -1,0 +1,65 @@
+[project]
+name = "ai-finder-workspace"
+version = "0.0.0"
+description = "AI Finder - AI artifact scanner workspace"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.4.0",
+    "mypy>=1.0.0",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "types-requests>=2.31.0",
+]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+ai-finder-kb = { workspace = true }
+ai-finder-scanner = { workspace = true }
+ai-finder = { workspace = true }
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.9"
+strict = false
+warn_return_any = false
+warn_unused_ignores = false
+exclude = [
+    "tests/",
+    "analyzers/",  # tree-sitter modules without type stubs
+]
+ignore_missing_imports = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "tree_sitter.*",
+    "tree_sitter_python.*",
+    "tree_sitter_javascript.*",
+    "tree_sitter_go.*",
+    "tree_sitter_rust.*",
+    "osslili.*",
+    "ptelemetry.*",
+    "ai_finder_scanner.analyzers.*",
+]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+testpaths = [
+    "packages/ai-finder-kb/tests",
+    "packages/ai-finder-scanner/tests",
+    "packages/ai-finder/tests",
+]
+addopts = "-v --tb=short --cov-report=term-missing"
