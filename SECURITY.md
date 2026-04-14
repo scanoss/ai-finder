@@ -19,7 +19,7 @@ Please **do not** create a public GitHub issue for security vulnerabilities. Thi
 
 ### 2. Report Privately
 
-Send your vulnerability report to **security@semcl.one** with the following information:
+Send your vulnerability report to **security@scanoss.com** with the following information:
 
 - Description of the vulnerability
 - Steps to reproduce the issue
@@ -58,7 +58,7 @@ Security updates will be released as patch versions (e.g., 1.0.1) and announced 
 
 - GitHub Security Advisories
 - Release notes
-- Our security mailing list (subscribe at security@semcl.one)
+- Our security mailing list (subscribe at security@scanoss.com)
 
 ## Bug Bounty Program
 
@@ -68,9 +68,9 @@ Security updates will be released as patch versions (e.g., 1.0.1) and announced 
 
 For security-related questions or concerns:
 
-- **Email**: security@semcl.one
+- **Email**: security@scanoss.com
 - **PGP Key**: [If applicable, provide PGP key or link]
 
 ---
 
-Thank you for helping keep SEMCL.ONE and our users safe!
+Thank you for helping keep SCANOSS and our users safe!

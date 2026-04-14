@@ -24,8 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Discrete events for funnel analysis (format, enrichment, findings, errors)
   - Granular error classification (file_not_found, network_error, etc.)
   - No file paths, scan targets, or PII collected
-  - Opt-out via `--no-telemetry` flag, `SCANOSS_AI_TELEMETRY=0`, `DO_NOT_TRACK=1`, or config file
-  - Config file location: `~/.scanoss-ai/config.json` with `{"telemetry": false}`
+  - Opt-out via `--no-telemetry` flag, `AI_FINDER_TELEMETRY=0`, `DO_NOT_TRACK=1`, or config file
+  - Config file location: `~/.ai-finder/config.json` with `{"telemetry": false}`
 - Customer journey documentation (`docs/CUSTOMER_JOURNEY.md`) for funnel building
 - Telemetry documentation (`docs/TELEMETRY.md`) explaining what is tracked and why
 
@@ -45,5 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation
 - Tests
 
-[Unreleased]: https://github.com/semclone/[project-name]/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/semclone/[project-name]/releases/tag/v1.0.0
+[Unreleased]: https://github.com/scanoss/ai-finder/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/scanoss/ai-finder/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/scanoss/ai-finder/releases/tag/v0.2.0

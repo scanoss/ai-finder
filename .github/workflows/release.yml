@@ -68,9 +68,9 @@ jobs:
       - name: Build packages
         run: |
           # Build each package
-          cd packages/scanoss-ai-kb && python -m build && cd ../..
-          cd packages/scanoss-ai-scanner && python -m build && cd ../..
-          cd packages/scanoss-ai && python -m build && cd ../..
+          cd packages/ai-finder-kb && python -m build && cd ../..
+          cd packages/ai-finder-scanner && python -m build && cd ../..
+          cd packages/ai-finder && python -m build && cd ../..
 
           # Collect all dist files
           mkdir -p dist

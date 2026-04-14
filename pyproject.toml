@@ -1,7 +1,8 @@
 [project]
-name = "scanoss-ai-workspace"
+name = "ai-finder-workspace"
 version = "0.0.0"
-description = "SCANOSS AI - AI artifact scanner workspace"
+description = "AI Finder - AI artifact scanner workspace"
+license = {text = "MIT"}
 requires-python = ">=3.8"
 
 [dependency-groups]
@@ -18,9 +19,9 @@ dev = [
 members = ["packages/*"]
 
 [tool.uv.sources]
-scanoss-ai-kb = { workspace = true }
-scanoss-ai-scanner = { workspace = true }
-scanoss-ai = { workspace = true }
+ai-finder-kb = { workspace = true }
+ai-finder-scanner = { workspace = true }
+ai-finder = { workspace = true }
 
 [tool.ruff]
 line-length = 100
@@ -51,14 +52,14 @@ module = [
     "tree_sitter_rust.*",
     "osslili.*",
     "ptelemetry.*",
-    "scanoss_ai_scanner.analyzers.*",
+    "ai_finder_scanner.analyzers.*",
 ]
 ignore_errors = true
 
 [tool.pytest.ini_options]
 testpaths = [
-    "packages/scanoss-ai-kb/tests",
-    "packages/scanoss-ai-scanner/tests",
-    "packages/scanoss-ai/tests",
+    "packages/ai-finder-kb/tests",
+    "packages/ai-finder-scanner/tests",
+    "packages/ai-finder/tests",
 ]
 addopts = "-v --tb=short --cov-report=term-missing"

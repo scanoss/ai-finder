@@ -1,12 +1,12 @@
 # Customer Journey Map
 
-This document maps the complete user journey through scanoss-ai, showing all entry points, decision paths, outcomes, and telemetry events for funnel analysis.
+This document maps the complete user journey through ai-finder, showing all entry points, decision paths, outcomes, and telemetry events for funnel analysis.
 
 ## Journey Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         SCANOSS-AI USER JOURNEYS                             │
+│                         AI-FINDER USER JOURNEYS                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │   ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐          │
@@ -31,11 +31,11 @@ The main workflow for scanning codebases for AI artifacts.
 
 | Entry | User Goal | Typical User |
 |-------|-----------|--------------|
-| `scanoss-ai scan .` | Quick scan, text output | Developer exploring |
-| `scanoss-ai scan . -f cyclonedx` | Generate SBOM for compliance | Security team |
-| `scanoss-ai scan . -f spdx` | Generate SBOM (SPDX format) | Compliance officer |
-| `scanoss-ai scan . -r` | Include relationships | Architect |
-| `scanoss-ai scan . --no-enrich` | Fast scan, no API calls | CI/CD pipeline |
+| `ai-finder scan .` | Quick scan, text output | Developer exploring |
+| `ai-finder scan . -f cyclonedx` | Generate SBOM for compliance | Security team |
+| `ai-finder scan . -f spdx` | Generate SBOM (SPDX format) | Compliance officer |
+| `ai-finder scan . -r` | Include relationships | Architect |
+| `ai-finder scan . --no-enrich` | Fast scan, no API calls | CI/CD pipeline |
 
 ### Journey Flow
 
@@ -167,9 +167,9 @@ Single file model identification workflow.
 
 | Entry | User Goal |
 |-------|-----------|
-| `scanoss-ai identify model.gguf` | Identify unknown model file |
-| `scanoss-ai identify model.gguf -f json` | Get structured metadata |
-| `scanoss-ai identify model.gguf --no-enrich` | Quick local-only check |
+| `ai-finder identify model.gguf` | Identify unknown model file |
+| `ai-finder identify model.gguf -f json` | Get structured metadata |
+| `ai-finder identify model.gguf --no-enrich` | Quick local-only check |
 
 ### Journey Flow
 
@@ -255,11 +255,11 @@ Knowledge Base setup and maintenance workflow.
 
 | Entry | User Goal |
 |-------|-----------|
-| `scanoss-ai kb init` | Initialize local KB |
-| `scanoss-ai kb status` | Check KB state |
-| `scanoss-ai kb crawl huggingface` | Populate with HuggingFace models |
-| `scanoss-ai kb crawl all` | Full KB population |
-| `scanoss-ai kb lookup pkg:huggingface/...` | Search KB |
+| `ai-finder kb init` | Initialize local KB |
+| `ai-finder kb status` | Check KB state |
+| `ai-finder kb crawl huggingface` | Populate with HuggingFace models |
+| `ai-finder kb crawl all` | Full KB population |
+| `ai-finder kb lookup pkg:huggingface/...` | Search KB |
 
 ### Journey Flow
 
