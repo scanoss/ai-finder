@@ -6,6 +6,7 @@ from typing import Any, Optional
 from .database import Database
 from .matcher import Matcher
 from .models import AncestryEdge, MCPMatch, ModelMatch, SDKMatch
+from .sync import KBSync, SyncResult, SyncStatus
 
 __version__ = "0.2.11"
 __all__ = [
@@ -16,6 +17,9 @@ __all__ = [
     "ModelMatch",
     "MCPMatch",
     "AncestryEdge",
+    "KBSync",
+    "SyncStatus",
+    "SyncResult",
     "get_seed_db_path",
 ]
 
@@ -119,3 +123,30 @@ class KnowledgeBase:
         if self._matcher is None:
             raise RuntimeError("Matcher not initialized")
         return self._matcher
+
+    def check_for_updates(self, remote_url: Optional[str] = None) -> SyncStatus:
+        """Check if KB updates are available.
+
+        Args:
+            remote_url: Optional custom remote URL for seed data.
+
+        Returns:
+            SyncStatus with version information.
+        """
+        sync = KBSync(self.db, remote_url) if remote_url else KBSync(self.db)
+        return sync.check_for_updates()
+
+    def sync(
+        self, remote_url: Optional[str] = None, force: bool = False
+    ) -> SyncResult:
+        """Sync the KB with remote seed data.
+
+        Args:
+            remote_url: Optional custom remote URL for seed data.
+            force: Force sync even if no update is available.
+
+        Returns:
+            SyncResult with operation details.
+        """
+        sync = KBSync(self.db, remote_url) if remote_url else KBSync(self.db)
+        return sync.sync(force=force)

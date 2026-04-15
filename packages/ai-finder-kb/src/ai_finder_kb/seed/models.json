@@ -1,0 +1,42 @@
+[
+  {
+    "purl": "pkg:huggingface/TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "name": "TinyLlama-1.1B-Chat-v1.0",
+    "organization": "TinyLlama",
+    "architecture": "llama",
+    "parameter_count": 1100000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Llama-2-7b",
+    "name": "Llama-2-7b",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 7000000000,
+    "license": "LLAMA 2 COMMUNITY LICENSE"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Mistral-7B-v0.1",
+    "name": "Mistral-7B-v0.1",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/phi-2",
+    "name": "phi-2",
+    "organization": "microsoft",
+    "architecture": "phi",
+    "parameter_count": 2700000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-2b",
+    "name": "gemma-2b",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 2000000000,
+    "license": "gemma"
+  }
+]

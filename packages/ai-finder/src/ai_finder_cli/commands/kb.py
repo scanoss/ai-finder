@@ -158,7 +158,7 @@ def init(kb_path: Path | None) -> None:
 )
 def status(kb_path: Path | None, output_format: str) -> None:
     """Show statistics about the knowledge base."""
-    from ai_finder_kb import Database
+    from ai_finder_kb import Database, KBSync
 
     with telemetry.track_command("kb.status", {"format": output_format}) as ctx:
         # Emit discrete feature events
@@ -184,14 +184,22 @@ def status(kb_path: Path | None, output_format: str) -> None:
                     except Exception:
                         table_counts[table] = 0
 
+                # Get sync state
+                sync = KBSync(db)
+                kb_version = sync.get_local_version()
+                last_sync = sync.get_last_sync()
+
             stat_data = {
                 "db_path": str(db_path),
                 "schema_version": schema_version,
+                "kb_version": kb_version,
+                "last_sync": last_sync.isoformat() if last_sync else None,
                 "table_counts": table_counts,
             }
 
             # Track KB stats (anonymous - no paths)
             ctx["schema_version"] = schema_version
+            ctx["kb_version"] = kb_version
             ctx["total_entries"] = sum(table_counts.values())
             ctx["output_format"] = output_format
 
@@ -211,6 +219,12 @@ def status(kb_path: Path | None, output_format: str) -> None:
             else:
                 click.echo(f"DB path:        {db_path}")
                 click.echo(f"Schema version: {schema_version}")
+                click.echo(f"KB version:     {kb_version}")
+                if last_sync:
+                    click.echo(f"Last sync:      {last_sync.isoformat()}")
+                else:
+                    click.echo("Last sync:      never")
+                click.echo("Table counts:")
                 for table, count in table_counts.items():
                     click.echo(f"  {table}: {count} row(s)")
 
@@ -464,3 +478,184 @@ def crawl(
         click.echo("Crawl complete:")
         for r in results:
             click.echo(f"  {r}")
+
+
+@kb.command("check-updates")
+@click.option(
+    "--kb-path",
+    default=None,
+    type=click.Path(path_type=Path),
+    help="Path to the knowledge base database.",
+)
+@click.option(
+    "--remote-url",
+    default=None,
+    help="Custom URL for remote seed data.",
+)
+@click.option(
+    "-f",
+    "--format",
+    "output_format",
+    type=click.Choice(["json", "text"]),
+    default="text",
+    show_default=True,
+    help="Output format.",
+)
+def check_updates(
+    kb_path: Path | None, remote_url: str | None, output_format: str
+) -> None:
+    """Check if KB updates are available from the remote server."""
+    from ai_finder_kb import Database, KBSync
+
+    with telemetry.track_command("kb.check_updates", {"format": output_format}) as ctx:
+        db_path = kb_path if kb_path else _default_kb_path()
+
+        if not _ensure_kb_exists(db_path):
+            sys.exit(2)
+
+        try:
+            with Database(db_path) as db:
+                sync = KBSync(db, remote_url) if remote_url else KBSync(db)
+                status = sync.check_for_updates()
+
+            ctx["local_version"] = status.local_version
+            ctx["remote_version"] = status.remote_version
+            ctx["update_available"] = status.update_available
+
+            if output_format == "json":
+                result = {
+                    "local_version": status.local_version,
+                    "remote_version": status.remote_version,
+                    "last_sync": status.last_sync.isoformat() if status.last_sync else None,
+                    "update_available": status.update_available,
+                    "error": status.error,
+                }
+                click.echo(json.dumps(result, indent=2))
+            else:
+                click.echo(f"Local version:  {status.local_version}")
+                click.echo(
+                    f"Remote version: {status.remote_version if status.remote_version is not None else 'unknown'}"
+                )
+                if status.last_sync:
+                    click.echo(f"Last sync:      {status.last_sync.isoformat()}")
+                else:
+                    click.echo("Last sync:      never")
+
+                if status.error:
+                    click.echo(f"Error:          {status.error}", err=True)
+                elif status.update_available:
+                    click.echo("\nUpdate available! Run 'ai-finder kb update' to sync.")
+                else:
+                    click.echo("\nKB is up to date.")
+
+        except Exception as exc:
+            click.echo(f"Error checking for updates: {exc}", err=True)
+            sys.exit(2)
+
+
+@kb.command("update")
+@click.option(
+    "--kb-path",
+    default=None,
+    type=click.Path(path_type=Path),
+    help="Path to the knowledge base database.",
+)
+@click.option(
+    "--remote-url",
+    default=None,
+    help="Custom URL for remote seed data.",
+)
+@click.option(
+    "--force",
+    is_flag=True,
+    help="Force sync even if no update is available.",
+)
+@click.option(
+    "-f",
+    "--format",
+    "output_format",
+    type=click.Choice(["json", "text"]),
+    default="text",
+    show_default=True,
+    help="Output format.",
+)
+def update(
+    kb_path: Path | None,
+    remote_url: str | None,
+    force: bool,
+    output_format: str,
+) -> None:
+    """Update the KB from the remote seed data server.
+
+    This downloads the latest SDK patterns, model definitions, and MCP server
+    entries from the remote server and updates the local knowledge base.
+
+    Data with source='crawled' or source='user' will NOT be overwritten.
+    Only data with source='seed' will be updated.
+    """
+    from ai_finder_kb import Database, KBSync
+
+    with telemetry.track_command("kb.update", {"force": force, "format": output_format}) as ctx:
+        telemetry.track_feature("kb.update", "force", "yes" if force else "no")
+
+        db_path = kb_path if kb_path else _default_kb_path()
+
+        if not _ensure_kb_exists(db_path):
+            sys.exit(2)
+
+        try:
+            with Database(db_path) as db:
+                sync = KBSync(db, remote_url) if remote_url else KBSync(db)
+
+                if not force:
+                    # Check for updates first
+                    status = sync.check_for_updates()
+                    if status.error:
+                        click.echo(f"Error checking for updates: {status.error}", err=True)
+                        sys.exit(2)
+                    if not status.update_available:
+                        if output_format == "json":
+                            click.echo(json.dumps({"success": True, "message": "Already up to date"}))
+                        else:
+                            click.echo("KB is already up to date.")
+                        telemetry.track_feature("kb.update", "result", "already_up_to_date")
+                        return
+
+                if output_format != "json":
+                    click.echo("Syncing KB from remote server...")
+                result = sync.sync(force=force)
+
+            ctx["success"] = result.success
+            ctx["previous_version"] = result.previous_version
+            ctx["new_version"] = result.new_version
+            ctx["sdks_updated"] = result.sdks_updated
+            ctx["models_updated"] = result.models_updated
+            ctx["mcp_servers_updated"] = result.mcp_servers_updated
+
+            if output_format == "json":
+                output = {
+                    "success": result.success,
+                    "previous_version": result.previous_version,
+                    "new_version": result.new_version,
+                    "sdks_updated": result.sdks_updated,
+                    "models_updated": result.models_updated,
+                    "mcp_servers_updated": result.mcp_servers_updated,
+                    "error": result.error,
+                }
+                click.echo(json.dumps(output, indent=2))
+            else:
+                if result.success:
+                    click.echo("KB sync complete!")
+                    click.echo(f"  Version: {result.previous_version} -> {result.new_version}")
+                    click.echo(f"  SDKs updated: {result.sdks_updated}")
+                    click.echo(f"  Models updated: {result.models_updated}")
+                    click.echo(f"  MCP servers updated: {result.mcp_servers_updated}")
+                    telemetry.track_feature("kb.update", "result", "success")
+                else:
+                    click.echo(f"Sync failed: {result.error}", err=True)
+                    telemetry.track_feature("kb.update", "result", "failed")
+                    sys.exit(2)
+
+        except Exception as exc:
+            click.echo(f"Error updating KB: {exc}", err=True)
+            sys.exit(2)
