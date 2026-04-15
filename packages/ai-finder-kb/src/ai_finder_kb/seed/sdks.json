@@ -408,6 +408,7 @@
     "id": "openai-kotlin",
     "purl": "pkg:maven/com.aallam.openai/openai-client",
     "patterns": [
+      "com.openai",
       "com.aallam.openai"
     ],
     "category": "llm-client",
@@ -917,16 +918,6 @@
     ],
     "category": "ml-runtime",
     "license": "Apache-2.0"
-  },
-  {
-    "id": "openai-kotlin",
-    "purl": "pkg:maven/com.aallam.openai/openai-client",
-    "patterns": [
-      "com.openai",
-      "com.aallam.openai"
-    ],
-    "category": "llm-client",
-    "license": "MIT"
   },
   {
     "id": "anthropic-kotlin",
