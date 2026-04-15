@@ -312,6 +312,18 @@ def lookup(purl: str, kb_path: Path | None, output_format: str) -> None:
                 except Exception:
                     pass  # Table may not exist in older DBs
 
+                # Search MCP servers
+                try:
+                    cursor = db.execute(
+                        "SELECT id, purl, description FROM mcp_servers "
+                        "WHERE purl = ? OR purl LIKE ? ESCAPE '\\'",
+                        (purl, f"{escaped_purl}%"),
+                    )
+                    for row in cursor:
+                        results.append({"type": "mcp_server", **dict(row)})
+                except Exception:
+                    pass  # Table may not exist in older DBs
+
             # Track result count (anonymous)
             ctx["results_count"] = len(results)
 
@@ -333,6 +345,8 @@ def lookup(purl: str, kb_path: Path | None, output_format: str) -> None:
                 for result in results:
                     click.echo(f"Type:    {result['type']}")
                     click.echo(f"PURL:    {result.get('purl', 'N/A')}")
+                    if result.get("id"):
+                        click.echo(f"ID:      {result['id']}")
                     if result.get("name"):
                         click.echo(f"Name:    {result['name']}")
                     if result.get("ecosystem"):
@@ -345,6 +359,8 @@ def lookup(purl: str, kb_path: Path | None, output_format: str) -> None:
                         )
                     if result.get("architecture"):
                         click.echo(f"Arch:    {result['architecture']}")
+                    if result.get("description"):
+                        click.echo(f"Desc:    {result['description']}")
                     if result.get("license"):
                         click.echo(f"License: {result['license']}")
                     click.echo("---")

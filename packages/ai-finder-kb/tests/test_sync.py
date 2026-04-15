@@ -366,6 +366,119 @@ class TestKBSync:
             assert "Invalid version format" in status.error
 
 
+    @patch("ai_finder_kb.sync.requests.Session")
+    def test_sync_checksum_verification_success(self, mock_session_class, temp_db_path) -> None:
+        """Test sync succeeds when checksums match."""
+        import hashlib
+
+        sdk_data = [{"id": "test-sdk", "purl": "pkg:pypi/test", "patterns": ["test"], "category": "llm-client", "license": "MIT"}]
+        sdk_json = json.dumps(sdk_data).encode()
+        sdk_checksum = hashlib.sha256(sdk_json).hexdigest()
+
+        version_response = MagicMock()
+        version_response.json.return_value = {
+            "version": 1,
+            "checksums": {
+                "sdks.json": sdk_checksum,
+                "models.json": hashlib.sha256(b"[]").hexdigest(),
+                "mcp_servers.json": hashlib.sha256(b"[]").hexdigest(),
+            }
+        }
+        version_response.raise_for_status = MagicMock()
+
+        sdks_response = MagicMock()
+        sdks_response.json.return_value = sdk_data
+        sdks_response.content = sdk_json
+        sdks_response.raise_for_status = MagicMock()
+
+        models_response = MagicMock()
+        models_response.json.return_value = []
+        models_response.content = b"[]"
+        models_response.raise_for_status = MagicMock()
+
+        mcp_response = MagicMock()
+        mcp_response.json.return_value = []
+        mcp_response.content = b"[]"
+        mcp_response.raise_for_status = MagicMock()
+
+        def mock_get(url, timeout=None):
+            if "version.json" in url:
+                return version_response
+            elif "sdks.json" in url:
+                return sdks_response
+            elif "models.json" in url:
+                return models_response
+            elif "mcp_servers.json" in url:
+                return mcp_response
+            raise ValueError(f"Unexpected URL: {url}")
+
+        mock_session = MagicMock()
+        mock_session.get.side_effect = mock_get
+        mock_session_class.return_value = mock_session
+
+        with Database(temp_db_path) as db:
+            db.initialize()
+            sync = KBSync(db)
+            result = sync.sync()
+
+            assert result.success is True
+            assert result.sdks_updated == 1
+
+    @patch("ai_finder_kb.sync.requests.Session")
+    def test_sync_checksum_verification_failure(self, mock_session_class, temp_db_path) -> None:
+        """Test sync fails when checksums don't match."""
+        version_response = MagicMock()
+        version_response.json.return_value = {
+            "version": 1,
+            "checksums": {
+                "sdks.json": "wrong_checksum_value",
+                "models.json": "wrong_checksum_value",
+                "mcp_servers.json": "wrong_checksum_value",
+            }
+        }
+        version_response.raise_for_status = MagicMock()
+
+        # All files return data that won't match the wrong checksums
+        sdks_response = MagicMock()
+        sdks_response.json.return_value = [{"id": "test", "purl": "pkg:test/test", "patterns": []}]
+        sdks_response.content = b'[{"id": "test", "purl": "pkg:test/test", "patterns": []}]'
+        sdks_response.raise_for_status = MagicMock()
+
+        models_response = MagicMock()
+        models_response.json.return_value = []
+        models_response.content = b"[]"
+        models_response.raise_for_status = MagicMock()
+
+        mcp_response = MagicMock()
+        mcp_response.json.return_value = []
+        mcp_response.content = b"[]"
+        mcp_response.raise_for_status = MagicMock()
+
+        def mock_get(url, timeout=None):
+            if "version.json" in url:
+                return version_response
+            elif "sdks.json" in url:
+                return sdks_response
+            elif "models.json" in url:
+                return models_response
+            elif "mcp_servers.json" in url:
+                return mcp_response
+            raise ValueError(f"Unexpected URL: {url}")
+
+        mock_session = MagicMock()
+        mock_session.get.side_effect = mock_get
+        mock_session_class.return_value = mock_session
+
+        with Database(temp_db_path) as db:
+            db.initialize()
+            sync = KBSync(db)
+            result = sync.sync()
+
+            assert result.success is False
+            assert "Checksum mismatch" in result.error
+            assert result.sdks_updated == 0
+
+
 class TestSyncStatus:
     """Tests for SyncStatus dataclass."""
 

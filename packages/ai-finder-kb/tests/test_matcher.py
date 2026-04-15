@@ -106,6 +106,21 @@ class TestMatcherSDK:
         assert "openai-python" in ids
         assert "anthropic-python" in ids
 
+    def test_lookup_sdk_by_purl(self, db_with_data) -> None:
+        matcher = Matcher(db_with_data)
+        result = matcher.lookup_sdk("pkg:pypi/openai")
+
+        assert result is not None
+        assert isinstance(result, SDKMatch)
+        assert result.id == "openai-python"
+        assert result.purl == "pkg:pypi/openai"
+        assert result.category == "llm-client"
+
+    def test_lookup_sdk_not_found(self, db_with_data) -> None:
+        matcher = Matcher(db_with_data)
+        result = matcher.lookup_sdk("pkg:pypi/nonexistent")
+        assert result is None
+
 
 class TestMatcherModel:
     def test_match_model_by_name(self, db_with_data) -> None:
@@ -148,4 +163,18 @@ class TestMatcherMCP:
     def test_match_mcp_not_found(self, db_with_data) -> None:
         matcher = Matcher(db_with_data)
         result = matcher.match_mcp("unknown-mcp-server")
+        assert result is None
+
+    def test_lookup_mcp_by_purl(self, db_with_data) -> None:
+        matcher = Matcher(db_with_data)
+        result = matcher.lookup_mcp("pkg:npm/@modelcontextprotocol/server-filesystem")
+
+        assert result is not None
+        assert isinstance(result, MCPMatch)
+        assert result.id == "mcp-filesystem"
+        assert result.description == "MCP filesystem server"
+
+    def test_lookup_mcp_not_found(self, db_with_data) -> None:
+        matcher = Matcher(db_with_data)
+        result = matcher.lookup_mcp("pkg:npm/nonexistent")
         assert result is None

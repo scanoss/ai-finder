@@ -1,5 +1,10 @@
 {
-  "version": 1,
-  "updated_at": "2026-04-14T00:00:00Z",
-  "description": "Initial KB seed data release"
+  "version": 2,
+  "updated_at": "2026-04-15T00:00:00Z",
+  "description": "Add checksum verification for integrity",
+  "checksums": {
+    "sdks.json": "d7fcb4f4ec4a65bab16b19bf5c3455ee146a6e076961591b2c465e9b4a6e3079",
+    "models.json": "88ad64ee33db6e9229abfb380759afb8298afdae667abd6eb16559fd316d4e10",
+    "mcp_servers.json": "8479b152d6e859686a17e2b0597b02707fb292e1dd5179710cefaadd5f464d7b"
+  }
 }

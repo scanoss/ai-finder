@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 from dataclasses import dataclass, field
@@ -97,11 +98,14 @@ class KBSync:
             return datetime.fromisoformat(result[0])
         return None
 
-    def _fetch_json(self, filename: str) -> tuple[dict | list | None, str | None]:
+    def _fetch_json(
+        self, filename: str, expected_checksum: str | None = None
+    ) -> tuple[dict | list | None, str | None]:
         """Fetch a JSON file from the remote URL.
 
         Args:
             filename: Name of the file to fetch.
+            expected_checksum: Optional SHA256 checksum to verify integrity.
 
         Returns:
             Tuple of (data, error). If error is None, fetch succeeded.
@@ -111,6 +115,19 @@ class KBSync:
         try:
             response = self._session.get(url, timeout=self.timeout)
             response.raise_for_status()
+
+            # Verify checksum if provided
+            if expected_checksum:
+                actual_checksum = hashlib.sha256(response.content).hexdigest()
+                if actual_checksum != expected_checksum:
+                    error_msg = (
+                        f"Checksum mismatch for {filename}: "
+                        f"expected {expected_checksum[:16]}..., "
+                        f"got {actual_checksum[:16]}..."
+                    )
+                    logger.warning(error_msg)
+                    return None, error_msg
+
             return response.json(), None
         except requests.RequestException as e:
             error_msg = f"Failed to fetch {filename}: {e}"
@@ -171,38 +188,52 @@ class KBSync:
         """
         local_version = self.get_local_version()
 
-        # Check for updates
-        status = self.check_for_updates()
-        if status.error:
+        # Fetch version.json to get checksums and remote version
+        version_data, version_error = self._fetch_json(self.VERSION_FILE)
+        if version_error:
             return SyncResult(
                 success=False,
                 previous_version=local_version,
                 new_version=local_version,
-                error=status.error,
+                error=version_error,
             )
 
-        if not status.update_available and not force:
-            # No update available - this is a success, not an error
+        # Validate version field
+        try:
+            remote_version = int(version_data.get("version", 0))
+        except (TypeError, ValueError):
+            return SyncResult(
+                success=False,
+                previous_version=local_version,
+                new_version=local_version,
+                error="Invalid version format in remote version.json",
+            )
+
+        # Check if update is needed
+        if remote_version <= local_version and not force:
             return SyncResult(
                 success=True,
                 previous_version=local_version,
                 new_version=local_version,
             )
 
-        remote_version = status.remote_version or local_version
+        # Extract checksums (may be None for older version.json without checksums)
+        checksums = version_data.get("checksums", {})
 
         # Fetch and apply seed data, tracking any errors
         fetch_errors: list[str] = []
         try:
-            sdks_count, sdk_error = self._sync_sdks()
+            sdks_count, sdk_error = self._sync_sdks(checksums.get(self.SDK_FILE))
             if sdk_error:
                 fetch_errors.append(sdk_error)
 
-            models_count, model_error = self._sync_models()
+            models_count, model_error = self._sync_models(checksums.get(self.MODELS_FILE))
             if model_error:
                 fetch_errors.append(model_error)
 
-            mcp_count, mcp_error = self._sync_mcp_servers()
+            mcp_count, mcp_error = self._sync_mcp_servers(
+                checksums.get(self.MCP_SERVERS_FILE)
+            )
             if mcp_error:
                 fetch_errors.append(mcp_error)
 
@@ -255,13 +286,16 @@ class KBSync:
                 error=str(e),
             )
 
-    def _sync_sdks(self) -> tuple[int, str | None]:
+    def _sync_sdks(self, checksum: str | None = None) -> tuple[int, str | None]:
         """Sync SDKs from remote.
+
+        Args:
+            checksum: Optional SHA256 checksum to verify file integrity.
 
         Returns:
             Tuple of (count, error). Error is None if all operations succeeded.
         """
-        sdks, fetch_error = self._fetch_json(self.SDK_FILE)
+        sdks, fetch_error = self._fetch_json(self.SDK_FILE, checksum)
         if fetch_error is not None:
             return 0, fetch_error
 
@@ -301,13 +335,16 @@ class KBSync:
             return count, f"Failed to insert {len(insert_errors)} SDKs: {insert_errors[0]}"
         return count, None
 
-    def _sync_models(self) -> tuple[int, str | None]:
+    def _sync_models(self, checksum: str | None = None) -> tuple[int, str | None]:
         """Sync models from remote.
+
+        Args:
+            checksum: Optional SHA256 checksum to verify file integrity.
 
         Returns:
             Tuple of (count, error). Error is None if all operations succeeded.
         """
-        models, fetch_error = self._fetch_json(self.MODELS_FILE)
+        models, fetch_error = self._fetch_json(self.MODELS_FILE, checksum)
         if fetch_error is not None:
             return 0, fetch_error
 
@@ -351,13 +388,16 @@ class KBSync:
             return count, f"Failed to insert {len(insert_errors)} models: {insert_errors[0]}"
         return count, None
 
-    def _sync_mcp_servers(self) -> tuple[int, str | None]:
+    def _sync_mcp_servers(self, checksum: str | None = None) -> tuple[int, str | None]:
         """Sync MCP servers from remote.
+
+        Args:
+            checksum: Optional SHA256 checksum to verify file integrity.
 
         Returns:
             Tuple of (count, error). Error is None if all operations succeeded.
         """
-        mcp_servers, fetch_error = self._fetch_json(self.MCP_SERVERS_FILE)
+        mcp_servers, fetch_error = self._fetch_json(self.MCP_SERVERS_FILE, checksum)
         if fetch_error is not None:
             return 0, fetch_error
 
