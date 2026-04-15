@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS sdks (
     patterns TEXT NOT NULL,  -- JSON array of import patterns
     category TEXT,           -- llm-client, embedding, agent, framework
     license TEXT,
+    source TEXT DEFAULT 'seed',  -- seed, crawled, user
     created_at TEXT DEFAULT (datetime('now'))
 );
 
@@ -37,6 +38,7 @@ CREATE TABLE IF NOT EXISTS models (
     task TEXT,                    -- HuggingFace pipeline_tag (text-generation, etc.)
     base_model_purl TEXT,         -- Fine-tuned from
     datasets TEXT,                -- JSON array of dataset names
+    source TEXT DEFAULT 'crawled',  -- seed, crawled, user
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -54,6 +56,7 @@ CREATE TABLE IF NOT EXISTS packages (
     author TEXT,
     is_ai_package INTEGER DEFAULT 1,
     ai_category TEXT,             -- sdk, framework, library, tool
+    source TEXT DEFAULT 'crawled',  -- seed, crawled, user
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -71,6 +74,7 @@ CREATE TABLE IF NOT EXISTS mcp_servers (
     purl TEXT,
     patterns TEXT NOT NULL,  -- JSON array of import/require patterns
     description TEXT,
+    source TEXT DEFAULT 'seed',  -- seed, crawled, user
     created_at TEXT DEFAULT (datetime('now'))
 );
 
@@ -107,4 +111,8 @@ CREATE TABLE IF NOT EXISTS sync_state (
 );
 
 -- Insert initial schema version
-INSERT OR IGNORE INTO schema_version (version) VALUES (1);
+INSERT OR IGNORE INTO schema_version (version) VALUES (2);
+
+-- Initialize KB sync state
+INSERT OR IGNORE INTO sync_state (key, value) VALUES ('kb_version', '0');
+INSERT OR IGNORE INTO sync_state (key, value) VALUES ('kb_last_sync', NULL);

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from ai_finder_cli.commands.kb import kb
 from click.testing import CliRunner
@@ -118,3 +119,142 @@ class TestKbLookup:
             # No seed available
             assert result.exit_code == 2
             assert "not found" in result.output.lower()
+
+
+class TestKbCheckUpdates:
+    @patch("ai_finder_kb.sync.requests.Session")
+    def test_check_updates_shows_status(self, mock_session_class, tmp_path: Path) -> None:
+        """Test that check-updates shows version info."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"version": 1}
+        mock_response.raise_for_status = MagicMock()
+
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        mock_session_class.return_value = mock_session
+
+        runner = CliRunner()
+        db_path = tmp_path / "test.db"
+
+        # Initialize first
+        runner.invoke(kb, ["init", "--kb-path", str(db_path)])
+
+        # Check updates
+        result = runner.invoke(kb, ["check-updates", "--kb-path", str(db_path)])
+
+        assert result.exit_code == 0
+        assert "local version" in result.output.lower()
+        assert "remote version" in result.output.lower()
+
+    @patch("ai_finder_kb.sync.requests.Session")
+    def test_check_updates_json_format(self, mock_session_class, tmp_path: Path) -> None:
+        """Test check-updates with JSON output."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"version": 2}
+        mock_response.raise_for_status = MagicMock()
+
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        mock_session_class.return_value = mock_session
+
+        runner = CliRunner()
+        db_path = tmp_path / "test.db"
+
+        runner.invoke(kb, ["init", "--kb-path", str(db_path)])
+
+        result = runner.invoke(
+            kb, ["check-updates", "--kb-path", str(db_path), "--format", "json"]
+        )
+
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert "local_version" in data
+        assert "remote_version" in data
+        assert "update_available" in data
+
+
+class TestKbUpdate:
+    @patch("ai_finder_kb.sync.requests.Session")
+    def test_update_no_update_available(self, mock_session_class, tmp_path: Path) -> None:
+        """Test update when no update is available."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"version": 0}
+        mock_response.raise_for_status = MagicMock()
+
+        mock_session = MagicMock()
+        mock_session.get.return_value = mock_response
+        mock_session_class.return_value = mock_session
+
+        runner = CliRunner()
+        db_path = tmp_path / "test.db"
+
+        runner.invoke(kb, ["init", "--kb-path", str(db_path)])
+
+        result = runner.invoke(kb, ["update", "--kb-path", str(db_path)])
+
+        assert result.exit_code == 0
+        assert "up to date" in result.output.lower()
+
+    @patch("ai_finder_kb.sync.requests.Session")
+    def test_update_with_force(self, mock_session_class, tmp_path: Path) -> None:
+        """Test update with --force flag."""
+        version_response = MagicMock()
+        version_response.json.return_value = {"version": 1}
+        version_response.raise_for_status = MagicMock()
+
+        empty_response = MagicMock()
+        empty_response.json.return_value = []
+        empty_response.raise_for_status = MagicMock()
+
+        def mock_get(url, timeout=None):
+            if "version.json" in url:
+                return version_response
+            return empty_response
+
+        mock_session = MagicMock()
+        mock_session.get.side_effect = mock_get
+        mock_session_class.return_value = mock_session
+
+        runner = CliRunner()
+        db_path = tmp_path / "test.db"
+
+        runner.invoke(kb, ["init", "--kb-path", str(db_path)])
+
+        result = runner.invoke(kb, ["update", "--kb-path", str(db_path), "--force"])
+
+        assert result.exit_code == 0
+        assert "sync complete" in result.output.lower()
+
+    @patch("ai_finder_kb.sync.requests.Session")
+    def test_update_json_format(self, mock_session_class, tmp_path: Path) -> None:
+        """Test update with JSON output."""
+        version_response = MagicMock()
+        version_response.json.return_value = {"version": 1}
+        version_response.raise_for_status = MagicMock()
+
+        empty_response = MagicMock()
+        empty_response.json.return_value = []
+        empty_response.raise_for_status = MagicMock()
+
+        def mock_get(url, timeout=None):
+            if "version.json" in url:
+                return version_response
+            return empty_response
+
+        mock_session = MagicMock()
+        mock_session.get.side_effect = mock_get
+        mock_session_class.return_value = mock_session
+
+        runner = CliRunner()
+        db_path = tmp_path / "test.db"
+
+        runner.invoke(kb, ["init", "--kb-path", str(db_path)])
+
+        result = runner.invoke(
+            kb, ["update", "--kb-path", str(db_path), "--force", "--format", "json"]
+        )
+
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert "success" in data
+        assert "new_version" in data

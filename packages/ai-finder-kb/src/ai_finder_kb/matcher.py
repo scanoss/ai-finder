@@ -85,6 +85,30 @@ class Matcher:
                 seen.add(match.id)
                 yield match
 
+    def lookup_sdk(self, purl: str) -> SDKMatch | None:
+        """Lookup SDK by PURL.
+
+        Args:
+            purl: Package URL to lookup.
+
+        Returns:
+            SDKMatch if found, None otherwise.
+        """
+        cursor = self.db.execute(
+            "SELECT id, purl, category, license FROM sdks WHERE purl = ?",
+            (purl,),
+        )
+        row = cursor.fetchone()
+        if row:
+            return SDKMatch(
+                id=row["id"],
+                purl=row["purl"],
+                category=row["category"],
+                license=row["license"],
+                confidence=1.0,
+            )
+        return None
+
     def _normalize_filename(self, filename: str) -> str:
         """Normalize model filename for matching.
 
@@ -199,4 +223,27 @@ class Matcher:
                         description=row["description"],
                         confidence=1.0,
                     )
+        return None
+
+    def lookup_mcp(self, purl: str) -> MCPMatch | None:
+        """Lookup MCP server by PURL.
+
+        Args:
+            purl: Package URL to lookup.
+
+        Returns:
+            MCPMatch if found, None otherwise.
+        """
+        cursor = self.db.execute(
+            "SELECT id, purl, description FROM mcp_servers WHERE purl = ?",
+            (purl,),
+        )
+        row = cursor.fetchone()
+        if row:
+            return MCPMatch(
+                id=row["id"],
+                purl=row["purl"],
+                description=row["description"],
+                confidence=1.0,
+            )
         return None

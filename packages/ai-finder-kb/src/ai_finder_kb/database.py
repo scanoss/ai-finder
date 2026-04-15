@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Optional
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 class Database:
@@ -58,14 +58,46 @@ class Database:
         self.conn.commit()
 
     def initialize(self) -> None:
-        """Initialize database schema."""
+        """Initialize database schema and run pending migrations."""
         current_version = self.get_version()
 
+        # Fresh database - apply initial schema
         if current_version == 0:
             schema_path = Path(__file__).parent / "schema.sql"
             schema_sql = schema_path.read_text()
             self.conn.executescript(schema_sql)
             self.commit()
+            # Re-read version after applying schema (schema.sql sets current version)
+            current_version = self.get_version()
+
+        # Run pending migrations (only if database is behind SCHEMA_VERSION)
+        if current_version < SCHEMA_VERSION:
+            self._run_migrations(current_version)
+
+    def _run_migrations(self, current_version: int) -> None:
+        """Run all pending migrations from current version to SCHEMA_VERSION.
+
+        Args:
+            current_version: Current schema version in database.
+        """
+        migrations_dir = Path(__file__).parent / "migrations"
+
+        for version in range(current_version + 1, SCHEMA_VERSION + 1):
+            migration_file = migrations_dir / f"v{version:03d}_*.sql"
+            # Find the migration file for this version
+            matching = list(migrations_dir.glob(f"v{version:03d}_*.sql"))
+
+            if not matching:
+                raise RuntimeError(f"Migration file not found for version {version}")
+
+            migration_path = matching[0]
+            migration_sql = migration_path.read_text()
+
+            try:
+                self.conn.executescript(migration_sql)
+                self.commit()
+            except sqlite3.Error as e:
+                raise RuntimeError(f"Migration v{version} failed: {e}") from e
 
     def get_version(self) -> int:
         """Get current schema version.

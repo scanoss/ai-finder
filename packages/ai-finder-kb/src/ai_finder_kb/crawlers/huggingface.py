@@ -286,8 +286,8 @@ class HuggingFaceCrawler:
                     INSERT INTO models (
                         purl, name, organization, version, format, architecture,
                         architecture_family, parameter_count, license, source_url,
-                        task, base_model_purl, datasets
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        task, base_model_purl, datasets, source
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'crawled')
                     ON CONFLICT(purl) DO UPDATE SET
                         name = excluded.name,
                         organization = excluded.organization,

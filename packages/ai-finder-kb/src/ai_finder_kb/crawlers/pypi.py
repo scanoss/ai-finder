@@ -139,8 +139,8 @@ class PyPICrawler:
                     """
                     INSERT INTO packages (
                         purl, name, ecosystem, version, license, summary,
-                        homepage, author, is_ai_package, ai_category
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        homepage, author, is_ai_package, ai_category, source
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'crawled')
                     ON CONFLICT(purl) DO UPDATE SET
                         version = excluded.version,
                         license = COALESCE(excluded.license, license),

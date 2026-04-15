@@ -1,0 +1,1096 @@
+[
+  {
+    "id": "openai",
+    "purl": "pkg:pypi/openai",
+    "patterns": [
+      "openai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "anthropic",
+    "purl": "pkg:pypi/anthropic",
+    "patterns": [
+      "anthropic"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain",
+    "purl": "pkg:pypi/langchain",
+    "patterns": [
+      "langchain",
+      "langchain_core",
+      "langchain_openai"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "llama-index",
+    "purl": "pkg:pypi/llama-index",
+    "patterns": [
+      "llama_index"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "transformers",
+    "purl": "pkg:pypi/transformers",
+    "patterns": [
+      "transformers"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "huggingface-hub",
+    "purl": "pkg:pypi/huggingface-hub",
+    "patterns": [
+      "huggingface_hub"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "torch",
+    "purl": "pkg:pypi/torch",
+    "patterns": [
+      "torch"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "id": "tensorflow",
+    "purl": "pkg:pypi/tensorflow",
+    "patterns": [
+      "tensorflow"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "keras",
+    "purl": "pkg:pypi/keras",
+    "patterns": [
+      "keras"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "google-generativeai",
+    "purl": "pkg:pypi/google-generativeai",
+    "patterns": [
+      "google.generativeai",
+      "google-generativeai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "vertexai",
+    "purl": "pkg:pypi/google-cloud-aiplatform",
+    "patterns": [
+      "vertexai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "cohere",
+    "purl": "pkg:pypi/cohere",
+    "patterns": [
+      "cohere"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "replicate",
+    "purl": "pkg:pypi/replicate",
+    "patterns": [
+      "replicate"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "together",
+    "purl": "pkg:pypi/together",
+    "patterns": [
+      "together"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "groq",
+    "purl": "pkg:pypi/groq",
+    "patterns": [
+      "groq"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mistralai",
+    "purl": "pkg:pypi/mistralai",
+    "patterns": [
+      "mistralai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "ollama",
+    "purl": "pkg:pypi/ollama",
+    "patterns": [
+      "ollama"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "openai-js",
+    "purl": "pkg:npm/openai",
+    "patterns": [
+      "openai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "anthropic-sdk",
+    "purl": "pkg:npm/@anthropic-ai/sdk",
+    "patterns": [
+      "@anthropic-ai/sdk"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-js",
+    "purl": "pkg:npm/langchain",
+    "patterns": [
+      "langchain",
+      "@langchain/core",
+      "@langchain/openai"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "vercel-ai",
+    "purl": "pkg:npm/ai",
+    "patterns": [
+      "ai",
+      "@vercel/ai"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "cohere-ai-js",
+    "purl": "pkg:npm/cohere-ai",
+    "patterns": [
+      "cohere-ai"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "replicate-js",
+    "purl": "pkg:npm/replicate",
+    "patterns": [
+      "replicate"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "huggingface-inference",
+    "purl": "pkg:npm/@huggingface/inference",
+    "patterns": [
+      "@huggingface/inference"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "together-ai-js",
+    "purl": "pkg:npm/together-ai",
+    "patterns": [
+      "together-ai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "groq-sdk",
+    "purl": "pkg:npm/groq-sdk",
+    "patterns": [
+      "groq-sdk"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mistralai-js",
+    "purl": "pkg:npm/@mistralai/mistralai",
+    "patterns": [
+      "@mistralai/mistralai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "ollama-js",
+    "purl": "pkg:npm/ollama-js",
+    "patterns": [
+      "ollama-js"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "google-generative-ai-js",
+    "purl": "pkg:npm/@google/generative-ai",
+    "patterns": [
+      "@google/generative-ai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "xenova-transformers",
+    "purl": "pkg:npm/@xenova/transformers",
+    "patterns": [
+      "@xenova/transformers"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "go-openai",
+    "purl": "pkg:golang/github.com/sashabaranov/go-openai",
+    "patterns": [
+      "github.com/sashabaranov/go-openai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "anthropic-sdk-go",
+    "purl": "pkg:golang/github.com/anthropics/anthropic-sdk-go",
+    "patterns": [
+      "github.com/anthropics/anthropic-sdk-go"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "cohere-go",
+    "purl": "pkg:golang/github.com/cohere-ai/cohere-go",
+    "patterns": [
+      "github.com/cohere-ai/cohere-go"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "replicate-go",
+    "purl": "pkg:golang/github.com/replicate/replicate-go",
+    "patterns": [
+      "github.com/replicate/replicate-go"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "langchaingo",
+    "purl": "pkg:golang/github.com/tmc/langchaingo",
+    "patterns": [
+      "github.com/tmc/langchaingo"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "async-openai",
+    "purl": "pkg:cargo/async-openai",
+    "patterns": [
+      "async_openai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "openai-api-rs",
+    "purl": "pkg:cargo/openai_api",
+    "patterns": [
+      "openai_api"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "candle",
+    "purl": "pkg:cargo/candle-core",
+    "patterns": [
+      "candle_core",
+      "candle_nn",
+      "candle_transformers"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "llm-rs",
+    "purl": "pkg:cargo/llm",
+    "patterns": [
+      "llm",
+      "llm_chain"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "rust-bert",
+    "purl": "pkg:cargo/rust-bert",
+    "patterns": [
+      "rust_bert"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "ort",
+    "purl": "pkg:cargo/ort",
+    "patterns": [
+      "ort"
+    ],
+    "category": "ml-runtime",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "tch-rs",
+    "purl": "pkg:cargo/tch",
+    "patterns": [
+      "tch"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "tract",
+    "purl": "pkg:cargo/tract",
+    "patterns": [
+      "tract"
+    ],
+    "category": "ml-runtime",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "openai-java",
+    "purl": "pkg:maven/com.theokanning.openai-gpt3-java/client",
+    "patterns": [
+      "com.theokanning.openai"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "openai-kotlin",
+    "purl": "pkg:maven/com.aallam.openai/openai-client",
+    "patterns": [
+      "com.openai",
+      "com.aallam.openai"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain4j",
+    "purl": "pkg:maven/dev.langchain4j/langchain4j",
+    "patterns": [
+      "dev.langchain4j"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "djl",
+    "purl": "pkg:maven/ai.djl/api",
+    "patterns": [
+      "ai.djl"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "tensorflow-java",
+    "purl": "pkg:maven/org.tensorflow/tensorflow",
+    "patterns": [
+      "org.tensorflow"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "deeplearning4j",
+    "purl": "pkg:maven/org.deeplearning4j/deeplearning4j-core",
+    "patterns": [
+      "org.deeplearning4j"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "google-cloud-aiplatform-java",
+    "purl": "pkg:maven/com.google.cloud/google-cloud-aiplatform",
+    "patterns": [
+      "com.google.cloud.aiplatform"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "onnxruntime-java",
+    "purl": "pkg:maven/ai.onnxruntime/onnxruntime",
+    "patterns": [
+      "ai.onnxruntime"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "ruby-openai",
+    "purl": "pkg:gem/ruby-openai",
+    "patterns": [
+      "ruby-openai",
+      "openai"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "anthropic-ruby",
+    "purl": "pkg:gem/anthropic",
+    "patterns": [
+      "anthropic"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "langchainrb",
+    "purl": "pkg:gem/langchainrb",
+    "patterns": [
+      "langchain",
+      "langchainrb"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "hugging-face-rb",
+    "purl": "pkg:gem/hugging-face",
+    "patterns": [
+      "hugging-face"
+    ],
+    "category": "ml-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "replicate-ruby",
+    "purl": "pkg:gem/replicate-ruby",
+    "patterns": [
+      "replicate-ruby"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "cohere-ruby",
+    "purl": "pkg:gem/cohere-ruby",
+    "patterns": [
+      "cohere-ruby"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "openai-php",
+    "purl": "pkg:composer/openai-php/client",
+    "patterns": [
+      "OpenAI"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "anthropic-php",
+    "purl": "pkg:composer/anthropic/sdk",
+    "patterns": [
+      "Anthropic"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-php",
+    "purl": "pkg:composer/langchain/langchain",
+    "patterns": [
+      "LangChain"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "google-generativeai-php",
+    "purl": "pkg:composer/google/generative-ai",
+    "patterns": [
+      "Google\\GenerativeAI",
+      "Google\\Cloud\\AIPlatform"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "huggingface-php",
+    "purl": "pkg:composer/huggingface/transformers",
+    "patterns": [
+      "HuggingFace"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "replicate-php",
+    "purl": "pkg:composer/replicate/replicate-php",
+    "patterns": [
+      "Replicate"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "cohere-php",
+    "purl": "pkg:composer/cohere/cohere-php",
+    "patterns": [
+      "Cohere"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "openai-dotnet",
+    "purl": "pkg:nuget/OpenAI",
+    "patterns": [
+      "OpenAI"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "azure-ai-openai",
+    "purl": "pkg:nuget/Azure.AI.OpenAI",
+    "patterns": [
+      "Azure.AI",
+      "Azure.AI.OpenAI"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "microsoft-ml",
+    "purl": "pkg:nuget/Microsoft.ML",
+    "patterns": [
+      "Microsoft.ML"
+    ],
+    "category": "ml-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "semantic-kernel",
+    "purl": "pkg:nuget/Microsoft.SemanticKernel",
+    "patterns": [
+      "Microsoft.SemanticKernel"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "google-ai-generativelanguage-dotnet",
+    "purl": "pkg:nuget/Google.Ai.Generativelanguage",
+    "patterns": [
+      "Google.Ai.Generativelanguage",
+      "Google.Cloud.AIPlatform"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "anthropic-dotnet",
+    "purl": "pkg:nuget/Anthropic",
+    "patterns": [
+      "Anthropic"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "huggingface-dotnet",
+    "purl": "pkg:nuget/HuggingFace",
+    "patterns": [
+      "HuggingFace"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "langchain-dotnet",
+    "purl": "pkg:nuget/LangChain",
+    "patterns": [
+      "LangChain"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "replicate-dotnet",
+    "purl": "pkg:nuget/Replicate",
+    "patterns": [
+      "Replicate"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "cohere-dotnet",
+    "purl": "pkg:nuget/Cohere",
+    "patterns": [
+      "Cohere"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "tensorflow-dotnet",
+    "purl": "pkg:nuget/TensorFlow.NET",
+    "patterns": [
+      "TensorFlow"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "onnx-dotnet",
+    "purl": "pkg:nuget/Microsoft.ML.OnnxRuntime",
+    "patterns": [
+      "ONNX"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "onnxruntime-cpp",
+    "purl": "pkg:conan/onnxruntime",
+    "patterns": [
+      "onnxruntime"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "tensorflow-cpp",
+    "purl": "pkg:conan/tensorflow",
+    "patterns": [
+      "tensorflow"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "libtorch",
+    "purl": "pkg:conan/libtorch",
+    "patterns": [
+      "torch",
+      "libtorch",
+      "ATen"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "id": "caffe",
+    "purl": "pkg:conan/caffe",
+    "patterns": [
+      "caffe",
+      "caffe2"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-2-Clause"
+  },
+  {
+    "id": "mxnet-cpp",
+    "purl": "pkg:conan/mxnet",
+    "patterns": [
+      "mxnet"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "opencv",
+    "purl": "pkg:conan/opencv",
+    "patterns": [
+      "opencv"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "dlib",
+    "purl": "pkg:conan/dlib",
+    "patterns": [
+      "dlib"
+    ],
+    "category": "ml-framework",
+    "license": "BSL-1.0"
+  },
+  {
+    "id": "llama-cpp",
+    "purl": "pkg:github/ggerganov/llama.cpp",
+    "patterns": [
+      "llama"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "whisper-cpp",
+    "purl": "pkg:github/ggerganov/whisper.cpp",
+    "patterns": [
+      "whisper"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "ggml",
+    "purl": "pkg:github/ggerganov/ggml",
+    "patterns": [
+      "ggml"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "coreml",
+    "purl": "pkg:swift/apple/coreml",
+    "patterns": [
+      "CoreML"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "createml",
+    "purl": "pkg:swift/apple/createml",
+    "patterns": [
+      "CreateML"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "naturallanguage",
+    "purl": "pkg:swift/apple/naturallanguage",
+    "patterns": [
+      "NaturalLanguage"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "vision",
+    "purl": "pkg:swift/apple/vision",
+    "patterns": [
+      "Vision"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "soundanalysis",
+    "purl": "pkg:swift/apple/soundanalysis",
+    "patterns": [
+      "SoundAnalysis"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "speech",
+    "purl": "pkg:swift/apple/speech",
+    "patterns": [
+      "Speech"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "openai-swift",
+    "purl": "pkg:swift/macpaw/openai",
+    "patterns": [
+      "OpenAI",
+      "SwiftOpenAI"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "anthropic-swift",
+    "purl": "pkg:swift/anthropics/anthropic-swift",
+    "patterns": [
+      "Anthropic"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "google-generative-ai-swift",
+    "purl": "pkg:swift/google/generative-ai-swift",
+    "patterns": [
+      "GoogleGenerativeAI"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "langchain-swift",
+    "purl": "pkg:swift/langchain-ai/langchain-swift",
+    "patterns": [
+      "LangChain"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "replicate-swift",
+    "purl": "pkg:swift/replicate/replicate-swift",
+    "patterns": [
+      "Replicate"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "mlkit-swift",
+    "purl": "pkg:swift/google/mlkit",
+    "patterns": [
+      "MLKit"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "tensorflow-lite-swift",
+    "purl": "pkg:swift/tensorflow/tensorflow-lite-swift",
+    "patterns": [
+      "TensorFlowLite",
+      "TensorFlowLiteSwift"
+    ],
+    "category": "ml-runtime",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "onnx-swift",
+    "purl": "pkg:swift/onnx/onnx-swift",
+    "patterns": [
+      "ONNX"
+    ],
+    "category": "ml-runtime",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "anthropic-kotlin",
+    "purl": "pkg:maven/com.anthropic/anthropic-sdk",
+    "patterns": [
+      "com.anthropic"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "google-ai-kotlin",
+    "purl": "pkg:maven/com.google.ai/generativeai",
+    "patterns": [
+      "com.google.ai",
+      "com.google.mlkit"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "onnxruntime-kotlin",
+    "purl": "pkg:maven/ai.onnxruntime/onnxruntime",
+    "patterns": [
+      "ai.onnxruntime"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "tensorflow-kotlin",
+    "purl": "pkg:maven/org.tensorflow/tensorflow",
+    "patterns": [
+      "org.tensorflow"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "pytorch-kotlin",
+    "purl": "pkg:maven/org.pytorch/pytorch_android",
+    "patterns": [
+      "org.pytorch"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "id": "langchain4j-kotlin",
+    "purl": "pkg:maven/dev.langchain4j/langchain4j",
+    "patterns": [
+      "dev.langchain4j"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "huggingface-kotlin",
+    "purl": "pkg:maven/com.huggingface/transformers",
+    "patterns": [
+      "com.huggingface"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "cohere-kotlin",
+    "purl": "pkg:maven/io.cohere/cohere-kotlin",
+    "patterns": [
+      "io.cohere"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "replicate-kotlin",
+    "purl": "pkg:maven/io.replicate/replicate-kotlin",
+    "patterns": [
+      "io.replicate"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "groq-kotlin",
+    "purl": "pkg:maven/com.groq/groq-kotlin",
+    "patterns": [
+      "com.groq"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "spark-ml",
+    "purl": "pkg:maven/org.apache.spark/spark-mllib",
+    "patterns": [
+      "org.apache.spark.ml",
+      "org.apache.spark.mllib"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "djl-scala",
+    "purl": "pkg:maven/ai.djl/api",
+    "patterns": [
+      "ai.djl"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "bigdl",
+    "purl": "pkg:maven/com.intel.analytics.bigdl/bigdl",
+    "patterns": [
+      "com.intel.analytics.bigdl"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "tensorflow-scala",
+    "purl": "pkg:maven/org.platanios/tensorflow",
+    "patterns": [
+      "org.tensorflow",
+      "org.platanios.tensorflow"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "catboost-scala",
+    "purl": "pkg:maven/ai.catboost/catboost-spark",
+    "patterns": [
+      "ai.catboost"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mleap",
+    "purl": "pkg:maven/ml.combust.mleap/mleap-runtime",
+    "patterns": [
+      "ml.combust.mleap"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "spark-nlp",
+    "purl": "pkg:maven/com.johnsnowlabs.nlp/spark-nlp",
+    "patterns": [
+      "com.johnsnowlabs.nlp"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "pytorch-scala",
+    "purl": "pkg:maven/org.bytedeco/pytorch",
+    "patterns": [
+      "org.bytedeco.pytorch"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "id": "onnxruntime-scala",
+    "purl": "pkg:maven/com.microsoft.onnxruntime/onnxruntime",
+    "patterns": [
+      "com.microsoft.onnxruntime"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  }
+]

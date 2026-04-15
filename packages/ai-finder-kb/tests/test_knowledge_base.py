@@ -2,6 +2,7 @@
 
 import pytest
 from ai_finder_kb import KnowledgeBase, Matcher
+from ai_finder_kb.database import SCHEMA_VERSION
 
 
 class TestKnowledgeBase:
@@ -34,5 +35,5 @@ class TestKnowledgeBase:
 
     def test_version_after_init(self, temp_db_path) -> None:
         with KnowledgeBase(db_path=temp_db_path) as kb:
-            # Should be initialized with schema version 1
-            assert kb.db.get_version() == 1
+            # Should be initialized with current schema version
+            assert kb.db.get_version() == SCHEMA_VERSION

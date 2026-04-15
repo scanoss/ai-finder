@@ -1,0 +1,32 @@
+[
+  {
+    "id": "mcp-filesystem",
+    "purl": "pkg:npm/@modelcontextprotocol/server-filesystem",
+    "patterns": ["@modelcontextprotocol/server-filesystem"],
+    "description": "MCP server for filesystem access"
+  },
+  {
+    "id": "mcp-github",
+    "purl": "pkg:npm/@modelcontextprotocol/server-github",
+    "patterns": ["@modelcontextprotocol/server-github"],
+    "description": "MCP server for GitHub integration"
+  },
+  {
+    "id": "mcp-postgres",
+    "purl": "pkg:npm/@modelcontextprotocol/server-postgres",
+    "patterns": ["@modelcontextprotocol/server-postgres"],
+    "description": "MCP server for PostgreSQL database access"
+  },
+  {
+    "id": "mcp-sqlite",
+    "purl": "pkg:npm/@modelcontextprotocol/server-sqlite",
+    "patterns": ["@modelcontextprotocol/server-sqlite"],
+    "description": "MCP server for SQLite database access"
+  },
+  {
+    "id": "mcp-slack",
+    "purl": "pkg:npm/@modelcontextprotocol/server-slack",
+    "patterns": ["@modelcontextprotocol/server-slack"],
+    "description": "MCP server for Slack integration"
+  }
+]
