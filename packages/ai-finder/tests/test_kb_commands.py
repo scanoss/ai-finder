@@ -162,9 +162,7 @@ class TestKbCheckUpdates:
 
         runner.invoke(kb, ["init", "--kb-path", str(db_path)])
 
-        result = runner.invoke(
-            kb, ["check-updates", "--kb-path", str(db_path), "--format", "json"]
-        )
+        result = runner.invoke(kb, ["check-updates", "--kb-path", str(db_path), "--format", "json"])
 
         assert result.exit_code == 0
         data = json.loads(result.output)

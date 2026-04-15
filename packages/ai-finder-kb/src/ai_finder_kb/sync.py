@@ -80,9 +80,7 @@ class KBSync:
         Returns:
             Local KB version number.
         """
-        result = self.db.execute(
-            "SELECT value FROM sync_state WHERE key = 'kb_version'"
-        ).fetchone()
+        result = self.db.execute("SELECT value FROM sync_state WHERE key = 'kb_version'").fetchone()
         return int(result[0]) if result else 0
 
     def get_last_sync(self) -> datetime | None:
@@ -231,9 +229,7 @@ class KBSync:
             if model_error:
                 fetch_errors.append(model_error)
 
-            mcp_count, mcp_error = self._sync_mcp_servers(
-                checksums.get(self.MCP_SERVERS_FILE)
-            )
+            mcp_count, mcp_error = self._sync_mcp_servers(checksums.get(self.MCP_SERVERS_FILE))
             if mcp_error:
                 fetch_errors.append(mcp_error)
 

@@ -160,9 +160,7 @@ class TestKBSync:
             assert result.mcp_servers_updated == 0
 
             # Verify SDK was inserted
-            row = db.execute(
-                "SELECT id, purl, source FROM sdks WHERE id = 'test-sdk'"
-            ).fetchone()
+            row = db.execute("SELECT id, purl, source FROM sdks WHERE id = 'test-sdk'").fetchone()
             assert row is not None
             assert row[0] == "test-sdk"
             assert row[1] == "pkg:pypi/test-sdk"
@@ -227,9 +225,7 @@ class TestKBSync:
             assert result.success is True
 
             # Verify crawled SDK was NOT updated
-            row = db.execute(
-                "SELECT purl, source FROM sdks WHERE id = 'test-sdk'"
-            ).fetchone()
+            row = db.execute("SELECT purl, source FROM sdks WHERE id = 'test-sdk'").fetchone()
             assert row is not None
             assert row[0] == "pkg:pypi/test-sdk-crawled"  # Unchanged
             assert row[1] == "crawled"
@@ -290,7 +286,6 @@ class TestKBSync:
             result = sync.sync(force=True)
             assert result.success is True
             assert result.sdks_updated == 1
-
 
     @patch("ai_finder_kb.sync.requests.Session")
     def test_sync_partial_fetch_failure(self, mock_session_class, temp_db_path) -> None:
@@ -364,19 +359,20 @@ class TestKBSync:
             assert status.update_available is False
             assert "Invalid version format" in status.error
 
-
     @patch("ai_finder_kb.sync.requests.Session")
     def test_sync_checksum_verification_success(self, mock_session_class, temp_db_path) -> None:
         """Test sync succeeds when checksums match."""
         import hashlib
 
-        sdk_data = [{
-            "id": "test-sdk",
-            "purl": "pkg:pypi/test",
-            "patterns": ["test"],
-            "category": "llm-client",
-            "license": "MIT",
-        }]
+        sdk_data = [
+            {
+                "id": "test-sdk",
+                "purl": "pkg:pypi/test",
+                "patterns": ["test"],
+                "category": "llm-client",
+                "license": "MIT",
+            }
+        ]
         sdk_json = json.dumps(sdk_data).encode()
         sdk_checksum = hashlib.sha256(sdk_json).hexdigest()
 
@@ -387,7 +383,7 @@ class TestKBSync:
                 "sdks.json": sdk_checksum,
                 "models.json": hashlib.sha256(b"[]").hexdigest(),
                 "mcp_servers.json": hashlib.sha256(b"[]").hexdigest(),
-            }
+            },
         }
         version_response.raise_for_status = MagicMock()
 
@@ -439,7 +435,7 @@ class TestKBSync:
                 "sdks.json": "wrong_checksum_value",
                 "models.json": "wrong_checksum_value",
                 "mcp_servers.json": "wrong_checksum_value",
-            }
+            },
         }
         version_response.raise_for_status = MagicMock()
 

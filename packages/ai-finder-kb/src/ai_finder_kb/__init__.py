@@ -136,9 +136,7 @@ class KnowledgeBase:
         sync = KBSync(self.db, remote_url) if remote_url else KBSync(self.db)
         return sync.check_for_updates()
 
-    def sync(
-        self, remote_url: Optional[str] = None, force: bool = False
-    ) -> SyncResult:
+    def sync(self, remote_url: Optional[str] = None, force: bool = False) -> SyncResult:
         """Sync the KB with remote seed data.
 
         Args:

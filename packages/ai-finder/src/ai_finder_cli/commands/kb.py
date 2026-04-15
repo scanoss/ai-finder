@@ -517,9 +517,7 @@ def crawl(
     show_default=True,
     help="Output format.",
 )
-def check_updates(
-    kb_path: Path | None, remote_url: str | None, output_format: str
-) -> None:
+def check_updates(kb_path: Path | None, remote_url: str | None, output_format: str) -> None:
     """Check if KB updates are available from the remote server."""
     from ai_finder_kb import Database, KBSync
 
