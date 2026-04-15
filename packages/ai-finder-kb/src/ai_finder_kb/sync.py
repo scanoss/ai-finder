@@ -149,13 +149,13 @@ class KBSync:
 
         # Fetch remote version
         version_data, error = self._fetch_json(self.VERSION_FILE)
-        if error is not None:
+        if error is not None or not isinstance(version_data, dict):
             return SyncStatus(
                 local_version=local_version,
                 remote_version=None,
                 last_sync=last_sync,
                 update_available=False,
-                error=error,
+                error=error or "Invalid version.json format",
             )
 
         # Validate version field
@@ -190,12 +190,12 @@ class KBSync:
 
         # Fetch version.json to get checksums and remote version
         version_data, version_error = self._fetch_json(self.VERSION_FILE)
-        if version_error:
+        if version_error or not isinstance(version_data, dict):
             return SyncResult(
                 success=False,
                 previous_version=local_version,
                 new_version=local_version,
-                error=version_error,
+                error=version_error or "Invalid version.json format",
             )
 
         # Validate version field

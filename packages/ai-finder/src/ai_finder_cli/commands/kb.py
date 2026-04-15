@@ -549,9 +549,8 @@ def check_updates(
                 click.echo(json.dumps(result, indent=2))
             else:
                 click.echo(f"Local version:  {status.local_version}")
-                click.echo(
-                    f"Remote version: {status.remote_version if status.remote_version is not None else 'unknown'}"
-                )
+                remote = status.remote_version if status.remote_version is not None else "unknown"
+                click.echo(f"Remote version: {remote}")
                 if status.last_sync:
                     click.echo(f"Last sync:      {status.last_sync.isoformat()}")
                 else:
@@ -631,7 +630,8 @@ def update(
                         sys.exit(2)
                     if not status.update_available:
                         if output_format == "json":
-                            click.echo(json.dumps({"success": True, "message": "Already up to date"}))
+                            msg = {"success": True, "message": "Already up to date"}
+                            click.echo(json.dumps(msg))
                         else:
                             click.echo("KB is already up to date.")
                         telemetry.track_feature("kb.update", "result", "already_up_to_date")

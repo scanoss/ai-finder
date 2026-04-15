@@ -3,9 +3,7 @@
 import json
 from unittest.mock import MagicMock, patch
 
-import pytest
 import requests
-
 from ai_finder_kb import KBSync, SyncResult, SyncStatus
 from ai_finder_kb.database import Database
 
@@ -218,7 +216,8 @@ class TestKBSync:
             # Insert a crawled SDK with same ID
             db.execute(
                 "INSERT INTO sdks (id, purl, patterns, category, license, source) "
-                "VALUES ('test-sdk', 'pkg:pypi/test-sdk-crawled', '[\"crawled\"]', 'llm-client', 'MIT', 'crawled')"
+                "VALUES ('test-sdk', 'pkg:pypi/test-sdk-crawled', "
+                "'[\"crawled\"]', 'llm-client', 'MIT', 'crawled')"
             )
             db.commit()
 
@@ -371,7 +370,13 @@ class TestKBSync:
         """Test sync succeeds when checksums match."""
         import hashlib
 
-        sdk_data = [{"id": "test-sdk", "purl": "pkg:pypi/test", "patterns": ["test"], "category": "llm-client", "license": "MIT"}]
+        sdk_data = [{
+            "id": "test-sdk",
+            "purl": "pkg:pypi/test",
+            "patterns": ["test"],
+            "category": "llm-client",
+            "license": "MIT",
+        }]
         sdk_json = json.dumps(sdk_data).encode()
         sdk_checksum = hashlib.sha256(sdk_json).hexdigest()
 

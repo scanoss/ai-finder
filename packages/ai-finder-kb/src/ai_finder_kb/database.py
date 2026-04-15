@@ -83,7 +83,6 @@ class Database:
         migrations_dir = Path(__file__).parent / "migrations"
 
         for version in range(current_version + 1, SCHEMA_VERSION + 1):
-            migration_file = migrations_dir / f"v{version:03d}_*.sql"
             # Find the migration file for this version
             matching = list(migrations_dir.glob(f"v{version:03d}_*.sql"))
 
