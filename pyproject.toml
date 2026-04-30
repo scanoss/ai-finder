@@ -16,11 +16,9 @@ dev = [
 ]
 
 [tool.uv.workspace]
-members = ["packages/*"]
+members = ["packages/ai-finder"]
 
 [tool.uv.sources]
-ai-finder-kb = { workspace = true }
-ai-finder-scanner = { workspace = true }
 ai-finder = { workspace = true }
 
 [tool.ruff]
@@ -57,9 +55,5 @@ module = [
 ignore_errors = true
 
 [tool.pytest.ini_options]
-testpaths = [
-    "packages/ai-finder-kb/tests",
-    "packages/ai-finder-scanner/tests",
-    "packages/ai-finder/tests",
-]
+testpaths = ["packages/ai-finder/tests"]
 addopts = "-v --tb=short --cov-report=term-missing"

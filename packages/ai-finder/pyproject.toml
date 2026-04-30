@@ -23,23 +23,38 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 dependencies = [
-    "ai-finder-scanner",
-    "ai-finder-kb",
     "click>=8.0",
+    "pyyaml>=6.0",
+    "tomli>=2.0;python_version<'3.11'",
+    "tqdm>=4.65",
+    "python-tlsh>=4.5.0",
+    "requests>=2.28",
+    "python-levenshtein>=0.25.1",
+    "osslili>=1.6",
 ]
-
-# ptelemetry for anonymous usage telemetry
-# Install from PyPI when available, or from local build:
-#   pip install ptelemetry
-# Telemetry is optional - CLI works without it (silently disabled)
 
 [project.scripts]
 ai-finder = "ai_finder_cli.main:main"
 
 [project.optional-dependencies]
+# Relationship analysis requires tree-sitter (Python 3.10+ only)
+relationships = [
+    "tree-sitter>=0.22;python_version>='3.10'",
+    "tree-sitter-python>=0.21;python_version>='3.10'",
+    "tree-sitter-javascript>=0.21;python_version>='3.10'",
+    "tree-sitter-typescript>=0.21;python_version>='3.10'",
+    "tree-sitter-ruby>=0.21;python_version>='3.10'",
+    "tree-sitter-php>=0.22;python_version>='3.10'",
+    "tree-sitter-c-sharp>=0.21;python_version>='3.10'",
+    "tree-sitter-go>=0.21;python_version>='3.10'",
+    "tree-sitter-rust>=0.21;python_version>='3.10'",
+    "tree-sitter-java>=0.21;python_version>='3.10'",
+    "tree-sitter-cpp>=0.21;python_version>='3.10'",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+    "pytest-mock>=3.10",
 ]
 
 [project.urls]
@@ -47,7 +62,11 @@ Homepage = "https://scanoss.com"
 Repository = "https://github.com/scanoss/ai-finder"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ai_finder_cli"]
+packages = [
+    "src/ai_finder_cli",
+    "src/ai_finder_kb",
+    "src/ai_finder_scanner",
+]
 
 [tool.hatch.build.targets.wheel.sources]
 "src" = ""

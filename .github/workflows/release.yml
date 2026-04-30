@@ -65,16 +65,11 @@ jobs:
       - name: Install build dependencies
         run: uv pip install --system build
 
-      - name: Build packages
+      - name: Build package
         run: |
-          # Build each package
-          cd packages/ai-finder-kb && python -m build && cd ../..
-          cd packages/ai-finder-scanner && python -m build && cd ../..
           cd packages/ai-finder && python -m build && cd ../..
-
-          # Collect all dist files
           mkdir -p dist
-          cp packages/*/dist/* dist/
+          cp packages/ai-finder/dist/* dist/
 
       - name: Generate hashes
         id: hash

@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.2] - 2026-04-30
 
+### Changed
+- Consolidated the previously separate `ai-finder`, `ai-finder-kb`, and `ai-finder-scanner` distributions into a single `ai-finder` PyPI package. The Python module names (`ai_finder_cli`, `ai_finder_kb`, `ai_finder_scanner`) are unchanged, so existing imports continue to work.
+- Release pipeline now publishes to TestPyPI on tag push; PyPI publish is a manual `workflow_dispatch` (`Promote to PyPI`) that pulls the artifacts from the GitHub Release.
+
 ### Removed
 - Standalone binary builds for macOS, Linux, and Windows. The project now ships exclusively via PyPI (`pip install ai-finder`). Removed `.github/workflows/build-binaries.yml` and the `ai-finder.spec` PyInstaller config.
 

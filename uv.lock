@@ -9,8 +9,6 @@ resolution-markers = [
 [manifest]
 members = [
     "ai-finder",
-    "ai-finder-kb",
-    "ai-finder-scanner",
     "ai-finder-workspace",
 ]
 
@@ -19,58 +17,9 @@ name = "ai-finder"
 version = "0.3.2"
 source = { editable = "packages/ai-finder" }
 dependencies = [
-    { name = "ai-finder-kb" },
-    { name = "ai-finder-scanner" },
     { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "click", version = "8.3.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pytest-cov" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "ai-finder-kb", editable = "packages/ai-finder-kb" },
-    { name = "ai-finder-scanner", editable = "packages/ai-finder-scanner" },
-    { name = "click", specifier = ">=8.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
-]
-provides-extras = ["dev"]
-
-[[package]]
-name = "ai-finder-kb"
-version = "0.3.2"
-source = { editable = "packages/ai-finder-kb" }
-dependencies = [
     { name = "osslili" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pytest-cov" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "osslili", marker = "python_full_version >= '3.9'", specifier = ">=1.6" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
-]
-provides-extras = ["dev"]
-
-[[package]]
-name = "ai-finder-scanner"
-version = "0.3.2"
-source = { editable = "packages/ai-finder-scanner" }
-dependencies = [
-    { name = "ai-finder-kb" },
     { name = "python-levenshtein", version = "0.27.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "python-levenshtein", version = "0.27.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "python-tlsh" },
@@ -104,7 +53,8 @@ relationships = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ai-finder-kb", editable = "packages/ai-finder-kb" },
+    { name = "click", specifier = ">=8.0" },
+    { name = "osslili", specifier = ">=1.6" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.10" },
