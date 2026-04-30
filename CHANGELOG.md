@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.2] - 2026-04-30
+
+### Removed
+- Standalone binary builds for macOS, Linux, and Windows. The project now ships exclusively via PyPI (`pip install ai-finder`). Removed `.github/workflows/build-binaries.yml` and the `ai-finder.spec` PyInstaller config.
+
 ## [0.2.1] - 2026-04-08
 
 ### Changed

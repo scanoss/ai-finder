@@ -75,40 +75,11 @@ Generated SBOMs are compliant with major standards:
 
 ## Installation
 
-### Standalone Binary (Recommended)
-
-Download the pre-built binary for your platform from [GitHub Releases](https://github.com/scanoss/ai-finder/releases):
-
-| Platform | Binary |
-|----------|--------|
-| macOS (Apple Silicon) | `ai-finder-macos-arm64` |
-| macOS (Intel) | `ai-finder-macos-x64` |
-| Linux (x86_64) | `ai-finder-linux-x64` |
-| Windows | `ai-finder-windows-x64.exe` |
-
-```bash
-# macOS - remove quarantine attribute first
-xattr -d com.apple.quarantine ai-finder-macos-arm64
-chmod +x ai-finder-macos-arm64
-./ai-finder-macos-arm64 --version
-
-# Linux
-chmod +x ai-finder-linux-x64
-./ai-finder-linux-x64 --version
-
-# Windows
-ai-finder-windows-x64.exe --version
-```
-
-> **Note (macOS):** The binary is not yet Apple-signed. macOS Gatekeeper will show a warning on first run. Use the `xattr` command above to remove the quarantine flag, or right-click the file and select "Open" to bypass.
-
-No Python installation required - all dependencies are bundled.
-
-### From PyPI
-
 ```bash
 pip install ai-finder
 ```
+
+Requires Python 3.9 or later.
 
 ## Usage
 
