@@ -8,7 +8,7 @@ from .matcher import Matcher
 from .models import AncestryEdge, MCPMatch, ModelMatch, SDKMatch
 from .sync import KBSync, SyncResult, SyncStatus
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 __all__ = [
     "KnowledgeBase",
     "Database",
@@ -31,15 +31,6 @@ def get_default_db_path() -> Path:
 
 def get_seed_db_path() -> Optional[Path]:
     """Get path to bundled seed database."""
-    import sys
-
-    # PyInstaller bundle: data is extracted to sys._MEIPASS
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        pyinstaller_path = Path(sys._MEIPASS) / "ai_finder_kb" / "data" / "seed.db"
-        if pyinstaller_path.exists():
-            return pyinstaller_path
-
-    # Standard Python: use importlib.resources
     try:
         import importlib.resources as resources
 
