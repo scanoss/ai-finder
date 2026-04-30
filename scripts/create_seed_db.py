@@ -5,12 +5,12 @@ import sys
 from pathlib import Path
 
 # Add the package to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "packages/ai-finder-kb/src"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "packages/ai-finder/src"))
 
 from ai_finder_kb.database import Database
 from ai_finder_kb.seed import seed_database
 
-SEED_DB_PATH = Path(__file__).parent.parent / "packages/ai-finder-kb/src/ai_finder_kb/data/seed.db"
+SEED_DB_PATH = Path(__file__).parent.parent / "packages/ai-finder/src/ai_finder_kb/data/seed.db"
 
 
 def main() -> None:

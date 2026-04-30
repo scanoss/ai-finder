@@ -9,7 +9,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-SEED_DIR = Path(__file__).parent.parent / "packages/ai-finder-kb/src/ai_finder_kb/seed"
+SEED_DIR = Path(__file__).parent.parent / "packages/ai-finder/src/ai_finder_kb/seed"
 
 SEED_FILES = [
     "sdks.json",

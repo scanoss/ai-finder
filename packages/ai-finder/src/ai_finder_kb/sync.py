@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # Default remote URL for seed data (GitHub raw content)
 DEFAULT_REMOTE_URL = (
     "https://raw.githubusercontent.com/scanoss/ai-finder/main/"
-    "packages/ai-finder-kb/src/ai_finder_kb/seed"
+    "packages/ai-finder/src/ai_finder_kb/seed"
 )
 
 
