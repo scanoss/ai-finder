@@ -16,7 +16,7 @@ members = [
 
 [[package]]
 name = "ai-finder"
-version = "0.3.1"
+version = "0.3.2"
 source = { editable = "packages/ai-finder" }
 dependencies = [
     { name = "ai-finder-kb" },
@@ -44,7 +44,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "ai-finder-kb"
-version = "0.3.1"
+version = "0.3.2"
 source = { editable = "packages/ai-finder-kb" }
 dependencies = [
     { name = "osslili" },
@@ -67,7 +67,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "ai-finder-scanner"
-version = "0.3.1"
+version = "0.3.2"
 source = { editable = "packages/ai-finder-scanner" }
 dependencies = [
     { name = "ai-finder-kb" },
