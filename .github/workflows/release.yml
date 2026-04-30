@@ -65,16 +65,11 @@ jobs:
       - name: Install build dependencies
         run: uv pip install --system build
 
-      - name: Build packages
+      - name: Build package
         run: |
-          # Build each package
-          cd packages/ai-finder-kb && python -m build && cd ../..
-          cd packages/ai-finder-scanner && python -m build && cd ../..
           cd packages/ai-finder && python -m build && cd ../..
-
-          # Collect all dist files
           mkdir -p dist
-          cp packages/*/dist/* dist/
+          cp packages/ai-finder/dist/* dist/
 
       - name: Generate hashes
         id: hash
@@ -102,12 +97,12 @@ jobs:
       base64-subjects: ${{ needs.build.outputs.hashes }}
       upload-assets: true
 
-  publish-pypi:
+  publish-testpypi:
     needs: build
     # Don't wait for provenance on private repos
     if: always() && needs.build.result == 'success'
     runs-on: ubuntu-latest
-    environment: pypi
+    environment: testpypi
     permissions:
       id-token: write
 
@@ -118,10 +113,11 @@ jobs:
           name: python-packages
           path: dist/
 
-      - name: Publish to PyPI
+      - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+          repository-url: https://test.pypi.org/legacy/
           skip-existing: true
 
   publish-github:
@@ -165,8 +161,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   sign-packages:
-    needs: publish-pypi
-    if: always() && needs.publish-pypi.result == 'success'
+    needs: publish-testpypi
+    if: always() && needs.publish-testpypi.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
