@@ -8,7 +8,7 @@ from .matcher import Matcher
 from .models import AncestryEdge, MCPMatch, ModelMatch, SDKMatch
 from .sync import KBSync, SyncResult, SyncStatus
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 __all__ = [
     "KnowledgeBase",
     "Database",
