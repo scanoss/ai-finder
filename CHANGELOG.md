@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.3] - 2026-05-04
+
+### Fixed
+- Telemetry events were being sent to the `ptelemetry` SDK's default endpoint (`producttelemetry.com`) instead of `telemetry.scanoss.com`. The client now passes `api_url` explicitly.
+
 ## [0.3.2] - 2026-04-30
 
 ### Changed
