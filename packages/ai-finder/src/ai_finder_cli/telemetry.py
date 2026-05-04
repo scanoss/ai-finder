@@ -26,6 +26,7 @@ from ai_finder_cli import __version__
 # Source installations have telemetry disabled by default.
 _INGEST_KEY = "__TELEMETRY_INGEST_KEY__"
 _PROJECT_SLUG = "ai-finder"
+_API_URL = "https://telemetry.scanoss.com/api"
 
 # Global telemetry client (lazily initialized)
 _client: Any = None
@@ -81,6 +82,7 @@ def _get_client() -> Any:
         _client = Telemetry(
             write_key=_INGEST_KEY,
             project_slug=_PROJECT_SLUG,
+            api_url=_API_URL,
         )
         return _client
     except ImportError:
