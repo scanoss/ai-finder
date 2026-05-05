@@ -73,13 +73,27 @@ jobs:
             echo "::error::TELEMETRY_INGEST_KEY secret is not set"
             exit 1
           fi
-          target="packages/ai-finder/src/ai_finder_cli/telemetry.py"
-          sed -i.bak "s|__TELEMETRY_INGEST_KEY__|${TELEMETRY_INGEST_KEY}|g" "$target"
-          rm "${target}.bak"
-          if grep -q '__TELEMETRY_INGEST_KEY__' "$target"; then
-            echo "::error::Placeholder was not substituted in $target"
-            exit 1
-          fi
+          # Line-anchored substitution: rewrite only the `_INGEST_KEY = "..."`
+          # assignment, leaving the `_INGEST_KEY_PLACEHOLDER = "..."` sentinel
+          # used by _get_client() intact. v0.3.4 used a global sed that
+          # clobbered both, which silently disabled telemetry in the wheel.
+          python3 - <<'PY'
+          import os, pathlib, sys
+          key = os.environ["TELEMETRY_INGEST_KEY"]
+          path = pathlib.Path("packages/ai-finder/src/ai_finder_cli/telemetry.py")
+          src = path.read_text()
+          marker = '_INGEST_KEY = "__TELEMETRY_INGEST_KEY__"'
+          if marker not in src:
+              sys.exit("::error::assignment marker not found in telemetry.py")
+          new = src.replace(marker, f'_INGEST_KEY = "{key}"', 1)
+          path.write_text(new)
+
+          # Reload and verify the wheel will be live, not silently disabled.
+          sys.path.insert(0, "packages/ai-finder/src")
+          from ai_finder_cli import telemetry
+          assert telemetry._INGEST_KEY != telemetry._INGEST_KEY_PLACEHOLDER, "key was not substituted"
+          assert telemetry._INGEST_KEY_PLACEHOLDER == "__TELEMETRY_INGEST_KEY__", "placeholder constant was clobbered"
+          PY
 
       - name: Build package
         run: |

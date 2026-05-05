@@ -74,9 +74,18 @@ def test_disable_shuts_down_existing_client(monkeypatch):
     assert telemetry._client is None
 
 
+def test_placeholder_constant_value():
+    """The placeholder constant must equal the literal sed substitutes against.
+
+    Constructed dynamically so the build-time sed doesn't clobber it; this test
+    asserts that the dynamic construction still produces the right string.
+    """
+    assert telemetry._INGEST_KEY_PLACEHOLDER == "__TELEMETRY_INGEST_KEY__"
+
+
 def test_placeholder_key_disables_client(monkeypatch):
     """Source installs ship with the placeholder; client must not initialize."""
-    monkeypatch.setattr(telemetry, "_INGEST_KEY", "__TELEMETRY_INGEST_KEY__")
+    monkeypatch.setattr(telemetry, "_INGEST_KEY", telemetry._INGEST_KEY_PLACEHOLDER)
     assert telemetry._get_client() is None
 
 
