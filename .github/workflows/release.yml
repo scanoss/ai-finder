@@ -65,6 +65,22 @@ jobs:
       - name: Install build dependencies
         run: uv pip install --system build
 
+      - name: Inject telemetry ingest key
+        env:
+          TELEMETRY_INGEST_KEY: ${{ secrets.TELEMETRY_INGEST_KEY }}
+        run: |
+          if [ -z "$TELEMETRY_INGEST_KEY" ]; then
+            echo "::error::TELEMETRY_INGEST_KEY secret is not set"
+            exit 1
+          fi
+          target="packages/ai-finder/src/ai_finder_cli/telemetry.py"
+          sed -i.bak "s|__TELEMETRY_INGEST_KEY__|${TELEMETRY_INGEST_KEY}|g" "$target"
+          rm "${target}.bak"
+          if grep -q '__TELEMETRY_INGEST_KEY__' "$target"; then
+            echo "::error::Placeholder was not substituted in $target"
+            exit 1
+          fi
+
       - name: Build package
         run: |
           cd packages/ai-finder && python -m build && cd ../..

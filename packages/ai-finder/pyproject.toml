@@ -31,6 +31,7 @@ dependencies = [
     "requests>=2.28",
     "python-levenshtein>=0.25.1",
     "osslili>=1.6",
+    "ptelemetry>=0.2.2",
 ]
 
 [project.scripts]

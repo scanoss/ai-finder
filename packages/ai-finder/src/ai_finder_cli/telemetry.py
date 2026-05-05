@@ -21,9 +21,10 @@ from typing import Any
 
 from ai_finder_cli import __version__
 
-# Ingest key for ai-finder project
-# This placeholder is replaced with the real key during binary builds.
-# Source installations have telemetry disabled by default.
+# Ingest key for ai-finder project.
+# The placeholder is substituted with the real key during the wheel build in
+# release.yml. Source installations (where the placeholder is left in place)
+# have telemetry disabled — _get_client() short-circuits below.
 _INGEST_KEY = "__TELEMETRY_INGEST_KEY__"
 _PROJECT_SLUG = "ai-finder"
 _API_URL = "https://telemetry.scanoss.com/api"
