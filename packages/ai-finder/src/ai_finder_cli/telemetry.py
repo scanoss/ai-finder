@@ -29,6 +29,11 @@ _INGEST_KEY = "__TELEMETRY_INGEST_KEY__"
 _PROJECT_SLUG = "ai-finder"
 _API_URL = "https://telemetry.scanoss.com/api"
 
+# Sentinel used to detect un-substituted source installs. The build-time
+# substitution in release.yml is line-anchored (it only rewrites the
+# `_INGEST_KEY = "..."` assignment above), so this literal is preserved.
+_INGEST_KEY_PLACEHOLDER = "__TELEMETRY_INGEST_KEY__"
+
 # Global telemetry client (lazily initialized)
 _client: Any = None
 _disabled_by_flag: bool = False
@@ -74,7 +79,7 @@ def _get_client() -> Any:
         return None
 
     # Check if ingest key was injected during build (not the placeholder)
-    if _INGEST_KEY == "__TELEMETRY_INGEST_KEY__" or not _INGEST_KEY:
+    if _INGEST_KEY == _INGEST_KEY_PLACEHOLDER or not _INGEST_KEY:
         return None
 
     try:
