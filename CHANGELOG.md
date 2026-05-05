@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.5] - 2026-05-05
+
+### Fixed
+- Telemetry was disabled in the 0.3.4 wheel because the build-time substitution rewrote every occurrence of `__TELEMETRY_INGEST_KEY__` in `telemetry.py`, including the literal in the placeholder check that detects un-substituted source installs. The substitution is now line-anchored to the `_INGEST_KEY = "..."` assignment, and the workflow asserts post-substitution that the placeholder constant is intact.
+
 ## [0.3.4] - 2026-05-04
 
 ### Fixed
