@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.4] - 2026-05-04
+
+### Fixed
+- Telemetry was silently a no-op for PyPI installs: the wheel build never substituted the `__TELEMETRY_INGEST_KEY__` placeholder (the substitution step lived in the deleted `build-binaries.yml`), and `ptelemetry` was not declared as a runtime dependency. The release pipeline now substitutes the placeholder before building the wheel, and `ptelemetry>=0.2.2` is a runtime dep. Tests added for every documented opt-out path.
+
 ## [0.3.3] - 2026-05-04
 
 ### Fixed
