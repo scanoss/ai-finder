@@ -26,7 +26,7 @@
 | Java/Kotlin | openai-java, LangChain4j, Spring AI |
 | And more... | Ruby, PHP, C#, C++, Swift, Scala, Kotlin |
 
-### AI Package Detection (134+ packages)
+### AI Package Detection (150+ packages)
 
 Comprehensive detection across categories:
 
@@ -43,7 +43,7 @@ Comprehensive detection across categories:
 
 ### Model File Detection (12 formats)
 
-GGUF, SafeTensors, ONNX, PyTorch, TensorFlow, TFLite, CoreML, JAX, Keras, MXNet, PaddlePaddle
+GGUF, SafeTensors, ONNX, PyTorch, TensorFlow, TFLite, CoreML, JAX, Keras, MXNet, PaddlePaddle, Pickle
 
 ### Manifest Parsing (11 formats)
 

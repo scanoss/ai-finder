@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.7] - 2026-05-06
+
+### Added
+- Seed entries for vector databases (ChromaDB, Pinecone, Weaviate, Qdrant, Milvus, FAISS, LanceDB), AI safety (Guardrails AI, NeMo Guardrails, LLM Guard, AIProxyGuard), speech/audio (OpenAI Whisper, Faster Whisper, ElevenLabs, Bark), observability (Tavily, LangSmith, W&B, MLflow, Accelerate, Datasets), and additional agent frameworks (Strands, CrewAI, AutoGen). SDK seed grows from 119 to 150.
+
+### Fixed
+- The package README on PyPI was a one-paragraph stub. Replaced with the full project description so the PyPI page matches the GitHub one.
+
 ## [0.3.6] - 2026-05-06
 
 ### Changed

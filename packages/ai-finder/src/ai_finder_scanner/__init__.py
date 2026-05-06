@@ -22,7 +22,7 @@ from ai_finder_scanner.models import (
 )
 from ai_finder_scanner.scanner import Scanner
 
-__version__ = "0.3.6"
+__version__ = "0.3.7"
 
 __all__ = [
     # Core
