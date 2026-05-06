@@ -1,11 +1,3473 @@
 [
   {
+    "purl": "pkg:huggingface/01-ai/Yi-1.5-6B",
+    "name": "Yi-1.5-6B",
+    "organization": "01-ai",
+    "architecture": "llama",
+    "parameter_count": 6061035520,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/01-ai/Yi-1.5-9B-Chat",
+    "name": "Yi-1.5-9B-Chat",
+    "organization": "01-ai",
+    "architecture": "llama",
+    "parameter_count": 8829407232,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/01-ai/Yi-Coder-1.5B",
+    "name": "Yi-Coder-1.5B",
+    "organization": "01-ai",
+    "architecture": "llama",
+    "parameter_count": 1476495360,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/01-ai/Yi-Coder-9B",
+    "name": "Yi-Coder-9B",
+    "organization": "01-ai",
+    "architecture": "llama",
+    "parameter_count": 8829407232,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/01-ai/Yi-Coder-9B-Chat",
+    "name": "Yi-Coder-9B-Chat",
+    "organization": "01-ai",
+    "architecture": "llama",
+    "parameter_count": 8829407232,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/3ndetz/zoomerlm-gemma4-e2b",
+    "name": "zoomerlm-gemma4-e2b",
+    "organization": "3ndetz",
+    "architecture": "gemma",
+    "parameter_count": 5123178051,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/AITeamVN/Vietnamese_Embedding_v2",
+    "name": "Vietnamese_Embedding_v2",
+    "organization": "AITeamVN",
+    "architecture": "bert",
+    "parameter_count": 567754752,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/AInVFX/SeedVR2_comfyUI",
+    "name": "SeedVR2_comfyUI",
+    "organization": "AInVFX",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/APRKDEV/icarus-1-8b-Q4_K_M-GGUF",
+    "name": "icarus-1-8b",
+    "organization": "APRKDEV",
+    "parameter_count": 8000000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/Abiray/supergemma4-e4b-abliterated-GGUF",
+    "name": "supergemma4-e4b-abliterated",
+    "organization": "Abiray",
+    "architecture": "gemma",
+    "parameter_count": 7518068992,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/Aero-Ex/Trellis2-GGUF",
+    "name": "Trellis2",
+    "organization": "Aero-Ex"
+  },
+  {
+    "purl": "pkg:huggingface/Agnuxo/cajal-9b-v2-q4_k_m",
+    "name": "cajal-9b-v2",
+    "organization": "Agnuxo",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Ahiyawesome/Testing_AI_Tutors",
+    "name": "Testing_AI_Tutors",
+    "organization": "Ahiyawesome",
+    "architecture": "llama"
+  },
+  {
+    "purl": "pkg:huggingface/AiAF/bluey-8B-Q4_K_M-GGUF",
+    "name": "bluey-8B",
+    "organization": "AiAF",
+    "parameter_count": 8000000000
+  },
+  {
+    "purl": "pkg:huggingface/Aitrepreneur/FLX",
+    "name": "FLX",
+    "organization": "Aitrepreneur",
+    "parameter_count": 427616846
+  },
+  {
+    "purl": "pkg:huggingface/AkongBeastmode/AQ-Finance-Model",
+    "name": "AQ-Finance-Model",
+    "organization": "AkongBeastmode",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/AksaraLLM/AksaraLLM-Qwen-1.5B-v5-public-GGUF",
+    "name": "AksaraLLM-Qwen-1.5B-v5-public",
+    "organization": "AksaraLLM",
+    "architecture": "qwen",
+    "parameter_count": 1777088000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/AksaraLLM/aksarallm-1.5b-native-GGUF",
+    "name": "aksarallm-1.5b-native",
+    "organization": "AksaraLLM",
+    "architecture": "llama",
+    "parameter_count": 1500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Ali-001-ch/sehatsaathi-gemma4-e4b-GGUF",
+    "name": "sehatsaathi-gemma4-e4b",
+    "organization": "Ali-001-ch",
+    "architecture": "gemma",
+    "parameter_count": 7996156490,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/AllThingsIntel/Apollo-V0.1-4B-Thinking",
+    "name": "Apollo-V0.1-4B-Thinking",
+    "organization": "AllThingsIntel",
+    "architecture": "qwen",
+    "parameter_count": 4022468096,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/Alpeniq/lora_premium_model_llm",
+    "name": "lora_premium_model_llm",
+    "organization": "Alpeniq"
+  },
+  {
+    "purl": "pkg:huggingface/Andycurrent/Gemma-3-1B-it-GLM-4.7-Flash-Heretic-Uncensored-Thinking_GGUF",
+    "name": "Gemma-3-1B-it-GLM-4.7-Flash-Heretic-Uncensored-Thinking_GGUF",
+    "organization": "Andycurrent",
+    "architecture": "gemma",
+    "parameter_count": 999885952,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/AngelSlim/Hy-MT1.5-1.8B-1.25bit",
+    "name": "Hy-MT1.5-1.8B-1.25bit",
+    "organization": "AngelSlim",
+    "architecture": "hunyuan_v1_dense",
+    "parameter_count": 1800000000
+  },
+  {
+    "purl": "pkg:huggingface/Anhelor/SPIF-GGUF",
+    "name": "SPIF",
+    "organization": "Anhelor",
+    "architecture": "mistral",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/ArlenIvan/realmarx",
+    "name": "realmarx",
+    "organization": "ArlenIvan"
+  },
+  {
+    "purl": "pkg:huggingface/ArmGPT/ArmenianGPT-1.0-3B",
+    "name": "ArmenianGPT-1.0-3B",
+    "organization": "ArmGPT",
+    "architecture": "mistral",
+    "parameter_count": 4251743232,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/ArshadSWE/Arshad_Bot-Q4_K_M-GGUF",
+    "name": "Arshad_Bot",
+    "organization": "ArshadSWE",
+    "architecture": "phi3",
+    "parameter_count": 3821079552
+  },
+  {
+    "purl": "pkg:huggingface/Arty1001/aquaveritas-lfm-GGUF",
+    "name": "aquaveritas-lfm",
+    "organization": "Arty1001",
+    "architecture": "lfm2_vl",
+    "parameter_count": 448718848,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Astrallm/prompter-codex-v6",
+    "name": "prompter-codex-v6",
+    "organization": "Astrallm",
+    "architecture": "t5",
+    "parameter_count": 76961152,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Aurel-test/RickGemma4b_fr_bf16",
+    "name": "RickGemma4b_fr_bf16",
+    "organization": "Aurel-test",
+    "architecture": "gemma",
+    "parameter_count": 7996156448,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/AuriAetherwiing/G4-E4B-Musica-v1-Q6_K-GGUF",
+    "name": "G4-E4B-Musica-v1",
+    "organization": "AuriAetherwiing",
+    "architecture": "gemma4",
+    "parameter_count": 7996156490,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Averonmohit/NeuroStudy-Phi3-Final-GGUF",
+    "name": "NeuroStudy-Phi3-Final",
+    "organization": "Averonmohit",
+    "architecture": "phi"
+  },
+  {
+    "purl": "pkg:huggingface/AvitoTech/avision",
+    "name": "avision",
+    "organization": "AvitoTech",
+    "architecture": "qwen",
+    "parameter_count": 7437052928,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/AxionLab-official/DogeAI-v1.5-Coder-Q2_K-GGUF",
+    "name": "DogeAI-v1.5-Coder",
+    "organization": "AxionLab-official",
+    "architecture": "gemma3_text",
+    "parameter_count": 268098176,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Ayansk11/FinSenti-Llama-3.2-1B-GGUF",
+    "name": "FinSenti-Llama-3.2-1B",
+    "organization": "Ayansk11",
+    "architecture": "llama",
+    "parameter_count": 1235814400,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Ayansk11/FinSenti-SmolLM-1.7B-GGUF",
+    "name": "FinSenti-SmolLM-1.7B",
+    "organization": "Ayansk11",
+    "architecture": "llama",
+    "parameter_count": 1711376384,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/BLACK0X80/horus-egy-coder",
+    "name": "horus-egy-coder",
+    "organization": "BLACK0X80",
+    "architecture": "llama",
+    "parameter_count": 1235814400,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/BasedAGI/Redemption_Wind_24B-i1-GGUF",
+    "name": "Redemption_Wind_24B-i1",
+    "organization": "BasedAGI",
+    "architecture": "mpt",
+    "parameter_count": 23572433920,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/Binodt/Llama-3.2-1B-Instruct-bnb-4bit_lora4sleepcoach_GGUF",
+    "name": "Llama-3.2-1B-Instruct-bnb-4bit_lora4sleepcoach_GGUF",
+    "organization": "Binodt",
+    "architecture": "llama",
+    "parameter_count": 1000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/BlankHtmlPage/Qwopus3.5-9B-v3.5-Q4_K_M-GGUF",
+    "name": "Qwopus3.5-9B-v3.5",
+    "organization": "BlankHtmlPage",
+    "architecture": "qwen3_5",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/BoyBarley/BoyBarley-Sparky-v3",
+    "name": "BoyBarley-Sparky-v3",
+    "organization": "BoyBarley",
+    "architecture": "qwen",
+    "parameter_count": 494032768,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Bradarr/gpt4-x-alpaca-13b-native-ggml-model-q4_0",
+    "name": "gpt4-x-alpaca-13b-native-ggml-model",
+    "organization": "Bradarr",
+    "parameter_count": 13000000000
+  },
+  {
+    "purl": "pkg:huggingface/BrinqAI/functiongemma-270m-physical-ai",
+    "name": "functiongemma-270m-physical-ai",
+    "organization": "BrinqAI",
+    "architecture": "gemma",
+    "parameter_count": 270000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/Brooooooklyn/Qwen3.6-35B-A3B-UD-Q2_K_XL-mlx",
+    "name": "Qwen3.6-35B-A3B-UD-Q2_K_XL",
+    "organization": "Brooooooklyn",
+    "architecture": "qwen",
+    "parameter_count": 4483952496,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Bruno0208/Qwen2.5-0.5B-Instruct-mate-q4_k_m.gguf",
+    "name": "Qwen2.5-0.5B-Instruct-mate-q4_k_m.gguf",
+    "organization": "Bruno0208",
+    "architecture": "qwen",
+    "parameter_count": 494032768,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Brunobkr/VOIDDER_gemma-4-E2B-it-5b-ultra-uncensored-heretic-5b-f16.gguf",
+    "name": "VOIDDER_gemma-4-E2B-it-5b-ultra-uncensored-heretic-5b-f16.gguf",
+    "organization": "Brunobkr",
+    "architecture": "gemma",
+    "parameter_count": 5000000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/Buyy/ontomind-gguf",
+    "name": "ontomind",
+    "organization": "Buyy",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/CCSSNE/LuffyTheFox-OmniClaw-Qwen3.5-9B-Claude-4.6-Opus-Uncensored-v2-GGUF",
+    "name": "LuffyTheFox-OmniClaw-Qwen3.5-9B-Claude-4.6-Opus-Uncensored-v2",
+    "organization": "CCSSNE",
+    "architecture": "qwen3_5",
+    "parameter_count": 9653104368,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/CMM7590/Lilith_AI_8B",
+    "name": "Lilith_AI_8B",
+    "organization": "CMM7590",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "CC-BY-NC-SA-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/CQSystems/Google-Gemma-4-E4B-It-GGUF",
+    "name": "Google-Gemma-4-E4B-It",
+    "organization": "CQSystems",
+    "architecture": "gemma",
+    "parameter_count": 7996156490,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/Casual-Autopsy/snowflake-arctic-embed-l-v2.0-gguf",
+    "name": "snowflake-arctic-embed-l-v2.0",
+    "organization": "Casual-Autopsy",
+    "architecture": "xlm-roberta",
+    "parameter_count": 567754752,
+    "license": "Arctic is licensed under the [Apache-2](https://www.apache.org/licenses/LICENSE-2.0). The released models can be used for commercial purposes free of charge"
+  },
+  {
+    "purl": "pkg:huggingface/Centara/gemma-4-E4B-it-OBLITERATED-Q4_K_M-GGUF",
+    "name": "gemma-4-E4B-it-OBLITERATED",
+    "organization": "Centara",
+    "architecture": "gemma",
+    "parameter_count": 7996156448,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ChristianAzinn/mxbai-embed-large-v1-gguf",
+    "name": "mxbai-embed-large-v1",
+    "organization": "ChristianAzinn",
+    "architecture": "bert",
+    "parameter_count": 335141888,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ChuuniZ/xcw-models",
+    "name": "xcw-models",
+    "organization": "ChuuniZ",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/ClaudioItaly/QwenPaw-Flash-4B-Q6_K-GGUF",
+    "name": "QwenPaw-Flash-4B",
+    "organization": "ClaudioItaly",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/CohereLabs/aya-101",
+    "name": "aya-101",
+    "organization": "CohereLabs",
+    "architecture": "t5",
+    "parameter_count": 12921057280,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/CohereLabs/aya-23-35B",
+    "name": "aya-23-35B",
+    "organization": "CohereLabs",
+    "architecture": "cohere",
+    "parameter_count": 35000000000,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/CohereLabs/aya-23-8B",
+    "name": "aya-23-8B",
+    "organization": "CohereLabs",
+    "architecture": "cohere",
+    "parameter_count": 8028033024,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/CohereLabs/aya-expanse-32b",
+    "name": "aya-expanse-32b",
+    "organization": "CohereLabs",
+    "architecture": "cohere",
+    "parameter_count": 32296476672,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/CohereLabs/tiny-aya-base",
+    "name": "tiny-aya-base",
+    "organization": "CohereLabs",
+    "architecture": "cohere2",
+    "parameter_count": 3349227520,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/CohereLabs/tiny-aya-fire",
+    "name": "tiny-aya-fire",
+    "organization": "CohereLabs",
+    "architecture": "cohere2",
+    "parameter_count": 3349227520,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/CohereLabs/tiny-aya-global",
+    "name": "tiny-aya-global",
+    "organization": "CohereLabs",
+    "architecture": "cohere2",
+    "parameter_count": 3349227520,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/CohereLabs/tiny-aya-water",
+    "name": "tiny-aya-water",
+    "organization": "CohereLabs",
+    "architecture": "cohere2",
+    "parameter_count": 3349227520,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/CoreWorxLab/caal-qwen3.5-4b",
+    "name": "caal-qwen3.5-4b",
+    "organization": "CoreWorxLab",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/CurveReality/ember-compress",
+    "name": "ember-compress",
+    "organization": "CurveReality",
+    "architecture": "mistral",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/CyberHarem/hachimiya_meguru_theidolmstershinycolors",
+    "name": "hachimiya_meguru_theidolmstershinycolors",
+    "organization": "CyberHarem",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/DanyDA/unsloth_Qwen3.5-35B-A3B-Q4_K_M-GGUF-SPLIT",
+    "name": "unsloth_Qwen3.5-35B-A3B-Q4_K_M-GGUF-SPLIT",
+    "organization": "DanyDA",
+    "architecture": "qwen",
+    "parameter_count": 35000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/DanyDA/unsloth_Qwen3.5-9B-GGUF_Qwen3.5-9B-Q8_0-GGUF-SPLIT",
+    "name": "unsloth_Qwen3.5-9B-GGUF_Qwen3.5-9B-Q8_0-GGUF-SPLIT",
+    "organization": "DanyDA",
+    "architecture": "qwen",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/DavidAU/Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking-NEO-CODE-Di-IMatrix-MAX-GGUF",
+    "name": "Qwen3.6-40B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking-NEO-CODE-Di-IMatrix-MAX",
+    "organization": "DavidAU",
+    "architecture": "qwen",
+    "parameter_count": 40000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/DeadBranches/UltraReal_FineTune_Anima",
+    "name": "UltraReal_FineTune_Anima",
+    "organization": "DeadBranches",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/DeepBeepMeep/Wan2.1",
+    "name": "Wan2.1",
+    "organization": "DeepBeepMeep",
+    "architecture": "qwen",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/DeepHat/DeepHat-V1-7B",
+    "name": "DeepHat-V1-7B",
+    "organization": "DeepHat",
+    "architecture": "qwen",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Diesor/tutor_matematicas_v2",
+    "name": "tutor_matematicas_v2",
+    "organization": "Diesor"
+  },
+  {
+    "purl": "pkg:huggingface/DoeyLLM/OneLLM-Doey-V1-Llama-3.2-1B-it-Q8_0-GGUF",
+    "name": "OneLLM-Doey-V1-Llama-3.2-1B-it",
+    "organization": "DoeyLLM",
+    "architecture": "llama",
+    "parameter_count": 1000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/DoeyLLM/OneLLM-Doey-V1-Llama-3.2-3B-Q4_K_M-GGUF",
+    "name": "OneLLM-Doey-V1-Llama-3.2-3B",
+    "organization": "DoeyLLM",
+    "architecture": "llama",
+    "parameter_count": 3000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/DrUkachi/ktt-math-tutor-models",
+    "name": "ktt-math-tutor-models",
+    "organization": "DrUkachi",
+    "architecture": "llama",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/DunnBC22/distilgpt2-2k_clean_medical_articles_causal_language_model",
+    "name": "distilgpt2-2k_clean_medical_articles_causal_language_model",
+    "organization": "DunnBC22",
+    "architecture": "gpt2",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/DuoNeural/Archon-Gemma-4-E4B-v2",
+    "name": "Archon-Gemma-4-E4B-v2",
+    "organization": "DuoNeural",
+    "architecture": "gemma",
+    "license": "Inherits [Gemma Terms of Use](https://ai.google.dev/gemma/terms). Fine-tuning weights released under the same terms"
+  },
+  {
+    "purl": "pkg:huggingface/EREN121232/MAJESTIC-FIN-R1-gguf",
+    "name": "MAJESTIC-FIN-R1",
+    "organization": "EREN121232",
+    "architecture": "lfm2",
+    "parameter_count": 2569272320,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/EleutherAI/gpt-j-6b",
+    "name": "gpt-j-6b",
+    "organization": "EleutherAI",
+    "architecture": "gptj",
+    "parameter_count": 6000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/EleutherAI/gpt-neox-20b",
+    "name": "gpt-neox-20b",
+    "organization": "EleutherAI",
+    "architecture": "gpt_neox",
+    "parameter_count": 20000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/EleutherAI/pythia-1.4b",
+    "name": "pythia-1.4b",
+    "organization": "EleutherAI",
+    "architecture": "gpt_neox",
+    "parameter_count": 1515311488,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/EleutherAI/pythia-6.9b",
+    "name": "pythia-6.9b",
+    "organization": "EleutherAI",
+    "architecture": "gpt_neox",
+    "parameter_count": 6991520256,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/EugeneMeng/Short-Drama-Title-Generator-4B-IQ4_NL-GGUF",
+    "name": "Short-Drama-Title-Generator-4B",
+    "organization": "EugeneMeng",
+    "architecture": "qwen3",
+    "parameter_count": 4022468096,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Evxlution/t5_aac_v2",
+    "name": "t5_aac_v2",
+    "organization": "Evxlution",
+    "architecture": "t5"
+  },
+  {
+    "purl": "pkg:huggingface/FacebookAI/roberta-base",
+    "name": "roberta-base",
+    "organization": "FacebookAI",
+    "architecture": "roberta",
+    "parameter_count": 124697947,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/FacebookAI/xlm-roberta-base",
+    "name": "xlm-roberta-base",
+    "organization": "FacebookAI",
+    "architecture": "xlm-roberta",
+    "parameter_count": 278885778,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/FacebookAI/xlm-roberta-large",
+    "name": "xlm-roberta-large",
+    "organization": "FacebookAI",
+    "architecture": "xlm-roberta",
+    "parameter_count": 561192082,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/FarmerlineML/w2v-bert-2.0_2026_krio",
+    "name": "w2v-bert-2.0_2026_krio",
+    "organization": "FarmerlineML",
+    "architecture": "bert",
+    "parameter_count": 605712225
+  },
+  {
+    "purl": "pkg:huggingface/Felladrin/gguf-smollm-360M-instruct-add-basics",
+    "name": "gguf-smollm-360M-instruct-add-basics",
+    "organization": "Felladrin",
+    "architecture": "llama",
+    "parameter_count": 361821120,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Fiscus/trinitite_safe_rl_base_model",
+    "name": "trinitite_safe_rl_base_model",
+    "organization": "Fiscus",
+    "architecture": "qwen",
+    "parameter_count": 4411424256,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Frank290350/Phibek-4B-v0.1-gguf",
+    "name": "Phibek-4B-v0.1",
+    "organization": "Frank290350",
+    "architecture": "phi",
+    "parameter_count": 4000000000
+  },
+  {
+    "purl": "pkg:huggingface/Fredjs/cfy",
+    "name": "cfy",
+    "organization": "Fredjs",
+    "architecture": "mpt"
+  },
+  {
+    "purl": "pkg:huggingface/GODsStrongestSoldier/Distil-Opus4.7-Minute.Codex.NSFW-0.1B",
+    "name": "Distil-Opus4.7-Minute.Codex.NSFW-0.1B",
+    "organization": "GODsStrongestSoldier",
+    "architecture": "gpt2",
+    "parameter_count": 81912576,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/GPUburnout/GPUburnout-3B-75K-Chat",
+    "name": "GPUburnout-3B-75K-Chat",
+    "organization": "GPUburnout",
+    "architecture": "llama",
+    "parameter_count": 3122969600
+  },
+  {
+    "purl": "pkg:huggingface/Gabrieltrf/alfred-qwen3.5-4b-Q4_K_M-GGUF",
+    "name": "alfred-qwen3.5-4b",
+    "organization": "Gabrieltrf",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/GenTech-Solution/pland-classifier",
+    "name": "pland-classifier",
+    "organization": "GenTech-Solution"
+  },
+  {
+    "purl": "pkg:huggingface/GioviManto/diadema-finetune-qwen7b-v0",
+    "name": "diadema-finetune-qwen7b-v0",
+    "organization": "GioviManto",
+    "architecture": "qwen",
+    "parameter_count": 7615616512
+  },
+  {
+    "purl": "pkg:huggingface/Grimxlock/cerberus-4b-v2-abliterated",
+    "name": "cerberus-4b-v2-abliterated",
+    "organization": "Grimxlock",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Gthalmie1/moody-porn-mix-v10-dpo-gguf",
+    "name": "moody-porn-mix-v10-dpo",
+    "organization": "Gthalmie1",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Gthalmie1/moody-real-mix-v5-dpo-gguf",
+    "name": "moody-real-mix-v5-dpo",
+    "organization": "Gthalmie1",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Guilherme34/Samantha-Mythomax-l2-13b-merge-fixed-Q2_K-GGUF",
+    "name": "Samantha-Mythomax-l2-13b-merge-fixed",
+    "organization": "Guilherme34",
+    "architecture": "llama",
+    "parameter_count": 13000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/GyanAISystems/mirzapur-ai-8b-F16-GGUF",
+    "name": "mirzapur-ai-8b",
+    "organization": "GyanAISystems",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/HailJebus/MT-Gen6fix-gemma-2-9B-Q4_0-GGUF",
+    "name": "MT-Gen6fix-gemma-2-9B",
+    "organization": "HailJebus",
+    "architecture": "gemma",
+    "parameter_count": 9000000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/HammadNaseer/medichat-tinyllama-q8",
+    "name": "medichat-tinyllama-q8",
+    "organization": "HammadNaseer",
+    "architecture": "llama",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Hamzasajjad38/pakistan-leaders-tinyllama-Q4-K-M-GGUF",
+    "name": "pakistan-leaders-tinyllama-Q4-K-M",
+    "organization": "Hamzasajjad38",
+    "architecture": "llama",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Hansel16/autotos-qlora-checkpoint",
+    "name": "autotos-qlora-checkpoint",
+    "organization": "Hansel16"
+  },
+  {
+    "purl": "pkg:huggingface/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive",
+    "name": "Qwen3.5-9B-Uncensored-HauhauCS-Aggressive",
+    "organization": "HauhauCS",
+    "architecture": "qwen",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Hongik-Project-2024/mmproj-model-f16.gguf",
+    "name": "mmproj-model-f16.gguf",
+    "organization": "Hongik-Project-2024"
+  },
+  {
+    "purl": "pkg:huggingface/HuggingFaceH4/zephyr-7b-beta",
+    "name": "zephyr-7b-beta",
+    "organization": "HuggingFaceH4",
+    "architecture": "mistral",
+    "parameter_count": 7241732096,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/HuggingFaceTB/SmolLM2-1.7B",
+    "name": "SmolLM2-1.7B",
+    "organization": "HuggingFaceTB",
+    "architecture": "llama",
+    "parameter_count": 1711376384,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/HuggingFaceTB/SmolLM2-1.7B-Instruct",
+    "name": "SmolLM2-1.7B-Instruct",
+    "organization": "HuggingFaceTB",
+    "architecture": "llama",
+    "parameter_count": 1700000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/HuggingFaceTB/SmolLM2-135M",
+    "name": "SmolLM2-135M",
+    "organization": "HuggingFaceTB",
+    "architecture": "llama",
+    "parameter_count": 134515008,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/HuggingFaceTB/SmolLM2-360M-Instruct",
+    "name": "SmolLM2-360M-Instruct",
+    "organization": "HuggingFaceTB",
+    "architecture": "llama",
+    "parameter_count": 361821120,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/HuggingFaceTB/SmolVLM2-500M-Video-Instruct",
+    "name": "SmolVLM2-500M-Video-Instruct",
+    "organization": "HuggingFaceTB",
+    "architecture": "smolvlm",
+    "parameter_count": 507482304,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/IDEAHQ/ava-nautilus",
+    "name": "ava-nautilus",
+    "organization": "IDEAHQ",
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/IntelFox/FineQwen3.5-2B_Q4-K-M",
+    "name": "FineQwen3.5-2B_Q4-K-M",
+    "organization": "IntelFox",
+    "architecture": "qwen",
+    "parameter_count": 2000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/IntelFox/ToucanQwen3.5-2B_Q4-K-M",
+    "name": "ToucanQwen3.5-2B_Q4-K-M",
+    "organization": "IntelFox",
+    "architecture": "qwen",
+    "parameter_count": 2000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/IrisCHEN04/ai_chatbot_model_merged_q4km",
+    "name": "ai_chatbot_model_merged_q4km",
+    "organization": "IrisCHEN04"
+  },
+  {
+    "purl": "pkg:huggingface/ItsJTA/editorai-jtasmol",
+    "name": "editorai-jtasmol",
+    "organization": "ItsJTA"
+  },
+  {
+    "purl": "pkg:huggingface/ItsJTA/editorai-medium",
+    "name": "editorai-medium",
+    "organization": "ItsJTA"
+  },
+  {
+    "purl": "pkg:huggingface/Jacaranda/UlizaLlama3",
+    "name": "UlizaLlama3",
+    "organization": "Jacaranda",
+    "architecture": "llama",
+    "parameter_count": 8030261248
+  },
+  {
+    "purl": "pkg:huggingface/Jashan887/81_Self_After_Dark_Unfiltered",
+    "name": "81_Self_After_Dark_Unfiltered",
+    "organization": "Jashan887",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/JeffGreen311/Eve-V2-Unleashed-Qwen3.5-8B-Liberated-4K-4B-Merged",
+    "name": "Eve-V2-Unleashed-Qwen3.5-8B-Liberated-4K-4B-Merged",
+    "organization": "JeffGreen311",
+    "architecture": "qwen",
+    "parameter_count": 8000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/Jiunsong/supergemma4-26b-uncensored-gguf-v2",
+    "name": "supergemma4-26b-uncensored-gguf-v2",
+    "organization": "Jiunsong",
+    "architecture": "gemma",
+    "parameter_count": 26000000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/Juicesyo/Sally-9B-GGUF",
+    "name": "Sally-9B",
+    "organization": "Juicesyo",
+    "architecture": "qwen3_5",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/JustACluelessKid2/IQuest-Coder-V1-7B-Thinking-Q6_K-GGUF",
+    "name": "IQuest-Coder-V1-7B-Thinking",
+    "organization": "JustACluelessKid2",
+    "architecture": "iquestcoder",
+    "parameter_count": 7000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/KBLab/sentence-bert-swedish-cased",
+    "name": "sentence-bert-swedish-cased",
+    "organization": "KBLab",
+    "architecture": "bert",
+    "parameter_count": 124691456,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/KBlueLeaf/TIPO-500M-ft",
+    "name": "TIPO-500M-ft",
+    "organization": "KBlueLeaf",
+    "architecture": "llama",
+    "parameter_count": 507989760,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/KLMFOREVER/dolphin-2.9-llama3-8b-q3f16_1-MLC",
+    "name": "dolphin-2.9-llama3-8b-q3f16_1-MLC",
+    "organization": "KLMFOREVER",
+    "architecture": "llama",
+    "parameter_count": 8000000000
+  },
+  {
+    "purl": "pkg:huggingface/Keyven/german-ocr-3.1",
+    "name": "german-ocr-3.1",
+    "organization": "Keyven",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/KoRiF/speecht5_finetuned_common_voice_be",
+    "name": "speecht5_finetuned_common_voice_be",
+    "organization": "KoRiF",
+    "architecture": "t5",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/Kutches/Anim4",
+    "name": "Anim4",
+    "organization": "Kutches",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/LH-Tech-AI/Apex-1.5-Coder-Instruct-350M",
+    "name": "Apex-1.5-Coder-Instruct-350M",
+    "organization": "LH-Tech-AI",
+    "architecture": "gpt2",
+    "parameter_count": 350000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/LLiserginov/luqwen-0.8b",
+    "name": "luqwen-0.8b",
+    "organization": "LLiserginov",
+    "architecture": "qwen",
+    "parameter_count": 800000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Lewdiculous/L3-8B-Stheno-v3.2-GGUF-IQ-Imatrix",
+    "name": "L3-8B-Stheno-v3.2-GGUF-IQ-Imatrix",
+    "organization": "Lewdiculous",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/Lewdiculous/MN-12B-Lyra-v4-GGUF-IQ-Imatrix",
+    "name": "MN-12B-Lyra-v4-GGUF-IQ-Imatrix",
+    "organization": "Lewdiculous",
+    "architecture": "mistral",
+    "parameter_count": 12247782400,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/Liang013/wk2.2",
+    "name": "wk2.2",
+    "organization": "Liang013"
+  },
+  {
+    "purl": "pkg:huggingface/LiquidAI/LFM2-2.6B",
+    "name": "LFM2-2.6B",
+    "organization": "LiquidAI",
+    "architecture": "lfm2",
+    "parameter_count": 2569272320,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/LiquidAI/LFM2.5-1.2B-Instruct",
+    "name": "LFM2.5-1.2B-Instruct",
+    "organization": "LiquidAI",
+    "architecture": "lfm2",
+    "parameter_count": 1200000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/LiquidAI/LFM2.5-350M",
+    "name": "LFM2.5-350M",
+    "organization": "LiquidAI",
+    "architecture": "lfm2",
+    "parameter_count": 354483968,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/LocoreMind/LocoOperator-4B-GGUF",
+    "name": "LocoOperator-4B",
+    "organization": "LocoreMind",
+    "architecture": "qwen3",
+    "parameter_count": 4022468096,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/LuckyOda/comfyui-full-pack",
+    "name": "comfyui-full-pack",
+    "organization": "LuckyOda",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/Lucy-in-the-Sky/Qwen2.5-Coder-14B-Instruct-Q2_K-GGUF",
+    "name": "Qwen2.5-Coder-14B-Instruct",
+    "organization": "Lucy-in-the-Sky",
+    "architecture": "qwen",
+    "parameter_count": 14000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/LuffyTheFox/OmniClaw-Qwen3.5-9B-Claude-4.6-Opus-Uncensored-v2-GGUF",
+    "name": "OmniClaw-Qwen3.5-9B-Claude-4.6-Opus-Uncensored-v2",
+    "organization": "LuffyTheFox",
+    "architecture": "qwen3_5",
+    "parameter_count": 9653104368,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/M4-ai/TinyMistral-248M-v2-Instruct-GGUF",
+    "name": "TinyMistral-248M-v2-Instruct",
+    "organization": "M4-ai",
+    "architecture": "mistral",
+    "parameter_count": 248024064,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/MCult01/muse-qwen3vl-8b-gguf",
+    "name": "muse-qwen3vl-8b",
+    "organization": "MCult01",
+    "architecture": "qwen",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Manah1820/peca-llama32-1b-merged-Q4_K_M-GGUF",
+    "name": "peca-llama32-1b-merged",
+    "organization": "Manah1820",
+    "architecture": "llama",
+    "parameter_count": 1000000000
+  },
+  {
+    "purl": "pkg:huggingface/Manojb/Crow-4B-Opus-4.6-Distill-Heretic_Qwen3.5.Q4_K_M.gguf",
+    "name": "Crow-4B-Opus-4.6-Distill-Heretic_Qwen3.5.Q4_K_M.gguf",
+    "organization": "Manojb",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Manojb/Huihui-Ling-mini-2.0-abliterated.i1-IQ4_XS.gguf",
+    "name": "Huihui-Ling-mini-2.0-abliterated.i1-IQ4_XS.gguf",
+    "organization": "Manojb"
+  },
+  {
+    "purl": "pkg:huggingface/Manojb/LFM2.5-1.2B-Instruct-F16.gguf",
+    "name": "LFM2.5-1.2B-Instruct-F16.gguf",
+    "organization": "Manojb",
+    "parameter_count": 1200000000
+  },
+  {
+    "purl": "pkg:huggingface/Manojb/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive-Q8_0.gguf",
+    "name": "Qwen3.5-9B-Uncensored-HauhauCS-Aggressive-Q8_0.gguf",
+    "organization": "Manojb",
+    "architecture": "qwen",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Mattimax/DAC5.3-0.5B-Q4_K_M-GGUF",
+    "name": "DAC5.3-0.5B",
+    "organization": "Mattimax",
+    "architecture": "qwen2",
+    "parameter_count": 500000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/MaziyarPanahi/mathstral-7B-v0.1-GGUF",
+    "name": "mathstral-7B-v0.1",
+    "organization": "MaziyarPanahi",
+    "architecture": "mistral",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/MelodyMachine/Deepfake-audio-detection-V2",
+    "name": "Deepfake-audio-detection-V2",
+    "organization": "MelodyMachine",
+    "architecture": "wav2vec2",
+    "parameter_count": 94569090,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Melvin56/EXAONE-3.5-7.8B-Instruct-abliterated-IQ4_XS-GGUF",
+    "name": "EXAONE-3.5-7.8B-Instruct-abliterated",
+    "organization": "Melvin56",
+    "architecture": "exaone",
+    "parameter_count": 7800000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/MikeDFT/devils_advocate_gen2_gguf",
+    "name": "devils_advocate_gen2_gguf",
+    "organization": "MikeDFT",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/MisterHolmes44/dream-catcher-llama3-GGUF",
+    "name": "dream-catcher-llama3",
+    "organization": "MisterHolmes44",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "Llama-3"
+  },
+  {
+    "purl": "pkg:huggingface/Moayd0999/V2-Edge-AI-Doctor",
+    "name": "V2-Edge-AI-Doctor",
+    "organization": "Moayd0999",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/ModelsLab/rm-ckpts",
+    "name": "rm-ckpts",
+    "organization": "ModelsLab",
+    "parameter_count": 220700242
+  },
+  {
+    "purl": "pkg:huggingface/Mohit1977/connect-car-vehicle",
+    "name": "connect-car-vehicle",
+    "organization": "Mohit1977",
+    "architecture": "gemma4",
+    "parameter_count": 5123178051,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Mohit1977/connect-car-vehicle-qwen",
+    "name": "connect-car-vehicle-qwen",
+    "organization": "Mohit1977",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/Moldwebs/wrk-models-g1",
+    "name": "wrk-models-g1",
+    "organization": "Moldwebs"
+  },
+  {
+    "purl": "pkg:huggingface/Motif-Technologies/Motif-Video-2B-GGUF",
+    "name": "Motif-Video-2B",
+    "organization": "Motif-Technologies",
+    "parameter_count": 2000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/MrEngineer/ClinIQ-Edge-gemma-4-e4b-it",
+    "name": "ClinIQ-Edge-gemma-4-e4b-it",
+    "organization": "MrEngineer",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/Mungert/Hunyuan-MT-7B-GGUF",
+    "name": "Hunyuan-MT-7B",
+    "organization": "Mungert",
+    "parameter_count": 7000000000
+  },
+  {
+    "purl": "pkg:huggingface/Mykee/HOTHUN-Hermes-3-8B-v1.4-GGUF",
+    "name": "HOTHUN-Hermes-3-8B-v1.4",
+    "organization": "Mykee",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "Llama-3"
+  },
+  {
+    "purl": "pkg:huggingface/Mykee/HOTHUN-Stheno-3.2-v1.4-GGUF",
+    "name": "HOTHUN-Stheno-3.2-v1.4",
+    "organization": "Mykee",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/NAMAA-Space/Namaa-ARA-Reranker-V1",
+    "name": "Namaa-ARA-Reranker-V1",
+    "organization": "NAMAA-Space",
+    "architecture": "bert",
+    "parameter_count": 567755777,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Nanbeige/Nanbeige4.1-3B",
+    "name": "Nanbeige4.1-3B",
+    "organization": "Nanbeige",
+    "architecture": "llama",
+    "parameter_count": 3933637120,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Ngixdev/OmniCoder-Qwen3.5-9B-Claude-4.6-Opus-Uncensored-v2-GGUF",
+    "name": "OmniCoder-Qwen3.5-9B-Claude-4.6-Opus-Uncensored-v2",
+    "organization": "Ngixdev",
+    "architecture": "qwen",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Nipun/vayuchat-smollm2-360m-ft",
+    "name": "vayuchat-smollm2-360m-ft",
+    "organization": "Nipun",
+    "parameter_count": 360000000
+  },
+  {
+    "purl": "pkg:huggingface/NousResearch/Hermes-2-Pro-Llama-3-8B",
+    "name": "Hermes-2-Pro-Llama-3-8B",
+    "organization": "NousResearch",
+    "architecture": "llama",
+    "parameter_count": 8030523392,
+    "license": "Llama-3"
+  },
+  {
+    "purl": "pkg:huggingface/NousResearch/Hermes-3-Llama-3.1-8B",
+    "name": "Hermes-3-Llama-3.1-8B",
+    "organization": "NousResearch",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "Llama-3"
+  },
+  {
+    "purl": "pkg:huggingface/NousResearch/Hermes-4-14B",
+    "name": "Hermes-4-14B",
+    "organization": "NousResearch",
+    "architecture": "qwen3",
+    "parameter_count": 424960,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/NousResearch/NousCoder-14B",
+    "name": "NousCoder-14B",
+    "organization": "NousResearch",
+    "architecture": "qwen3",
+    "parameter_count": 14768307200,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Novaciano/Bride_Of_Frankenstein-3.2-1B-Q4_K_M-GGUF",
+    "name": "Bride_Of_Frankenstein-3.2-1B",
+    "organization": "Novaciano",
+    "parameter_count": 1000000000
+  },
+  {
+    "purl": "pkg:huggingface/Novaciano/Scarface-3.2-1B-Q4_K_M-GGUF",
+    "name": "Scarface-3.2-1B",
+    "organization": "Novaciano",
+    "architecture": "llama",
+    "parameter_count": 1235814400,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/Novus-Sphere/sanctum_mobile_FINAL_RU",
+    "name": "sanctum_mobile_FINAL_RU",
+    "organization": "Novus-Sphere",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Oguzzh4nn/psikolog-glm4-GGUF",
+    "name": "psikolog-glm4",
+    "organization": "Oguzzh4nn"
+  },
+  {
+    "purl": "pkg:huggingface/Old-Fisherman/Fooocus_Nex",
+    "name": "Fooocus_Nex",
+    "organization": "Old-Fisherman",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/Omarrran/gemma2_model_9B_q4_km",
+    "name": "gemma2_model_9B_q4_km",
+    "organization": "Omarrran",
+    "architecture": "gemma",
+    "parameter_count": 9000000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/Omkardkdnd/Blackgpt",
+    "name": "Blackgpt",
+    "organization": "Omkardkdnd"
+  },
+  {
+    "purl": "pkg:huggingface/OpenMOSS-Team/MOSS-TTS",
+    "name": "MOSS-TTS",
+    "organization": "OpenMOSS-Team",
+    "architecture": "moss_tts_delay",
+    "parameter_count": 8489841664,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/OpenxAILabs/nix-reviewer-1.5b-GGUF",
+    "name": "nix-reviewer-1.5b",
+    "organization": "OpenxAILabs",
+    "parameter_count": 1500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/OrionStarAI/Orion-14B-Chat",
+    "name": "Orion-14B-Chat",
+    "organization": "OrionStarAI",
+    "architecture": "orion",
+    "parameter_count": 14000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Otakadelic/mergekit-model_stock-prczfmj-Q4_K_M-GGUF",
+    "name": "mergekit-model_stock-prczfmj",
+    "organization": "Otakadelic",
+    "architecture": "gemma3",
+    "parameter_count": 27432067952
+  },
+  {
+    "purl": "pkg:huggingface/OusiaResearch/AurethV2-4B-GGUF",
+    "name": "AurethV2-4B",
+    "organization": "OusiaResearch",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Outlier-Ai/Outlier-Lite-7B-GGUF",
+    "name": "Outlier-Lite-7B",
+    "organization": "Outlier-Ai",
+    "architecture": "qwen2",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/P3dream/genguardian-udp-lag-detector",
+    "name": "genguardian-udp-lag-detector",
+    "organization": "P3dream"
+  },
+  {
+    "purl": "pkg:huggingface/PJRM/LlamaTronic-3.1-4B-IQ4_NL-GGUF",
+    "name": "LlamaTronic-3.1-4B",
+    "organization": "PJRM",
+    "architecture": "llama",
+    "parameter_count": 4512746496
+  },
+  {
+    "purl": "pkg:huggingface/PJRM/StableHermes-3b-Q4_0-GGUF",
+    "name": "StableHermes-3b",
+    "organization": "PJRM",
+    "architecture": "stablelm_epoch",
+    "parameter_count": 3000000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/PJRM/stablelm-2-zephyr-1_6b-Q4_0-GGUF",
+    "name": "stablelm-2-zephyr-1_6b",
+    "organization": "PJRM",
+    "architecture": "stablelm",
+    "parameter_count": 6000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/PabloCano1/ordered-PT-gemma3-4b-fine-tuned",
+    "name": "ordered-PT-gemma3-4b-fine-tuned",
+    "organization": "PabloCano1",
+    "architecture": "gemma",
+    "parameter_count": 4300079472,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/PaddlePaddle/PaddleOCR-VL-1.5",
+    "name": "PaddleOCR-VL-1.5",
+    "organization": "PaddlePaddle",
+    "architecture": "paddleocr_vl",
+    "parameter_count": 958588736,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/PantheonUnbound/Satyr-V0.1-4B",
+    "name": "Satyr-V0.1-4B",
+    "organization": "PantheonUnbound",
+    "architecture": "qwen3",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/PatataAliena/Qwen2.5-VL-7B-Instruct-Q4_K_M-GGUF",
+    "name": "Qwen2.5-VL-7B-Instruct",
+    "organization": "PatataAliena",
+    "architecture": "qwen",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/PetarDj/Mistal7B_0.2_ggml-model-Q6_K.gguf",
+    "name": "Mistal7B_0.2_ggml-model-Q6_K.gguf",
+    "organization": "PetarDj"
+  },
+  {
+    "purl": "pkg:huggingface/PixArt-alpha/PixArt-Sigma-XL-2-1024-MS",
+    "name": "PixArt-Sigma-XL-2-1024-MS",
+    "organization": "PixArt-alpha",
+    "license": "OpenRAIL++"
+  },
+  {
+    "purl": "pkg:huggingface/PriyankaHundalekar/Hindi-Offensive-Analyzer-MuRIL",
+    "name": "Hindi-Offensive-Analyzer-MuRIL",
+    "organization": "PriyankaHundalekar",
+    "architecture": "bert"
+  },
+  {
+    "purl": "pkg:huggingface/QuantFactory/DarkIdol-Llama-3.1-8B-Instruct-1.2-Uncensored-GGUF",
+    "name": "DarkIdol-Llama-3.1-8B-Instruct-1.2-Uncensored",
+    "organization": "QuantFactory",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "Llama-3.1"
+  },
+  {
+    "purl": "pkg:huggingface/QusiEqualsTrue/RedN-HaoxAI_v4bgemma4-gguf",
+    "name": "RedN-HaoxAI_v4bgemma4",
+    "organization": "QusiEqualsTrue",
+    "architecture": "gemma",
+    "parameter_count": 4300079472,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2-1.5B",
+    "name": "Qwen2-1.5B",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 1543714304,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2-7B-Instruct",
+    "name": "Qwen2-7B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2-Math-1.5B-Instruct",
+    "name": "Qwen2-Math-1.5B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 1543714304,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2-Math-7B",
+    "name": "Qwen2-Math-7B",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-0.5B",
+    "name": "Qwen2.5-0.5B",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 494032768,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-1.5B-Instruct",
+    "name": "Qwen2.5-1.5B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen",
+    "parameter_count": 1500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-14B-Instruct",
+    "name": "Qwen2.5-14B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 14770033664,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-32B-Instruct",
+    "name": "Qwen2.5-32B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 32763876352,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-3B-Instruct",
+    "name": "Qwen2.5-3B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen",
+    "parameter_count": 3000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-72B-Instruct",
+    "name": "Qwen2.5-72B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 72706203648,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-7B",
+    "name": "Qwen2.5-7B",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-7B-Instruct",
+    "name": "Qwen2.5-7B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-Coder-0.5B-Instruct",
+    "name": "Qwen2.5-Coder-0.5B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen",
+    "parameter_count": 494032768,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen2.5-Coder-7B-Instruct",
+    "name": "Qwen2.5-Coder-7B-Instruct",
+    "organization": "Qwen",
+    "architecture": "qwen",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3-0.6B",
+    "name": "Qwen3-0.6B",
+    "organization": "Qwen",
+    "architecture": "qwen3",
+    "parameter_count": 751632384,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3-14B",
+    "name": "Qwen3-14B",
+    "organization": "Qwen",
+    "architecture": "qwen3",
+    "parameter_count": 14768307200,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3-4B-Base",
+    "name": "Qwen3-4B-Base",
+    "organization": "Qwen",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3-8B",
+    "name": "Qwen3-8B",
+    "organization": "Qwen",
+    "architecture": "qwen",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3-Embedding-4B",
+    "name": "Qwen3-Embedding-4B",
+    "organization": "Qwen",
+    "architecture": "qwen3",
+    "parameter_count": 4022468096,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3.5-0.8B",
+    "name": "Qwen3.5-0.8B",
+    "organization": "Qwen",
+    "architecture": "qwen",
+    "parameter_count": 800000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3.5-27B",
+    "name": "Qwen3.5-27B",
+    "organization": "Qwen",
+    "architecture": "qwen3_5",
+    "parameter_count": 27781427952,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3.5-4B",
+    "name": "Qwen3.5-4B",
+    "organization": "Qwen",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Qwen/Qwen3.5-9B",
+    "name": "Qwen3.5-9B",
+    "organization": "Qwen",
+    "architecture": "qwen3_5",
+    "parameter_count": 9653104368,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/RHMD/Bonsai-1.7B-q1f16_0-MLC",
+    "name": "Bonsai-1.7B-q1f16_0-MLC",
+    "organization": "RHMD",
+    "parameter_count": 1700000000
+  },
+  {
+    "purl": "pkg:huggingface/RYDDZ/DFK_2-Qwen3.5-2B.Q4_K_M",
+    "name": "DFK_2-Qwen3.5-2B.Q4_K_M",
+    "organization": "RYDDZ",
+    "architecture": "qwen",
+    "parameter_count": 2000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/RahulKadam0909/neutts-air-hi-preview-Q4_K_M-GGUF",
+    "name": "neutts-air-hi-preview",
+    "organization": "RahulKadam0909",
+    "architecture": "qwen2",
+    "parameter_count": 552914304,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ReXeeD/TASX-Cmd-0.5B-GGUF",
+    "name": "TASX-Cmd-0.5B",
+    "organization": "ReXeeD",
+    "architecture": "qwen2",
+    "parameter_count": 494032768,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/RecursiveMAS/Mixture-Math-DeepSeek-R1-Distill-Qwen-1.5B",
+    "name": "Mixture-Math-DeepSeek-R1-Distill-Qwen-1.5B",
+    "organization": "RecursiveMAS",
+    "architecture": "qwen",
+    "parameter_count": 1777088000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/RecursiveMAS/Sequential-Scaled-Solver-Qwen3.5-4B",
+    "name": "Sequential-Scaled-Solver-Qwen3.5-4B",
+    "organization": "RecursiveMAS",
+    "architecture": "qwen",
+    "parameter_count": 4205751296,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/RedHatAI/Llama-3.2-1B-Instruct-FP8-dynamic",
+    "name": "Llama-3.2-1B-Instruct",
+    "organization": "RedHatAI",
+    "architecture": "llama",
+    "parameter_count": 1498859520,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/RichardErkhov/KONIexp_-_v3_1_pt_ep1_sft_4_based_on_llama3_1_8b_90_per_data_20240918-gguf",
+    "name": "KONIexp_-_v3_1_pt_ep1_sft_4_based_on_llama3_1_8b_90_per_data_20240918",
+    "organization": "RichardErkhov",
+    "architecture": "llama",
+    "parameter_count": 8000000000
+  },
+  {
+    "purl": "pkg:huggingface/RingoSystems/RingoLLM",
+    "name": "RingoLLM",
+    "organization": "RingoSystems",
+    "architecture": "qwen3_5",
+    "parameter_count": 27781427952,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Roderick3rd/AR15_Expert_Larry_3B_4bit",
+    "name": "AR15_Expert_Larry_3B_4bit",
+    "organization": "Roderick3rd",
+    "architecture": "llama",
+    "parameter_count": 502139904,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/RthItalia/Rth-lm-code-25b",
+    "name": "Rth-lm-code-25b",
+    "organization": "RthItalia",
+    "architecture": "rth_tcn",
+    "parameter_count": 25000000000,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/S-a-r-a/pak-funding-mentor-ai-gguf",
+    "name": "pak-funding-mentor-ai",
+    "organization": "S-a-r-a"
+  },
+  {
+    "purl": "pkg:huggingface/SKIS-AI-Research/ODIN-C1",
+    "name": "ODIN-C1",
+    "organization": "SKIS-AI-Research",
+    "architecture": "lfm2",
+    "parameter_count": 1170340608
+  },
+  {
+    "purl": "pkg:huggingface/SakuraLLM/Sakura-GalTransl-7B-v3.7",
+    "name": "Sakura-GalTransl-7B-v3.7",
+    "organization": "SakuraLLM",
+    "parameter_count": 7000000000,
+    "license": "CC-BY-NC-SA-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/SalihHub/blind-assist-gemma4-gguf-v2",
+    "name": "blind-assist-gemma4-gguf-v2",
+    "organization": "SalihHub",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/SamSankar/aegis-gemma4-e2b-merged-Q4_K_M-GGUF",
+    "name": "aegis-gemma4-e2b-merged",
+    "organization": "SamSankar",
+    "architecture": "gemma",
+    "parameter_count": 5123178016,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/Sanya2025/Proxima_B-instruct-Q5_0-GGUF",
+    "name": "Proxima_B-instruct",
+    "organization": "Sanya2025",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Scorched2/shader-v1-16bit-Q4_K_M-GGUF",
+    "name": "shader-v1-16bit",
+    "organization": "Scorched2",
+    "architecture": "gemma4",
+    "parameter_count": 5123178051
+  },
+  {
+    "purl": "pkg:huggingface/Scorched2/shader-v2",
+    "name": "shader-v2",
+    "organization": "Scorched2",
+    "architecture": "hrm",
+    "parameter_count": 325453492
+  },
+  {
+    "purl": "pkg:huggingface/SedatAl/Turkish_Recipe_ChatBot_v2",
+    "name": "Turkish_Recipe_ChatBot_v2",
+    "organization": "SedatAl",
+    "architecture": "llama",
+    "parameter_count": 48627712,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/SeeSee21/Z-Anime",
+    "name": "Z-Anime",
+    "organization": "SeeSee21",
+    "architecture": "z-anime",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Serveurperso/OmniVoice-GGUF",
+    "name": "OmniVoice",
+    "organization": "Serveurperso",
+    "architecture": "omnivoice",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ShanzaGull/World_Top_leaders-tinyllama-peft-gguf",
+    "name": "World_Top_leaders-tinyllama-peft",
+    "organization": "ShanzaGull",
+    "architecture": "llama",
+    "parameter_count": 1100048384,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Sheshachal/distilbert-base-uncased-finetuned-sst-2-english",
+    "name": "distilbert-base-uncased-finetuned-sst-2-english",
+    "organization": "Sheshachal",
+    "architecture": "bert"
+  },
+  {
+    "purl": "pkg:huggingface/Shubh769/Vitas-Ayurveda-Phi3",
+    "name": "Vitas-Ayurveda-Phi3",
+    "organization": "Shubh769",
+    "architecture": "phi"
+  },
+  {
+    "purl": "pkg:huggingface/Shubh769/medical_phi3_q4km.gguf",
+    "name": "medical_phi3_q4km.gguf",
+    "organization": "Shubh769",
+    "architecture": "phi",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/Soea511/Spacetoon-Model-V1-GGUF",
+    "name": "Spacetoon-Model-V1",
+    "organization": "Soea511"
+  },
+  {
+    "purl": "pkg:huggingface/SoriSan/traductor-engine-v1",
+    "name": "traductor-engine-v1",
+    "organization": "SoriSan"
+  },
+  {
+    "purl": "pkg:huggingface/SpeciesFileGroup/ento-model-parse",
+    "name": "ento-model-parse",
+    "organization": "SpeciesFileGroup"
+  },
+  {
+    "purl": "pkg:huggingface/Stevefocs/MyGemmaNPC",
+    "name": "MyGemmaNPC",
+    "organization": "Stevefocs",
+    "architecture": "gemma",
+    "parameter_count": 268098176,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/SutskeverFanBoy/papagan_1.3b",
+    "name": "papagan_1.3b",
+    "organization": "SutskeverFanBoy",
+    "architecture": "papagan",
+    "parameter_count": 1300000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/THUDM/chatglm3-6b",
+    "name": "chatglm3-6b",
+    "organization": "THUDM",
+    "architecture": "chatglm",
+    "parameter_count": 6000000000
+  },
+  {
+    "purl": "pkg:huggingface/THUDM/glm-4-9b-chat",
+    "name": "glm-4-9b-chat",
+    "organization": "THUDM",
+    "architecture": "chatglm",
+    "parameter_count": 9399951392,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/Tesslate/OmniCoder-9B",
+    "name": "OmniCoder-9B",
+    "organization": "Tesslate",
+    "architecture": "qwen3_5",
+    "parameter_count": 9653104368,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/TheDrummer/Gemmasutra-Mini-2B-v1-GGUF",
+    "name": "Gemmasutra-Mini-2B-v1",
+    "organization": "TheDrummer",
+    "architecture": "gemma",
+    "parameter_count": 2000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/TheDrummer/Gemmasutra-Small-4B-v1-GGUF",
+    "name": "Gemmasutra-Small-4B-v1",
+    "organization": "TheDrummer",
+    "architecture": "gemma",
+    "parameter_count": 4000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/TheOSExplorer/bge-reranker-v2-m3-Q2_K-GGUF",
+    "name": "bge-reranker-v2-m3",
+    "organization": "TheOSExplorer",
+    "architecture": "xlm-roberta",
+    "parameter_count": 567755777,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/TheRofli/qquark-435m",
+    "name": "qquark-435m",
+    "organization": "TheRofli",
+    "parameter_count": 435000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Theogott/spr-qwen3_5-9b-dora-vramsafe-gguf",
+    "name": "spr-qwen3_5-9b-dora-vramsafe",
+    "organization": "Theogott",
+    "architecture": "qwen",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
     "purl": "pkg:huggingface/TinyLlama/TinyLlama-1.1B-Chat-v1.0",
     "name": "TinyLlama-1.1B-Chat-v1.0",
     "organization": "TinyLlama",
     "architecture": "llama",
     "parameter_count": 1100000000,
     "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Tiranyx/migancore-7b-soul-v0.1-gguf",
+    "name": "migancore-7b-soul-v0.1",
+    "organization": "Tiranyx",
+    "parameter_count": 7000000000
+  },
+  {
+    "purl": "pkg:huggingface/Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF",
+    "name": "MistralRP-Noromaid-NSFW-Mistral-7B",
+    "organization": "Ttimofeyka",
+    "architecture": "mistral",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/TurbulenceDeterministe/Carnice-9b-W8A16-AWQ",
+    "name": "Carnice-9b-W8A16",
+    "organization": "TurbulenceDeterministe",
+    "architecture": "qwen",
+    "parameter_count": 7742552560,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/U82-IA/Agent_4b_v4",
+    "name": "Agent_4b_v4",
+    "organization": "U82-IA",
+    "architecture": "qwen",
+    "parameter_count": 4022468096,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/UlasE/reploop-fitness",
+    "name": "reploop-fitness",
+    "organization": "UlasE",
+    "architecture": "llama"
+  },
+  {
+    "purl": "pkg:huggingface/UnfilteredAI/NSFW-flash",
+    "name": "NSFW-flash",
+    "organization": "UnfilteredAI",
+    "architecture": "stablelm",
+    "parameter_count": 2240163840
+  },
+  {
+    "purl": "pkg:huggingface/WaliyaKhan882/metallama-merged-trl-ft-gguf",
+    "name": "metallama-merged-trl-ft",
+    "organization": "WaliyaKhan882",
+    "architecture": "llama"
+  },
+  {
+    "purl": "pkg:huggingface/WaveCut/QClaw-4B-mlx_4bit_DWQ",
+    "name": "QClaw-4B-mlx_4bit_DWQ",
+    "organization": "WaveCut",
+    "architecture": "qwen",
+    "parameter_count": 657959936,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Wilhelm-Foundation/rare-archive-qwen-4b-sft-v1",
+    "name": "rare-archive-qwen-4b-sft-v1",
+    "organization": "Wilhelm-Foundation",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/WithinUsAI/IBM4.1-Unnoticed.Thinker.Uncensored-3B.gguf",
+    "name": "IBM4.1-Unnoticed.Thinker.Uncensored-3B.gguf",
+    "organization": "WithinUsAI",
+    "architecture": "granite",
+    "parameter_count": 3000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/WithinUsAI/Opus4.7-GODs.Ghost.Codex-4B.GGuF",
+    "name": "Opus4.7-GODs.Ghost.Codex-4B.GGuF",
+    "organization": "WithinUsAI",
+    "architecture": "qwen3_5",
+    "parameter_count": 4659865088,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/XChava/cyber-ken-v3-GGUF",
+    "name": "cyber-ken-v3",
+    "organization": "XChava",
+    "architecture": "qwen3_5",
+    "parameter_count": 9653104368,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/YU-MO/Yumo-nano",
+    "name": "Yumo-nano",
+    "organization": "YU-MO",
+    "architecture": "qwen2",
+    "parameter_count": 1777088000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/YorkieOH10/granite-8b-code-instruct-Q4_K_M-GGUF",
+    "name": "granite-8b-code-instruct",
+    "organization": "YorkieOH10",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/Yunaxa/Luina-Llama-3.2-3B-Merged-Q4_K_M-GGUF",
+    "name": "Luina-Llama-3.2-3B-Merged",
+    "organization": "Yunaxa",
+    "architecture": "llama",
+    "parameter_count": 3000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ZeeshanLiaqat/dark-pattern-qwen3.5",
+    "name": "dark-pattern-qwen3.5",
+    "organization": "ZeeshanLiaqat",
+    "architecture": "qwen",
+    "parameter_count": 4659865088,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/abetlen/nanollava-gguf",
+    "name": "nanollava",
+    "organization": "abetlen",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/abhaybhargav/PWNISMS-Threat-Model-Structured",
+    "name": "PWNISMS-Threat-Model-Structured",
+    "organization": "abhaybhargav",
+    "architecture": "qwen",
+    "parameter_count": 1543714304,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/adeljebali/modele_q8_0.gguf",
+    "name": "modele_q8_0.gguf",
+    "organization": "adeljebali",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/afifaimran/afi-gemma4-e2b-merged-gguf",
+    "name": "afi-gemma4-e2b-merged",
+    "organization": "afifaimran",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/afifaimran/gemma4_e2b_26_run1_merged",
+    "name": "gemma4_e2b_26_run1_merged",
+    "organization": "afifaimran",
+    "architecture": "gemma",
+    "parameter_count": 5123178051,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/afifaimran/menochat-gemma4-e2b-26-run2-gguf",
+    "name": "menochat-gemma4-e2b-26-run2",
+    "organization": "afifaimran",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/ai-toba/toba-trilingual-1.2B",
+    "name": "toba-trilingual-1.2B",
+    "organization": "ai-toba",
+    "parameter_count": 1270685716,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/aidonuts/clairvoyant-chronicles-v0",
+    "name": "clairvoyant-chronicles-v0",
+    "organization": "aidonuts",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/alecccdd/LFM2.5-VL-450M-ratebv-large-sigmax-100-Q8_0-GGUF",
+    "name": "LFM2.5-VL-450M-ratebv-large-sigmax-100",
+    "organization": "alecccdd",
+    "architecture": "lfm2_vl",
+    "parameter_count": 450000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ales27pm/lumen-fleet-gguf",
+    "name": "lumen-fleet",
+    "organization": "ales27pm"
+  },
+  {
+    "purl": "pkg:huggingface/ales27pm/lumen-qwen3-bootstrap-gguf",
+    "name": "lumen-qwen3-bootstrap",
+    "organization": "ales27pm",
+    "architecture": "qwen",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/allenai/Bolmo-1B",
+    "name": "Bolmo-1B",
+    "organization": "allenai",
+    "architecture": "bolmo",
+    "parameter_count": 1468911776,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/allenai/OLMo-2-0425-1B-Instruct",
+    "name": "OLMo-2-0425-1B-Instruct",
+    "organization": "allenai",
+    "architecture": "olmo2",
+    "parameter_count": 1484916736,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/allenai/OLMo-2-1124-13B-Instruct",
+    "name": "OLMo-2-1124-13B-Instruct",
+    "organization": "allenai",
+    "architecture": "olmo2",
+    "parameter_count": 13716198400,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/allenai/OLMo-3-7B-Instruct",
+    "name": "OLMo-3-7B-Instruct",
+    "organization": "allenai",
+    "architecture": "olmo3",
+    "parameter_count": 528384,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/allenai/olmOCR-2-7B-1025-FP8",
+    "name": "olmOCR-2-7B-1025",
+    "organization": "allenai",
+    "architecture": "qwen",
+    "parameter_count": 8293557248,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/aloksinr/lindows-copilot-phi3-q4",
+    "name": "lindows-copilot-phi3-q4",
+    "organization": "aloksinr",
+    "architecture": "phi"
+  },
+  {
+    "purl": "pkg:huggingface/amazon/chronos-2",
+    "name": "chronos-2",
+    "organization": "amazon",
+    "architecture": "t5",
+    "parameter_count": 119477664,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/anicka/karma-electric-apertus-8b",
+    "name": "karma-electric-apertus-8b",
+    "organization": "anicka",
+    "architecture": "apertus",
+    "parameter_count": 8053338176,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/anuraagkalvani/tally-qwen-2.5-coder",
+    "name": "tally-qwen-2.5-coder",
+    "organization": "anuraagkalvani",
+    "architecture": "qwen",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/apokolipzz/DMind-2-4B-Q4_K_M-GGUF",
+    "name": "DMind-2-4B",
+    "organization": "apokolipzz",
+    "architecture": "qwen3",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/arnavm7/candy-crush-qwen35-grpo-lora",
+    "name": "candy-crush-qwen35-grpo-lora",
+    "organization": "arnavm7",
+    "architecture": "qwen",
+    "parameter_count": 9653104368,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/asdasdasd1234567890/asd",
+    "name": "asd",
+    "organization": "asdasdasd1234567890"
+  },
+  {
+    "purl": "pkg:huggingface/augmem/AIST-87M-GGUF",
+    "name": "AIST-87M",
+    "organization": "augmem",
+    "parameter_count": 87000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/augmem/ES-AIST-81M-preview-GGUF",
+    "name": "ES-AIST-81M-preview",
+    "organization": "augmem",
+    "parameter_count": 81000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/automationkasey/agent-orchestrator-merged-q8",
+    "name": "agent-orchestrator-merged-q8",
+    "organization": "automationkasey"
+  },
+  {
+    "purl": "pkg:huggingface/automationkasey/codex-legalx-merged-q8",
+    "name": "codex-legalx-merged-q8",
+    "organization": "automationkasey"
+  },
+  {
+    "purl": "pkg:huggingface/azad-uddin/dorothy-8bit",
+    "name": "dorothy-8bit",
+    "organization": "azad-uddin"
+  },
+  {
+    "purl": "pkg:huggingface/bachngo/vn-emb-v2",
+    "name": "vn-emb-v2",
+    "organization": "bachngo"
+  },
+  {
+    "purl": "pkg:huggingface/bartowski/google_gemma-4-26B-A4B-it-GGUF",
+    "name": "google_gemma-4-26B-A4B-it",
+    "organization": "bartowski",
+    "architecture": "gemma",
+    "parameter_count": 26544131376,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/bau0221/model_1125_q2k",
+    "name": "model_1125_q2k",
+    "organization": "bau0221",
+    "architecture": "llama",
+    "parameter_count": 3934684872,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/beezza/kokoa",
+    "name": "kokoa",
+    "organization": "beezza"
+  },
+  {
+    "purl": "pkg:huggingface/bhriguverma/padhai-v2-gemma3-mobile",
+    "name": "padhai-v2-gemma3-mobile",
+    "organization": "bhriguverma",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/bigcode/starcoder2-15b",
+    "name": "starcoder2-15b",
+    "organization": "bigcode",
+    "architecture": "starcoder2",
+    "parameter_count": 15000000000,
+    "license": "BigCode-OpenRAIL-M"
+  },
+  {
+    "purl": "pkg:huggingface/bigcode/starcoder2-3b",
+    "name": "starcoder2-3b",
+    "organization": "bigcode",
+    "architecture": "starcoder2",
+    "parameter_count": 3030371328,
+    "license": "BigCode-OpenRAIL-M"
+  },
+  {
+    "purl": "pkg:huggingface/bigcode/starcoder2-7b",
+    "name": "starcoder2-7b",
+    "organization": "bigcode",
+    "architecture": "starcoder2",
+    "parameter_count": 7173923840,
+    "license": "BigCode-OpenRAIL-M"
+  },
+  {
+    "purl": "pkg:huggingface/bigscience/bloom-7b1",
+    "name": "bloom-7b1",
+    "organization": "bigscience",
+    "architecture": "bloom",
+    "parameter_count": 7069016064,
+    "license": "BigScience-BLOOM-RAIL-1.0"
+  },
+  {
+    "purl": "pkg:huggingface/bigscience/bloomz-560m",
+    "name": "bloomz-560m",
+    "organization": "bigscience",
+    "architecture": "bloom",
+    "parameter_count": 559214592,
+    "license": "BigScience-BLOOM-RAIL-1.0"
+  },
+  {
+    "purl": "pkg:huggingface/bitznbrewz/Hermes-3-Llama-3.2-3B.Q4_K_M-MLX",
+    "name": "Hermes-3-Llama-3.2-3B.Q4_K_M",
+    "organization": "bitznbrewz",
+    "architecture": "llama",
+    "parameter_count": 502139904,
+    "license": "Llama-3"
+  },
+  {
+    "purl": "pkg:huggingface/bldeaw/m1_planner_q4_k_m",
+    "name": "m1_planner_q4_k_m",
+    "organization": "bldeaw"
+  },
+  {
+    "purl": "pkg:huggingface/bluryar/MAGIC-TTS-GGUF",
+    "name": "MAGIC-TTS",
+    "organization": "bluryar"
+  },
+  {
+    "purl": "pkg:huggingface/brnklmr/moodyDesireMixv20_PRO_GGUF",
+    "name": "moodyDesireMixv20_PRO_GGUF",
+    "organization": "brnklmr",
+    "license": "CreativeML-OpenRAIL-M"
+  },
+  {
+    "purl": "pkg:huggingface/brunopio/Qwen3.5-14B-A3B-Claude-4.6-Opus-Reasoning-Distilled-reap-Q4_K_M-GGUF",
+    "name": "Qwen3.5-14B-A3B-Claude-4.6-Opus-Reasoning-Distilled-reap",
+    "organization": "brunopio",
+    "architecture": "qwen",
+    "parameter_count": 14000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/calcuis/pig-vae",
+    "name": "pig-vae",
+    "organization": "calcuis",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/calcuis/sd3.5-large-gguf",
+    "name": "sd3.5-large",
+    "organization": "calcuis",
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/canopylabs/orpheus-3b-0.1-ft",
+    "name": "orpheus-3b-0.1-ft",
+    "organization": "canopylabs",
+    "architecture": "llama",
+    "parameter_count": 3782986752,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/cazonai/elyra-0.2-wip-adapter",
+    "name": "elyra-0.2-wip-adapter",
+    "organization": "cazonai",
+    "architecture": "gemma3",
+    "parameter_count": 4385411830,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/chachinggg/godot-qwen2.5-coder-3b-instruct",
+    "name": "godot-qwen2.5-coder-3b-instruct",
+    "organization": "chachinggg",
+    "architecture": "qwen",
+    "parameter_count": 3085938688,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/chachinggg/godot-qwen2.5-coder-7b-instruct-bnb-4bit",
+    "name": "godot-qwen2.5-coder-7b-instruct-bnb-4bit",
+    "organization": "chachinggg",
+    "architecture": "qwen",
+    "parameter_count": 7820050928,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/chatpig/encoder",
+    "name": "encoder",
+    "organization": "chatpig",
+    "architecture": "t5",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/chenly124/Qwen3.5-4B-PaperWitch-heresy-Q8_0-GGUF",
+    "name": "Qwen3.5-4B-PaperWitch-heresy",
+    "organization": "chenly124",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/cherryDavid/Qwen3-1.7B-Q8_0-GGUF",
+    "name": "Qwen3-1.7B",
+    "organization": "cherryDavid",
+    "architecture": "qwen",
+    "parameter_count": 1700000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/chfm/VoxCPM2-gguf-notcpp",
+    "name": "VoxCPM2-gguf-notcpp",
+    "organization": "chfm",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/chi1818/WhoBu-Llama3.1-8B-SFT-Merge",
+    "name": "WhoBu-Llama3.1-8B-SFT-Merge",
+    "organization": "chi1818",
+    "architecture": "llama",
+    "parameter_count": 8030261248
+  },
+  {
+    "purl": "pkg:huggingface/chrisbst48/MITRE_QWEN2.5_7b_Q4_K_M",
+    "name": "MITRE_QWEN2.5_7b_Q4_K_M",
+    "organization": "chrisbst48",
+    "architecture": "qwen",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/chumdz97/ason",
+    "name": "ason",
+    "organization": "chumdz97",
+    "license": "GPL-3.0-only"
+  },
+  {
+    "purl": "pkg:huggingface/ciscoriordan/lsjpre-qwen3-8b-tiebreak",
+    "name": "lsjpre-qwen3-8b-tiebreak",
+    "organization": "ciscoriordan",
+    "architecture": "qwen",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/cjpais/llava-1.6-mistral-7b-gguf",
+    "name": "llava-1.6-mistral-7b",
+    "organization": "cjpais",
+    "architecture": "mistral",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/clemsail/micro-kiki-v3",
+    "name": "micro-kiki-v3",
+    "organization": "clemsail",
+    "architecture": "qwen3_5_moe",
+    "parameter_count": 35951822704,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/cnyric/schooltool-expert-7b-gguf",
+    "name": "schooltool-expert-7b",
+    "organization": "cnyric",
+    "parameter_count": 7000000000
+  },
+  {
+    "purl": "pkg:huggingface/codellama/CodeLlama-13b-Instruct-hf",
+    "name": "CodeLlama-13b-Instruct-hf",
+    "organization": "codellama",
+    "architecture": "llama",
+    "parameter_count": 13016028160,
+    "license": "LLAMA 2 COMMUNITY LICENSE"
+  },
+  {
+    "purl": "pkg:huggingface/codellama/CodeLlama-7b-hf",
+    "name": "CodeLlama-7b-hf",
+    "organization": "codellama",
+    "architecture": "llama",
+    "parameter_count": 6738546688,
+    "license": "LLAMA 2 COMMUNITY LICENSE"
+  },
+  {
+    "purl": "pkg:huggingface/constructai/Qwenite3.5-0.8B-GGUF",
+    "name": "Qwenite3.5-0.8B",
+    "organization": "constructai",
+    "architecture": "qwen",
+    "parameter_count": 752393024,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/constructai/Qwenite3.5-2B-GGUF",
+    "name": "Qwenite3.5-2B",
+    "organization": "constructai",
+    "architecture": "qwen",
+    "parameter_count": 1881825088,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/cretu-luca/code-reviewer-grpo",
+    "name": "code-reviewer-grpo",
+    "organization": "cretu-luca",
+    "architecture": "qwen3_5",
+    "parameter_count": 9653104368,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/cyankiwi/Qwen3.5-9B-AWQ-4bit",
+    "name": "Qwen3.5-9B-AWQ-4bit",
+    "organization": "cyankiwi",
+    "architecture": "qwen",
+    "parameter_count": 9875665038,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/d96En8Lx/i2i",
+    "name": "i2i",
+    "organization": "d96En8Lx",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/deadprogram/MyGemmaNPC2-Q4_K_M-GGUF",
+    "name": "MyGemmaNPC2",
+    "organization": "deadprogram",
+    "architecture": "gemma",
+    "parameter_count": 268098176,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct",
+    "name": "DeepSeek-Coder-V2-Lite-Instruct",
+    "organization": "deepseek-ai",
+    "architecture": "deepseek_v2",
+    "parameter_count": 15706484224,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
+    "name": "DeepSeek-R1-Distill-Llama-70B",
+    "organization": "deepseek-ai",
+    "architecture": "llama",
+    "parameter_count": 70000000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+    "name": "DeepSeek-R1-Distill-Llama-8B",
+    "organization": "deepseek-ai",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+    "name": "DeepSeek-R1-Distill-Qwen-1.5B",
+    "organization": "deepseek-ai",
+    "architecture": "qwen",
+    "parameter_count": 1777088000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+    "name": "DeepSeek-R1-Distill-Qwen-14B",
+    "organization": "deepseek-ai",
+    "architecture": "qwen",
+    "parameter_count": 14000000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+    "name": "DeepSeek-R1-Distill-Qwen-32B",
+    "organization": "deepseek-ai",
+    "architecture": "qwen2",
+    "parameter_count": 32763876352,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+    "name": "DeepSeek-R1-Distill-Qwen-7B",
+    "organization": "deepseek-ai",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/deepseek-coder-1.3b-instruct",
+    "name": "deepseek-coder-1.3b-instruct",
+    "organization": "deepseek-ai",
+    "architecture": "llama",
+    "parameter_count": 1300000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/deepseek-ai/deepseek-coder-7b-instruct-v1.5",
+    "name": "deepseek-coder-7b-instruct-v1.5",
+    "organization": "deepseek-ai",
+    "architecture": "llama",
+    "parameter_count": 6910365696,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/defog/sqlcoder-7b-2",
+    "name": "sqlcoder-7b-2",
+    "organization": "defog",
+    "architecture": "llama",
+    "parameter_count": 6738546688,
+    "license": "CC-BY-SA-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/deltakitsune/properly",
+    "name": "properly",
+    "organization": "deltakitsune",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/denisbalon/wan2-1-infinitetalk-multi-fp8-e5m2-scaled-kj.safetensors",
+    "name": "wan2-1-infinitetalk-multi-fp8-e5m2-scaled-kj.safetensors",
+    "organization": "denisbalon"
+  },
+  {
+    "purl": "pkg:huggingface/denisbalon/wan2-1-infinitetalk-single-fp8-e4m3fn-scaled-kj.safetensors",
+    "name": "wan2-1-infinitetalk-single-fp8-e4m3fn-scaled-kj.safetensors",
+    "organization": "denisbalon"
+  },
+  {
+    "purl": "pkg:huggingface/domofon/domofon-0.8b-75b-tokens-base-GGUF",
+    "name": "domofon-0.8b-75b-tokens-base",
+    "organization": "domofon",
+    "parameter_count": 800000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/doncxy/BIJA-cerebellum-Qwen3-1.7B-v1",
+    "name": "BIJA-cerebellum-Qwen3-1.7B-v1",
+    "organization": "doncxy",
+    "architecture": "qwen",
+    "parameter_count": 1700000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/douglasmac/tether-models-v4",
+    "name": "tether-models-v4",
+    "organization": "douglasmac"
+  },
+  {
+    "purl": "pkg:huggingface/duclvQ/decomposer-qwen3.5-0.8b-sft",
+    "name": "decomposer-qwen3.5-0.8b-sft",
+    "organization": "duclvQ",
+    "architecture": "qwen",
+    "parameter_count": 752393024,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/dummy9996/sulphur_2_prompt_enhancer_model_GGUF",
+    "name": "sulphur_2_prompt_enhancer_model_GGUF",
+    "organization": "dummy9996",
+    "architecture": "mpt"
+  },
+  {
+    "purl": "pkg:huggingface/duyle240820/sentra-utoledo-v2.0",
+    "name": "sentra-utoledo-v2.0",
+    "organization": "duyle240820",
+    "architecture": "qwen2",
+    "parameter_count": 1576741182,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ebybucuresteanu/LFM2.5-VL-1.6B-Q4_0.gguf",
+    "name": "LFM2.5-VL-1.6B-Q4_0.gguf",
+    "organization": "ebybucuresteanu",
+    "parameter_count": 1600000000
+  },
+  {
+    "purl": "pkg:huggingface/edbuildingstuff/unhinged-horoscopes",
+    "name": "unhinged-horoscopes",
+    "organization": "edbuildingstuff",
+    "architecture": "llama",
+    "parameter_count": 1235814400,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/elusinchi/dnd-gguf-models",
+    "name": "dnd-gguf-models",
+    "organization": "elusinchi",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/emqnuele/Ludomi-3",
+    "name": "Ludomi-3",
+    "organization": "emqnuele",
+    "architecture": "qwen3_5",
+    "parameter_count": 2274069824,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/enacimie/Qwen3.5-2B-Q4_K_M-GGUF",
+    "name": "Qwen3.5-2B",
+    "organization": "enacimie",
+    "architecture": "qwen",
+    "parameter_count": 2000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/enginil/dots.mocr-IQ3_XXS-GGUF",
+    "name": "dots.mocr",
+    "organization": "enginil",
+    "architecture": "dots_ocr",
+    "parameter_count": 3039179264,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/erdemozkan/YOLO-Coder-1.5B",
+    "name": "YOLO-Coder-1.5B",
+    "organization": "erdemozkan",
+    "architecture": "qwen2",
+    "parameter_count": 1543714304,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/erdemozkan/YOLO-Coder-8B",
+    "name": "YOLO-Coder-8B",
+    "organization": "erdemozkan",
+    "architecture": "qwen",
+    "parameter_count": 7615616512,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/erenyeager-1/MediPhi-Instruct-Q4_K_S-GGUF",
+    "name": "MediPhi-Instruct",
+    "organization": "erenyeager-1",
+    "architecture": "phi",
+    "parameter_count": 3821079552,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/ericeric777777/NSTC-Writer-7B",
+    "name": "NSTC-Writer-7B",
+    "organization": "ericeric777777",
+    "architecture": "qwen",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/erinkhoo/rizzlm2.1-gguf",
+    "name": "rizzlm2.1",
+    "organization": "erinkhoo",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/evanhugging/tiny-stories-50m-GGUF",
+    "name": "tiny-stories-50m",
+    "organization": "evanhugging",
+    "parameter_count": 50000000
+  },
+  {
+    "purl": "pkg:huggingface/fadiil/judol-guard-gemma4-e2b-gguf",
+    "name": "judol-guard-gemma4-e2b",
+    "organization": "fadiil",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/faunix/QwenSeek-2B-GGUF",
+    "name": "QwenSeek-2B",
+    "organization": "faunix",
+    "architecture": "qwen",
+    "parameter_count": 1881825088,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/flammenai/FlameDesigner-Qwen2.5-3B-v1-GGUF",
+    "name": "FlameDesigner-Qwen2.5-3B-v1",
+    "organization": "flammenai",
+    "architecture": "qwen",
+    "parameter_count": 3085938688,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/gbrx/GonzaLomo",
+    "name": "GonzaLomo",
+    "organization": "gbrx",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/geoffmunn/iMatrix",
+    "name": "iMatrix",
+    "organization": "geoffmunn",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/georgeanton/alice-phc-cure",
+    "name": "alice-phc-cure",
+    "organization": "georgeanton",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ggml-org/Qwen2.5-Coder-1.5B-Instruct-Q8_0-GGUF",
+    "name": "Qwen2.5-Coder-1.5B-Instruct",
+    "organization": "ggml-org",
+    "architecture": "qwen",
+    "parameter_count": 1500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ggml-org/Qwen3-4B-Instruct-2507-Q8_0-GGUF",
+    "name": "Qwen3-4B-Instruct-2507",
+    "organization": "ggml-org",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ggml-org/embeddinggemma-300m-qat-q8_0-GGUF",
+    "name": "embeddinggemma-300m-qat",
+    "organization": "ggml-org",
+    "architecture": "gemma",
+    "parameter_count": 302863104,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/ggml-org/models-moved",
+    "name": "models-moved",
+    "organization": "ggml-org",
+    "architecture": "starcoder"
+  },
+  {
+    "purl": "pkg:huggingface/ghost4280/Ghost-V6-Singularity-Q4_K_M-GGUF",
+    "name": "Ghost-V6-Singularity",
+    "organization": "ghost4280",
+    "architecture": "llama",
+    "parameter_count": 8030261248
+  },
+  {
+    "purl": "pkg:huggingface/gianson/sygnif_lora",
+    "name": "sygnif_lora",
+    "organization": "gianson",
+    "architecture": "gemma",
+    "parameter_count": 999885952,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/google-bert/bert-base-uncased",
+    "name": "bert-base-uncased",
+    "organization": "google-bert",
+    "architecture": "bert",
+    "parameter_count": 110106428,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/google/embeddinggemma-300m",
+    "name": "embeddinggemma-300m",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 302863104,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-1.1-2b-it",
+    "name": "gemma-1.1-2b-it",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 2506172416,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-1.1-7b-it",
+    "name": "gemma-1.1-7b-it",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 8537680896,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-2-27b-it",
+    "name": "gemma-2-27b-it",
+    "organization": "google",
+    "architecture": "gemma2",
+    "parameter_count": 27227128320,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-2-2b-it",
+    "name": "gemma-2-2b-it",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 2614341888,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-2-9b-it",
+    "name": "gemma-2-9b-it",
+    "organization": "google",
+    "architecture": "gemma2",
+    "parameter_count": 9241705984,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-2b",
+    "name": "gemma-2b",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 2000000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-3-1b-it",
+    "name": "gemma-3-1b-it",
+    "organization": "google",
+    "architecture": "gemma3_text",
+    "parameter_count": 999885952,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-3-270m",
+    "name": "gemma-3-270m",
+    "organization": "google",
+    "architecture": "gemma3_text",
+    "parameter_count": 268098176,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-3-27b-it",
+    "name": "gemma-3-27b-it",
+    "organization": "google",
+    "architecture": "gemma3",
+    "parameter_count": 27432406640,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-3-4b-it",
+    "name": "gemma-3-4b-it",
+    "organization": "google",
+    "architecture": "gemma3",
+    "parameter_count": 4300079472,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-3n-E2B-it",
+    "name": "gemma-3n-E2B-it",
+    "organization": "google",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-4-E2B-it",
+    "name": "gemma-4-E2B-it",
+    "organization": "dahus",
+    "architecture": "gemma",
+    "parameter_count": 5123178051,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-4-E4B-it",
+    "name": "gemma-4-E4B-it",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 7996156490,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/google/gemma-7b",
+    "name": "gemma-7b",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 7000000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/google/medgemma-1.5-4b-it",
+    "name": "medgemma-1.5-4b-it",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 4300079472,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/google/medgemma-4b-it",
+    "name": "medgemma-4b-it",
+    "organization": "google",
+    "architecture": "gemma",
+    "parameter_count": 4000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/guhantech/CipherModel-1.5B",
+    "name": "CipherModel-1.5B",
+    "organization": "guhantech",
+    "architecture": "qwen2",
+    "parameter_count": 1543714304,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/harishforaiandml/Step3-VL-10B-Base-Q2_K-GGUF",
+    "name": "Step3-VL-10B-Base",
+    "organization": "harishforaiandml",
+    "architecture": "step_robotics",
+    "parameter_count": 10000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/harishforaiandml/XCurOS-1.2-8B-VLBF16-Instruct-Q2_K-GGUF",
+    "name": "XCurOS-1.2-8B-VLBF16-Instruct",
+    "organization": "harishforaiandml",
+    "architecture": "qwen3_vl",
+    "parameter_count": 8000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/hf-audio/xcodec-hubert-general",
+    "name": "xcodec-hubert-general",
+    "organization": "hf-audio",
+    "architecture": "bert",
+    "parameter_count": 177484041,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/hoornet/nives-fg-270m-v1",
+    "name": "nives-fg-270m-v1",
+    "organization": "hoornet",
+    "architecture": "gemma",
+    "parameter_count": 268098176,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/howard0su/DFLASH",
+    "name": "DFLASH",
+    "organization": "howard0su",
+    "architecture": "qwen",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/hugging-quants/Llama-3.2-3B-Instruct-Q4_K_M-GGUF",
+    "name": "Llama-3.2-3B-Instruct",
+    "organization": "hugging-quants",
+    "architecture": "llama",
+    "parameter_count": 3000000000,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/hugo74130/sm64-v2",
+    "name": "sm64-v2",
+    "organization": "hugo74130"
+  },
+  {
+    "purl": "pkg:huggingface/hum-ma/SDXL-models-GGUF",
+    "name": "SDXL-models",
+    "organization": "hum-ma",
+    "architecture": "stable_diffusion"
+  },
+  {
+    "purl": "pkg:huggingface/ia-espirita/riv-ai-v2-Q4_K_M-GGUF",
+    "name": "riv-ai-v2",
+    "organization": "ia-espirita",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ibm-granite/granite-3.1-8b-instruct",
+    "name": "granite-3.1-8b-instruct",
+    "organization": "ibm-granite",
+    "architecture": "granite",
+    "parameter_count": 8170835968,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ibm-granite/granite-3.2-8b-instruct",
+    "name": "granite-3.2-8b-instruct",
+    "organization": "ibm-granite",
+    "architecture": "granite",
+    "parameter_count": 8170848256,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ibm-granite/granite-3.3-8b-instruct",
+    "name": "granite-3.3-8b-instruct",
+    "organization": "ibm-granite",
+    "architecture": "granite",
+    "parameter_count": 8170864640,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ibm-granite/granite-4.0-1b",
+    "name": "granite-4.0-1b",
+    "organization": "ibm-granite",
+    "architecture": "granitemoehybrid",
+    "parameter_count": 1631750144,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ibm-granite/granite-4.0-350m",
+    "name": "granite-4.0-350m",
+    "organization": "ibm-granite",
+    "architecture": "granitemoehybrid",
+    "parameter_count": 352379904,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/icedmoca/kcode-oss-20b-mxfp4",
+    "name": "kcode-oss-20b-mxfp4",
+    "organization": "icedmoca",
+    "parameter_count": 20000000000
+  },
+  {
+    "purl": "pkg:huggingface/idromerom714/tonka-gemma4-e2b-merged-Q4_K_M-GGUF",
+    "name": "tonka-gemma4-e2b-merged",
+    "organization": "idromerom714",
+    "architecture": "gemma",
+    "parameter_count": 5123178051,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/imaron/i-have-no-idea-what-im-doing",
+    "name": "i-have-no-idea-what-im-doing",
+    "organization": "imaron",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/infil00p/shieldgemma-2-4b-it-GGUF",
+    "name": "shieldgemma-2-4b-it",
+    "organization": "infil00p",
+    "architecture": "gemma",
+    "parameter_count": 4000000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/infinity-studio/RedSage-Qwen3-8B-DPO-i1-GGUF",
+    "name": "RedSage-Qwen3-8B-DPO-i1",
+    "organization": "infinity-studio",
+    "architecture": "qwen",
+    "parameter_count": 8190735360,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/instructlab/merlinite-7b-lab-GGUF",
+    "name": "merlinite-7b-lab",
+    "organization": "instructlab",
+    "architecture": "mistral",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/internlm/internlm2_5-1_8b-chat",
+    "name": "internlm2_5-1_8b-chat",
+    "organization": "internlm",
+    "architecture": "internlm2",
+    "parameter_count": 1889110016,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/internlm/internlm2_5-20b-chat",
+    "name": "internlm2_5-20b-chat",
+    "organization": "internlm",
+    "architecture": "internlm2",
+    "parameter_count": 19861149696,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/internlm/internlm2_5-7b-chat",
+    "name": "internlm2_5-7b-chat",
+    "organization": "internlm",
+    "architecture": "internlm2",
+    "parameter_count": 7737708544,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/intfloat/multilingual-e5-large-instruct",
+    "name": "multilingual-e5-large-instruct",
+    "organization": "intfloat",
+    "architecture": "bert",
+    "parameter_count": 559890432,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/ishu-newaz/TinyLlamaOnLowPoweredDevices-Q4_K_S-GGUF",
+    "name": "TinyLlamaOnLowPoweredDevices",
+    "organization": "ishu-newaz",
+    "architecture": "llama",
+    "parameter_count": 1100048384,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/itstechuse/akeno-mergedv8",
+    "name": "akeno-mergedv8",
+    "organization": "itstechuse",
+    "architecture": "mistral",
+    "parameter_count": 7241732096,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/jayn7/HunyuanVideo-1.5_T2V_720p-GGUF",
+    "name": "HunyuanVideo-1.5_T2V_720p",
+    "organization": "jayn7",
+    "license": "This repository follows the same license as the [Hunyuan Video 1.5](https://huggingface.co/tencent/HunyuanVideo-1.5"
+  },
+  {
+    "purl": "pkg:huggingface/jc-builds/Qwen3.5-9B-VLM-Q4_K_M-GGUF",
+    "name": "Qwen3.5-9B-VLM",
+    "organization": "jc-builds",
+    "architecture": "qwen",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/jeremyhola/LORAs",
+    "name": "LORAs",
+    "organization": "jeremyhola",
+    "architecture": "qwen",
+    "parameter_count": 7241732096,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/jinaai/jina-reranker-v2-base-multilingual",
+    "name": "jina-reranker-v2-base-multilingual",
+    "organization": "jinaai",
+    "architecture": "bert",
+    "parameter_count": 278437633,
+    "license": "CC-BY-NC-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/joni3/qwen3.5-2b-mmproj-Q8_0",
+    "name": "qwen3.5-2b-mmproj",
+    "organization": "joni3",
+    "architecture": "qwen",
+    "parameter_count": 2000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/jpacifico/Chocolatine-3B-Instruct-DPO-Revised-Q4_K_M-GGUF",
+    "name": "Chocolatine-3B-Instruct-DPO-Revised",
+    "organization": "jpacifico",
+    "architecture": "phi3",
+    "parameter_count": 3000000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/jsrobinson3/beebuddy-bee-qwen35-v3-gguf",
+    "name": "beebuddy-bee-qwen35-v3",
+    "organization": "jsrobinson3",
+    "architecture": "qwen",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/juan1995-dev/Qwen3.6-35B-A3B-UD-Q4_K_M_GGUF",
+    "name": "Qwen3.6-35B-A3B-UD-Q4_K_M_GGUF",
+    "organization": "juan1995-dev",
+    "architecture": "qwen",
+    "parameter_count": 35000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/kai-os/Carnice-V2-27b-GGUF",
+    "name": "Carnice-V2-27b",
+    "organization": "kai-os",
+    "architecture": "qwen3_5",
+    "parameter_count": 27000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/kalle07/embedder_collection",
+    "name": "embedder_collection",
+    "organization": "kalle07"
+  },
+  {
+    "purl": "pkg:huggingface/kashif0912/ULTRON-V2",
+    "name": "ULTRON-V2",
+    "organization": "kashif0912",
+    "architecture": "llama",
+    "parameter_count": 3212749824,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/kaushikdash/odia-gemma4-e2b-gguf",
+    "name": "odia-gemma4-e2b",
+    "organization": "kaushikdash",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/kawaimasa/Wanabi-Novelist-12B-GGUF",
+    "name": "Wanabi-Novelist-12B",
+    "organization": "kawaimasa",
+    "architecture": "mistral",
+    "parameter_count": 12247782400,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/kenpath/svara-tts-v1",
+    "name": "svara-tts-v1",
+    "organization": "kenpath",
+    "architecture": "llama",
+    "parameter_count": 3300867072,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/khaledJJJ/Fattah-hydroponics-v3",
+    "name": "Fattah-hydroponics-v3",
+    "organization": "khaledJJJ",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/kingsenglishvietnam/Satire-GGUF",
+    "name": "Satire",
+    "organization": "kingsenglishvietnam"
+  },
+  {
+    "purl": "pkg:huggingface/knifeayumu/LLM_Collection",
+    "name": "LLM_Collection",
+    "organization": "knifeayumu",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/koboldcpp/music",
+    "name": "music",
+    "organization": "koboldcpp"
+  },
+  {
+    "purl": "pkg:huggingface/koboldcpp/tts",
+    "name": "tts",
+    "organization": "koboldcpp"
+  },
+  {
+    "purl": "pkg:huggingface/konpep/Aether-Coder-v2.0-GGUF",
+    "name": "Aether-Coder-v2.0",
+    "organization": "konpep",
+    "architecture": "qwen2",
+    "parameter_count": 1543714304,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/kurtpayne/skillscan-detector-v4-7-reproduce",
+    "name": "skillscan-detector-v4-7-reproduce",
+    "organization": "kurtpayne",
+    "architecture": "qwen2",
+    "parameter_count": 1543714304
+  },
+  {
+    "purl": "pkg:huggingface/llmStra33/Qwen3.5-9B-heretic-v2-Q4_K_M-GGUF",
+    "name": "Qwen3.5-9B-heretic-v2",
+    "organization": "llmStra33",
+    "architecture": "qwen",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/lopho/Wan2.2-T2V-A14B-Diffusers_bf16_vae",
+    "name": "Wan2.2-T2V-A14B-Diffusers_bf16_vae",
+    "organization": "lopho",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/lorinet3/kblab-bert-swedish-cased-pos-gguf",
+    "name": "kblab-bert-swedish-cased-pos",
+    "organization": "lorinet3",
+    "architecture": "bert"
+  },
+  {
+    "purl": "pkg:huggingface/loubnabnl/smollm-135M-instruct-add-basics-w-math",
+    "name": "smollm-135M-instruct-add-basics-w-math",
+    "organization": "loubnabnl",
+    "architecture": "llama",
+    "parameter_count": 135000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/lthn/lemma",
+    "name": "lemma",
+    "organization": "lthn",
+    "architecture": "gemma",
+    "parameter_count": 7996156490,
+    "license": "eupl-1.2"
+  },
+  {
+    "purl": "pkg:huggingface/lucaelin/functiongemma-270m-cn-gguf",
+    "name": "functiongemma-270m-cn",
+    "organization": "lucaelin",
+    "architecture": "gemma",
+    "parameter_count": 270000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/lyraaaa/the-archivist-Q8_0-GGUF",
+    "name": "the-archivist",
+    "organization": "lyraaaa",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/majentik/Qwen3.5-27B-RotorQuant-GGUF-Q2_K",
+    "name": "Qwen3.5-27B-RotorQuant",
+    "organization": "majentik",
+    "architecture": "qwen",
+    "parameter_count": 27000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mashriram/sarvam-1.5-gguf",
+    "name": "sarvam-1.5",
+    "organization": "mashriram",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/matt-hans93/ups-tools-qwen2.5-7b",
+    "name": "ups-tools-qwen2.5-7b",
+    "organization": "matt-hans93",
+    "architecture": "qwen",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mayank23raj/mayank-mahoba-logic-v1-Q4_K_M-GGUF",
+    "name": "mayank-mahoba-logic-v1",
+    "organization": "mayank23raj",
+    "architecture": "llama",
+    "parameter_count": 3212749824,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/meshllm/Qwen3-0.6B-Q4_K_M-layers-test",
+    "name": "Qwen3-0.6B-Q4_K_M-layers-test",
+    "organization": "meshllm",
+    "architecture": "qwen",
+    "parameter_count": 600000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Llama-2-13b-chat-hf",
+    "name": "Llama-2-13b-chat-hf",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 13000000000,
+    "license": "LLAMA 2 COMMUNITY LICENSE"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Llama-2-13b-hf",
+    "name": "Llama-2-13b-hf",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 13000000000,
+    "license": "LLAMA 2 COMMUNITY LICENSE"
   },
   {
     "purl": "pkg:huggingface/meta-llama/Llama-2-7b",
@@ -16,12 +3478,151 @@
     "license": "LLAMA 2 COMMUNITY LICENSE"
   },
   {
-    "purl": "pkg:huggingface/mistralai/Mistral-7B-v0.1",
-    "name": "Mistral-7B-v0.1",
-    "organization": "mistralai",
-    "architecture": "mistral",
-    "parameter_count": 7000000000,
+    "purl": "pkg:huggingface/meta-llama/Llama-2-7b-hf",
+    "name": "Llama-2-7b-hf",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 6738417664,
+    "license": "LLAMA 2 COMMUNITY LICENSE"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Llama-3.1-70B-Instruct",
+    "name": "Llama-3.1-70B-Instruct",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 70553706496,
+    "license": "Llama-3.1"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Llama-3.1-8B",
+    "name": "Llama-3.1-8B",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "Llama-3.1"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Llama-3.1-8B-Instruct",
+    "name": "Llama-3.1-8B-Instruct",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "Llama-3.1"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Llama-3.2-1B",
+    "name": "Llama-3.2-1B",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 1235814400,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Llama-3.2-3B",
+    "name": "Llama-3.2-3B",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 3212749824,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/meta-llama/Meta-Llama-3-8B",
+    "name": "Meta-Llama-3-8B",
+    "organization": "meta-llama",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "Llama-3"
+  },
+  {
+    "purl": "pkg:huggingface/metercai/SimpleSDXL2",
+    "name": "SimpleSDXL2",
+    "organization": "metercai",
     "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/michi883/memory-moment-v5-gemma4-e2b-gguf",
+    "name": "memory-moment-v5-gemma4-e2b",
+    "organization": "michi883",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/LLM2CLIP-Llama-3-8B-Instruct-CC-Finetuned",
+    "name": "LLM2CLIP-Llama-3-8B-Instruct-CC-Finetuned",
+    "organization": "microsoft",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/NextCoder-14B",
+    "name": "NextCoder-14B",
+    "organization": "microsoft",
+    "architecture": "qwen2",
+    "parameter_count": 14770033664,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/NextCoder-7B",
+    "name": "NextCoder-7B",
+    "organization": "microsoft",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/Phi-3-medium-4k-instruct",
+    "name": "Phi-3-medium-4k-instruct",
+    "organization": "microsoft",
+    "architecture": "phi3",
+    "parameter_count": 13960238080,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/Phi-3-mini-4k-instruct",
+    "name": "Phi-3-mini-4k-instruct",
+    "organization": "microsoft",
+    "architecture": "phi",
+    "parameter_count": 3821079552,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/Phi-3.5-mini-instruct",
+    "name": "Phi-3.5-mini-instruct",
+    "organization": "microsoft",
+    "architecture": "phi",
+    "parameter_count": 3821079552,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/Phi-4-mini-instruct",
+    "name": "Phi-4-mini-instruct",
+    "organization": "microsoft",
+    "architecture": "phi3",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/Phi-4-mini-reasoning",
+    "name": "Phi-4-mini-reasoning",
+    "organization": "microsoft",
+    "architecture": "phi3",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/VibeVoice-Realtime-0.5B",
+    "name": "VibeVoice-Realtime-0.5B",
+    "organization": "microsoft",
+    "architecture": "vibevoice_streaming",
+    "parameter_count": 1017626722,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/microsoft/phi-1_5",
+    "name": "phi-1_5",
+    "organization": "microsoft",
+    "architecture": "phi",
+    "parameter_count": 1418270720,
+    "license": "MIT"
   },
   {
     "purl": "pkg:huggingface/microsoft/phi-2",
@@ -32,11 +3633,1593 @@
     "license": "MIT"
   },
   {
-    "purl": "pkg:huggingface/google/gemma-2b",
-    "name": "gemma-2b",
-    "organization": "google",
+    "purl": "pkg:huggingface/microsoft/phi-4",
+    "name": "phi-4",
+    "organization": "microsoft",
+    "architecture": "phi3",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/mirxa2/Mirxa3.6-27B",
+    "name": "Mirxa3.6-27B",
+    "organization": "mirxa2",
+    "architecture": "qwen",
+    "parameter_count": 27000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Codestral-22B-v0.1",
+    "name": "Codestral-22B-v0.1",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 22247282688,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Devstral-Small-2-24B-Instruct-2512",
+    "name": "Devstral-Small-2-24B-Instruct-2512",
+    "organization": "mistralai",
+    "architecture": "mistral3",
+    "parameter_count": 24011361840,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Magistral-Small-2506",
+    "name": "Magistral-Small-2506",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 23572403200,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Ministral-3-3B-Base-2512",
+    "name": "Ministral-3-3B-Base-2512",
+    "organization": "mistralai",
+    "architecture": "mistral3",
+    "parameter_count": 4251743232,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Ministral-3-3B-Instruct-2512-BF16",
+    "name": "Ministral-3-3B-Instruct-2512",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 4251743232,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Ministral-3-3B-Reasoning-2512",
+    "name": "Ministral-3-3B-Reasoning-2512",
+    "organization": "mistralai",
+    "architecture": "mistral3",
+    "parameter_count": 4251743232,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Ministral-3-8B-Base-2512",
+    "name": "Ministral-3-8B-Base-2512",
+    "organization": "mistralai",
+    "architecture": "mistral3",
+    "parameter_count": 8918026240,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Ministral-3-8B-Reasoning-2512-GGUF",
+    "name": "Ministral-3-8B-Reasoning-2512",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Ministral-8B-Instruct-2410",
+    "name": "Ministral-8B-Instruct-2410",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 8000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Mistral-7B-Instruct-v0.3",
+    "name": "Mistral-7B-Instruct-v0.3",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Mistral-7B-v0.1",
+    "name": "Mistral-7B-v0.1",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Mistral-Nemo-Instruct-2407",
+    "name": "Mistral-Nemo-Instruct-2407",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 12247782400,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mistralai/Mistral-Small-24B-Instruct-2501",
+    "name": "Mistral-Small-24B-Instruct-2501",
+    "organization": "mistralai",
+    "architecture": "mistral",
+    "parameter_count": 24000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mitchbs/charlie01-hermes-llama3.2-3B-GGUF",
+    "name": "charlie01-hermes-llama3.2-3B",
+    "organization": "mitchbs",
+    "architecture": "llama",
+    "parameter_count": 3000000000
+  },
+  {
+    "purl": "pkg:huggingface/mixedbread-ai/mxbai-embed-xsmall-v1",
+    "name": "mxbai-embed-xsmall-v1",
+    "organization": "mixedbread-ai",
+    "architecture": "bert",
+    "parameter_count": 24089472,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mlc-ai/Llama-3.2-1B-Instruct-q4f16_1-MLC",
+    "name": "Llama-3.2-1B-Instruct-q4f16_1-MLC",
+    "organization": "mlc-ai",
+    "architecture": "llama",
+    "parameter_count": 1000000000,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/mlc-ai/Phi-3-mini-4k-instruct-q4f16_1-MLC",
+    "name": "Phi-3-mini-4k-instruct-q4f16_1-MLC",
+    "organization": "mlc-ai",
+    "architecture": "phi",
+    "parameter_count": 3821079552,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/mlc-ai/Phi-3.5-mini-instruct-q4f16_0-MLC",
+    "name": "Phi-3.5-mini-instruct-q4f16_0-MLC",
+    "organization": "mlc-ai",
+    "architecture": "phi",
+    "parameter_count": 3821079552,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/mlc-ai/Qwen2.5-0.5B-Instruct-q4f16_1-MLC",
+    "name": "Qwen2.5-0.5B-Instruct-q4f16_1-MLC",
+    "organization": "mlc-ai",
+    "architecture": "qwen",
+    "parameter_count": 500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mlc-ai/Qwen2.5-1.5B-Instruct-q4f16_1-MLC",
+    "name": "Qwen2.5-1.5B-Instruct-q4f16_1-MLC",
+    "organization": "mlc-ai",
+    "architecture": "qwen",
+    "parameter_count": 1500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mlx-community/Kimi-K2.6-mlx-DQ3_K_M-q8",
+    "name": "Kimi-K2.6-mlx-DQ3_K_M-q8",
+    "organization": "mlx-community",
+    "architecture": "kimi_k25",
+    "parameter_count": 1026408232448,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/moonshotai/Moonlight-16B-A3B-Instruct",
+    "name": "Moonlight-16B-A3B-Instruct",
+    "organization": "moonshotai",
+    "architecture": "deepseek",
+    "parameter_count": 15960111936,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/AReaL-tau2-merge-sft-235B-i1-GGUF",
+    "name": "AReaL-tau2-merge-sft-235B-i1",
+    "organization": "mradermacher",
+    "architecture": "qwen3_moe",
+    "parameter_count": 235000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Aspire_V2_ALT_ROW-8B-Model_Stock-GGUF",
+    "name": "Aspire_V2_ALT_ROW-8B-Model_Stock",
+    "organization": "mradermacher",
+    "parameter_count": 8000000000
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Aura-12B-i1-GGUF",
+    "name": "Aura-12B-i1",
+    "organization": "mradermacher",
+    "architecture": "mistral",
+    "parameter_count": 12000000000
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/DAC5.2-0.5B-GGUF",
+    "name": "DAC5.2-0.5B",
+    "organization": "mradermacher",
+    "architecture": "qwen2",
+    "parameter_count": 500000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Deflowered_MaidElla-3.2-1B-i1-GGUF",
+    "name": "Deflowered_MaidElla-3.2-1B-i1",
+    "organization": "mradermacher",
+    "architecture": "llama",
+    "parameter_count": 1000000000,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/DocWain-14B-v2-unified-dpo-r2-GGUF",
+    "name": "DocWain-14B-v2-unified-dpo-r2",
+    "organization": "mradermacher",
+    "architecture": "qwen3",
+    "parameter_count": 14000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/KodaLite-1.3B-i1-GGUF",
+    "name": "KodaLite-1.3B-i1",
+    "organization": "mradermacher",
+    "architecture": "llama",
+    "parameter_count": 1300000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Legal-Embedding-ita-0.6B-GGUF",
+    "name": "Legal-Embedding-ita-0.6B",
+    "organization": "mradermacher",
+    "architecture": "qwen3",
+    "parameter_count": 600000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Lily-1.5b-v0.1-GGUF",
+    "name": "Lily-1.5b-v0.1",
+    "organization": "mradermacher",
+    "architecture": "qwen2",
+    "parameter_count": 1500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/LittleLamb-ToolCalling-i1-GGUF",
+    "name": "LittleLamb-ToolCalling-i1",
+    "organization": "mradermacher",
+    "architecture": "qwen3",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Nile-Chat-4B-i1-GGUF",
+    "name": "Nile-Chat-4B-i1",
+    "organization": "mradermacher",
+    "architecture": "gemma3_text",
+    "parameter_count": 4000000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/OpenAI-gpt-oss-20B-Claude-4.5-Opus-Heretic-Uncensored-i1-GGUF",
+    "name": "OpenAI-gpt-oss-20B-Claude-4.5-Opus-Heretic-Uncensored-i1",
+    "organization": "mradermacher",
+    "architecture": "gpt_oss",
+    "parameter_count": 20000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/OpenElla-NovelWriter-8B-V2-merged-i1-GGUF",
+    "name": "OpenElla-NovelWriter-8B-V2-merged-i1",
+    "organization": "mradermacher",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Qwopus-9B-Unfettered-i1-GGUF",
+    "name": "Qwopus-9B-Unfettered-i1",
+    "organization": "mradermacher",
+    "architecture": "qwen3_5_text",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Raphael-7B-GGUF",
+    "name": "Raphael-7B",
+    "organization": "mradermacher",
+    "architecture": "mistral",
+    "parameter_count": 7000000000
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/Rocinante-XL-16B-v1-absolute-heresy-i1-GGUF",
+    "name": "Rocinante-XL-16B-v1-absolute-heresy-i1",
+    "organization": "mradermacher",
+    "architecture": "mistral",
+    "parameter_count": 16000000000
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/VachaSpeech-0.6B-GGUF",
+    "name": "VachaSpeech-0.6B",
+    "organization": "mradermacher",
+    "architecture": "qwen3",
+    "parameter_count": 600000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/VetJarvis-1.1-4B-Instruct-GGUF",
+    "name": "VetJarvis-1.1-4B-Instruct",
+    "organization": "mradermacher",
+    "architecture": "qwen3_5",
+    "parameter_count": 4000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/bella-bartender-gemma-e2b-GGUF",
+    "name": "bella-bartender-gemma-e2b",
+    "organization": "mradermacher",
     "architecture": "gemma",
+    "parameter_count": 5104297539,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/psychological-tone-analyzer_model_v1-GGUF",
+    "name": "psychological-tone-analyzer_model_v1",
+    "organization": "mradermacher",
+    "architecture": "distilbert",
+    "parameter_count": 66957317
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/qwen2-math-7b-sft-OpenHermes2.5-checkpoint-4000-i1-GGUF",
+    "name": "qwen2-math-7b-sft-OpenHermes2.5-checkpoint-4000-i1",
+    "organization": "mradermacher",
+    "architecture": "qwen",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/salamandra-estigiaV7-GGUF",
+    "name": "salamandra-estigiaV7",
+    "organization": "mradermacher",
+    "architecture": "llama",
+    "parameter_count": 2253490176,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/mradermacher/vntl-llama3-8b-v2-hf-GGUF",
+    "name": "vntl-llama3-8b-v2-hf",
+    "organization": "mradermacher",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "Llama-3"
+  },
+  {
+    "purl": "pkg:huggingface/mrdayl/nugget-reap-32-top3-lora-polish",
+    "name": "nugget-reap-32-top3-lora-polish",
+    "organization": "mrdayl",
+    "architecture": "qwen3_moe",
+    "parameter_count": 8779413504,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/munyew/MERaLiON-2-3B-GGUF",
+    "name": "MERaLiON-2-3B",
+    "organization": "munyew",
+    "architecture": "meralion2",
+    "parameter_count": 3470880512,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/my-ai-stack/Stack-3.0-Omni-Nexus",
+    "name": "Stack-3.0-Omni-Nexus",
+    "organization": "my-ai-stack",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/n-Arno/Anima-P3-Turbo-AIO-Q4_K",
+    "name": "Anima-P3-Turbo-AIO-Q4_K",
+    "organization": "n-Arno",
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/n0kovo/CapQwen3.6-27B-BLIP3o-Long-Caption-Distilled-GGUF",
+    "name": "CapQwen3.6-27B-BLIP3o-Long-Caption-Distilled",
+    "organization": "n0kovo",
+    "architecture": "qwen",
+    "parameter_count": 27000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/naazimsnh02/voiceown-base-gguf",
+    "name": "voiceown-base",
+    "organization": "naazimsnh02",
+    "architecture": "gemma4",
+    "parameter_count": 5123178051,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ncncomplete/NyayaLLM-Q4_K_M-GGUF",
+    "name": "NyayaLLM",
+    "organization": "ncncomplete",
+    "architecture": "llama",
+    "parameter_count": 8030269440,
+    "license": "Llama-3.1"
+  },
+  {
+    "purl": "pkg:huggingface/nd1490/ratatouille-llama3-3b-v8-MERGED",
+    "name": "ratatouille-llama3-3b-v8-MERGED",
+    "organization": "nd1490",
+    "architecture": "llama",
+    "parameter_count": 3212749824,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/nebje/sigphia",
+    "name": "sigphia",
+    "organization": "nebje"
+  },
+  {
+    "purl": "pkg:huggingface/nectec/pathumma-thaillm-8b-think-3.0.0-GGUF",
+    "name": "pathumma-thaillm-8b-think-3.0.0",
+    "organization": "nectec",
+    "parameter_count": 8000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/neuphonic/neutts-air",
+    "name": "neutts-air",
+    "organization": "neuphonic",
+    "architecture": "qwen2",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/neuralcrew/neutrino-instruct",
+    "name": "neutrino-instruct",
+    "organization": "neuralcrew",
+    "architecture": "neutrino",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/newsletter/Mistral-7B-Instruct-v0.2-Q6_K-GGUF",
+    "name": "Mistral-7B-Instruct-v0.2",
+    "organization": "newsletter",
+    "architecture": "mistral",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/nisancoskun/astrology_tr-Q4_K_M-GGUF",
+    "name": "astrology_tr",
+    "organization": "nisancoskun",
+    "architecture": "gemma3",
+    "parameter_count": 4300079472,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/nisten/Biggie-SmoLlm-0.15B-Base",
+    "name": "Biggie-SmoLlm-0.15B-Base",
+    "organization": "nisten",
+    "architecture": "llama",
+    "parameter_count": 134515008,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/nmerkle/Meta-Llama-3-8B-Instruct-ggml-model-Q4_K_M.gguf",
+    "name": "Meta-Llama-3-8B-Instruct-ggml-model-Q4_K_M.gguf",
+    "organization": "nmerkle",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "Llama-3"
+  },
+  {
+    "purl": "pkg:huggingface/nnethercott/llava-v1.5-7b-gpt4OCR-hf-GGUF_Q4_K_M",
+    "name": "llava-v1.5-7b-gpt4OCR-hf-GGUF_Q4_K_M",
+    "organization": "nnethercott",
+    "parameter_count": 7000000000,
+    "license": "Llama-2"
+  },
+  {
+    "purl": "pkg:huggingface/noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF",
+    "name": "Huihui-Qwen3-VL-8B-Instruct-abliterated",
+    "organization": "noctrex",
+    "architecture": "qwen",
+    "parameter_count": 8767123696,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/noctrex/LightOnOCR-2-1B-ocr-soup-GGUF",
+    "name": "LightOnOCR-2-1B-ocr-soup",
+    "organization": "noctrex",
+    "architecture": "mistral3",
+    "parameter_count": 1005647872,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/nomadAi22/unsloth_llama3.2_3b_instruct_CSA_f16",
+    "name": "unsloth_llama3.2_3b_instruct_CSA_f16",
+    "organization": "nomadAi22",
+    "architecture": "llama",
+    "parameter_count": 3000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/nomic-ai/colnomic-embed-multimodal-7b",
+    "name": "colnomic-embed-multimodal-7b",
+    "organization": "nomic-ai",
+    "architecture": "qwen2_5_vl",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/nomic-ai/nomic-embed-text-v1.5",
+    "name": "nomic-embed-text-v1.5",
+    "organization": "RinaChen",
+    "architecture": "bert",
+    "parameter_count": 136731648,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/norallm/normistral-7b-warm",
+    "name": "normistral-7b-warm",
+    "organization": "norallm",
+    "architecture": "mistral",
+    "parameter_count": 7248023552,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/nsumonte/Spanish-Meta_llama3.1_256-merged",
+    "name": "Spanish-Meta_llama3.1_256-merged",
+    "organization": "nsumonte",
+    "architecture": "llama",
+    "parameter_count": 8030261248
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/AceReason-Nemotron-14B",
+    "name": "AceReason-Nemotron-14B",
+    "organization": "nvidia",
+    "architecture": "qwen2",
+    "parameter_count": 14770033664,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/AceReason-Nemotron-7B",
+    "name": "AceReason-Nemotron-7B",
+    "organization": "nvidia",
+    "architecture": "qwen2",
+    "parameter_count": 7615616512,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/Cosmos-Reason2-2B",
+    "name": "Cosmos-Reason2-2B",
+    "organization": "nvidia",
+    "architecture": "qwen",
     "parameter_count": 2000000000,
-    "license": "gemma"
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/Llama-3.1-Nemotron-Safety-Guard-8B-v3",
+    "name": "Llama-3.1-Nemotron-Safety-Guard-8B-v3",
+    "organization": "nvidia",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16",
+    "name": "NVIDIA-Nemotron-3-Nano-4B",
+    "organization": "nvidia",
+    "architecture": "nemotron_h",
+    "parameter_count": 4000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/NVIDIA-Nemotron-Nano-12B-v2-Base",
+    "name": "NVIDIA-Nemotron-Nano-12B-v2-Base",
+    "organization": "nvidia",
+    "parameter_count": 12000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/Nemotron-Flash-1B",
+    "name": "Nemotron-Flash-1B",
+    "organization": "nvidia",
+    "architecture": "nemotron_flash",
+    "parameter_count": 965389440,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/Nemotron-Flash-3B-Instruct",
+    "name": "Nemotron-Flash-3B-Instruct",
+    "organization": "nvidia",
+    "architecture": "nemotron_flash",
+    "parameter_count": 2750007840,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/nvidia/parakeet-tdt-0.6b-v3",
+    "name": "parakeet-tdt-0.6b-v3",
+    "organization": "nvidia",
+    "architecture": "parakeet_tdt",
+    "parameter_count": 627057286,
+    "license": "CC-BY-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/onekq-ai/OneSQL-v0.1-Qwen-7B-GGUF",
+    "name": "OneSQL-v0.1-Qwen-7B",
+    "organization": "onekq-ai",
+    "architecture": "qwen",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/onnx-community/moondream2.text_model-ONNX",
+    "name": "moondream2.text_model-ONNX",
+    "organization": "onnx-community",
+    "architecture": "phi",
+    "parameter_count": 1418270720
+  },
+  {
+    "purl": "pkg:huggingface/openai-community/gpt2",
+    "name": "gpt2",
+    "organization": "openai-community",
+    "architecture": "gpt2",
+    "parameter_count": 137022720,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/openai-community/gpt2-medium",
+    "name": "gpt2-medium",
+    "organization": "openai-community",
+    "architecture": "gpt2",
+    "parameter_count": 379988992,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/openai-community/gpt2-xl",
+    "name": "gpt2-xl",
+    "organization": "openai-community",
+    "architecture": "gpt2",
+    "parameter_count": 1607942848,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/openai/whisper-tiny.en",
+    "name": "whisper-tiny.en",
+    "organization": "openai",
+    "architecture": "whisper",
+    "parameter_count": 37760256,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/openbmb/MiniCPM4.1-8B",
+    "name": "MiniCPM4.1-8B",
+    "organization": "openbmb",
+    "architecture": "minicpm",
+    "parameter_count": 8185253888,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/openensemble/plan-gguf",
+    "name": "plan",
+    "organization": "openensemble"
+  },
+  {
+    "purl": "pkg:huggingface/opensearch-project/opensearch-neural-sparse-encoding-multilingual-v1",
+    "name": "opensearch-neural-sparse-encoding-multilingual-v1",
+    "organization": "opensearch-project",
+    "architecture": "bert",
+    "parameter_count": 167463831,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/orivus/Orivus-Architect-v1-14B-Pro-GGUF",
+    "name": "Orivus-Architect-v1-14B-Pro",
+    "organization": "orivus",
+    "architecture": "qwen2",
+    "parameter_count": 14000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/osa911/qwen3-4b-instruct-2507-q4km-gguf",
+    "name": "qwen3-4b-instruct-2507-q4km",
+    "organization": "osa911",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/pbhappliedsystems/mistral-nemo-instruct-2407-gguf-Q4-K-M",
+    "name": "mistral-nemo-instruct-2407-gguf-Q4-K-M",
+    "organization": "pbhappliedsystems",
+    "architecture": "mistral",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/pegasus912/Josiefied-Qwen3-4B-Instruct-2507-gabliterated-v2-Q8_0-GGUF",
+    "name": "Josiefied-Qwen3-4B-Instruct-2507-gabliterated-v2",
+    "organization": "pegasus912",
+    "architecture": "qwen",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/perfectPresentation/rcrc-chat-v3-gemma-1b-rag-hanifa-GGUF",
+    "name": "rcrc-chat-v3-gemma-1b-rag-hanifa",
+    "organization": "perfectPresentation",
+    "architecture": "gemma",
+    "parameter_count": 1000000000,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/perfectPresentation/rcrc-chat-v5-gemma-1b-cpt-sft",
+    "name": "rcrc-chat-v5-gemma-1b-cpt-sft",
+    "organization": "perfectPresentation",
+    "architecture": "gemma",
+    "parameter_count": 999885952,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/phanja/my-finetuned-report-model-Q4_K_M-GGUF",
+    "name": "my-finetuned-report-model",
+    "organization": "phanja",
+    "architecture": "llama",
+    "parameter_count": 1100048384
+  },
+  {
+    "purl": "pkg:huggingface/piyawudk/PhishMe-12k-Qwen3.5-4B-CorrectionSFT-v1-GGUF",
+    "name": "PhishMe-12k-Qwen3.5-4B-CorrectionSFT-v1",
+    "organization": "piyawudk",
+    "architecture": "phi",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/piyawudk/PhishMe-12k-Qwen3.5-4B-DPO-v1-GGUF",
+    "name": "PhishMe-12k-Qwen3.5-4B-DPO-v1",
+    "organization": "piyawudk",
+    "architecture": "phi",
+    "parameter_count": 4000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/pkpie1234/usdjpy-qwen25-3b-v6_1-gguf",
+    "name": "usdjpy-qwen25-3b-v6_1",
+    "organization": "pkpie1234",
+    "architecture": "qwen",
+    "parameter_count": 3085938688,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/pnnbao-ump/VieNeu-TTS-0.3B",
+    "name": "VieNeu-TTS-0.3B",
+    "organization": "pnnbao-ump",
+    "architecture": "qwen",
+    "parameter_count": 244131584,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/pnnbao-ump/VieNeu-TTS-v2-Turbo-GGUF",
+    "name": "VieNeu-TTS-v2-Turbo",
+    "organization": "pnnbao-ump",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/prawinin/sunny-legal-assistant-3b",
+    "name": "sunny-legal-assistant-3b",
+    "organization": "prawinin",
+    "architecture": "llama",
+    "parameter_count": 3212749824,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/prithivMLmods/Gliese-Qwen3.5-0.8B-Abliterated-Caption",
+    "name": "Gliese-Qwen3.5-0.8B-Abliterated-Caption",
+    "organization": "prithivMLmods",
+    "architecture": "qwen",
+    "parameter_count": 852985920,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/pthinc/Cicikus_v4_0.3B_Pitircik",
+    "name": "Cicikus_v4_0.3B_Pitircik",
+    "organization": "pthinc",
+    "architecture": "gemma3_text",
+    "parameter_count": 268098176,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/rafacalifornia/avap-coder_qw25_3b_v1",
+    "name": "avap-coder_qw25_3b_v1",
+    "organization": "rafacalifornia",
+    "architecture": "qwen",
+    "parameter_count": 3000000000
+  },
+  {
+    "purl": "pkg:huggingface/ramankrishna10/npc-agentic-7b-v3",
+    "name": "npc-agentic-7b-v3",
+    "organization": "ramankrishna10",
+    "architecture": "qwen",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/ramgpt/Nanonets-OCR2-3B-GGUF-Q4_K_M",
+    "name": "Nanonets-OCR2-3B",
+    "organization": "ramgpt",
+    "architecture": "qwen2_5_vl",
+    "parameter_count": 3000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/ramyun/adelie-qwen-roleplay-v2-gguf",
+    "name": "adelie-qwen-roleplay-v2",
+    "organization": "ramyun",
+    "architecture": "qwen",
+    "parameter_count": 7615616512,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/rawoyemi/yaps-android-models",
+    "name": "yaps-android-models",
+    "organization": "rawoyemi"
+  },
+  {
+    "purl": "pkg:huggingface/reaperdoesntknow/DualMinded-Qwen3-1.7B",
+    "name": "DualMinded-Qwen3-1.7B",
+    "organization": "reaperdoesntknow",
+    "architecture": "qwen",
+    "parameter_count": 2031739904,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/reaperdoesntknow/SMOLM2Prover",
+    "name": "SMOLM2Prover",
+    "organization": "reaperdoesntknow",
+    "architecture": "llama",
+    "parameter_count": 361821120,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/remsee/kyleJr-Apr26",
+    "name": "kyleJr-Apr26",
+    "organization": "remsee",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/rikunarita-2/Darwin-4B-Genesis-Q5_K_M-GGUF",
+    "name": "Darwin-4B-Genesis",
+    "organization": "rikunarita-2",
+    "architecture": "gemma4",
+    "parameter_count": 7518069034,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/rippertnt/HyperCLOVAX-SEED-Text-Instruct-1.5B-Q4_K_M-GGUF",
+    "name": "HyperCLOVAX-SEED-Text-Instruct-1.5B",
+    "organization": "rippertnt",
+    "architecture": "llama",
+    "parameter_count": 1500000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/rockypod/svelte-coder",
+    "name": "svelte-coder",
+    "organization": "rockypod",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/rockypod/svelte-coder-4b",
+    "name": "svelte-coder-4b",
+    "organization": "rockypod",
+    "architecture": "qwen3",
+    "parameter_count": 4000000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/rockypod/svelte-coder-8b",
+    "name": "svelte-coder-8b",
+    "organization": "rockypod",
+    "architecture": "qwen3",
+    "parameter_count": 8190735360,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/roleplaiapp/Dolphin3.0-Llama3.1-8B-Q2_K-GGUF",
+    "name": "Dolphin3.0-Llama3.1-8B",
+    "organization": "roleplaiapp",
+    "architecture": "llama",
+    "parameter_count": 8000000000
+  },
+  {
+    "purl": "pkg:huggingface/roleplaiapp/MN-12B-Mag-Mell-R1-Q2_K-GGUF",
+    "name": "MN-12B-Mag-Mell-R1",
+    "organization": "roleplaiapp",
+    "parameter_count": 12000000000
+  },
+  {
+    "purl": "pkg:huggingface/roleplaiapp/saiga_nemo_12b_gguf-Q2_K-GGUF",
+    "name": "saiga_nemo_12b_gguf",
+    "organization": "roleplaiapp",
+    "parameter_count": 12000000000
+  },
+  {
+    "purl": "pkg:huggingface/ruv/ruvltra-claude-code",
+    "name": "ruvltra-claude-code",
+    "organization": "ruv",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/sallani/PrivaMesh",
+    "name": "PrivaMesh",
+    "organization": "sallani",
+    "architecture": "mistral",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/sammiset/finops-fail-triage",
+    "name": "finops-fail-triage",
+    "organization": "sammiset",
+    "architecture": "qwen",
+    "parameter_count": 9653104368,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/sangoi-exe/sd-webui-codex",
+    "name": "sd-webui-codex",
+    "organization": "sangoi-exe",
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/sarathvaddi/vaddi-llm-v1",
+    "name": "vaddi-llm-v1",
+    "organization": "sarathvaddi",
+    "architecture": "llama",
+    "parameter_count": 8030261248,
+    "license": "Llama-3.1"
+  },
+  {
+    "purl": "pkg:huggingface/sc-98-ai/snigs",
+    "name": "snigs",
+    "organization": "sc-98-ai",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/scragnog/HOT-Step-CPP-PP-VAE",
+    "name": "HOT-Step-CPP-PP-VAE",
+    "organization": "scragnog",
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/scragnog/ace-step-1.5-gguf-merge-models",
+    "name": "ace-step-1.5-gguf-merge-models",
+    "organization": "scragnog",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/second-state/stable-diffusion-v1-5-GGUF",
+    "name": "stable-diffusion-v1-5",
+    "organization": "second-state",
+    "license": "CreativeML-OpenRAIL-M"
+  },
+  {
+    "purl": "pkg:huggingface/sergindous/Sergup-SPT-9B0on-Tencent-GGUF",
+    "name": "Sergup-SPT-9B0on-Tencent",
+    "organization": "sergindous",
+    "parameter_count": 8913692160,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/sergindous/Sergup-TTS",
+    "name": "Sergup-TTS",
+    "organization": "sergindous"
+  },
+  {
+    "purl": "pkg:huggingface/sevoh/fmode",
+    "name": "fmode",
+    "organization": "sevoh",
+    "architecture": "gemma4"
+  },
+  {
+    "purl": "pkg:huggingface/shazzadulimun/aurora",
+    "name": "aurora",
+    "organization": "shazzadulimun",
+    "architecture": "gemma",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/shehrozrafaqat/football-tinyllama-trl-lora",
+    "name": "football-tinyllama-trl-lora",
+    "organization": "shehrozrafaqat",
+    "architecture": "llama",
+    "parameter_count": 1100048384,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/shing3232/Sakura-1.5B-Qwen2.5-v1.0-GGUF-IMX",
+    "name": "Sakura-1.5B-Qwen2.5-v1.0",
+    "organization": "shing3232",
+    "architecture": "qwen",
+    "parameter_count": 1500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/shinshekai/chandra-ocr-2-Q8_0-GGUF",
+    "name": "chandra-ocr-2",
+    "organization": "shinshekai",
+    "architecture": "qwen3_5",
+    "parameter_count": 5295564288,
+    "license": "OpenRAIL"
+  },
+  {
+    "purl": "pkg:huggingface/sijiey/Thermal-Affordance-Model",
+    "name": "Thermal-Affordance-Model",
+    "organization": "sijiey",
+    "license": "CC-BY-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/sivakrishna123/FREYAH-v2.5",
+    "name": "FREYAH-v2.5",
+    "organization": "sivakrishna123",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/skymizer/quantized-debug-models",
+    "name": "quantized-debug-models",
+    "organization": "skymizer",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/smashingtags/eightly-agent",
+    "name": "eightly-agent",
+    "organization": "smashingtags",
+    "architecture": "gemma3_text",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/speakleash/Bielik-4.5B-v3.0-Instruct-GGUF",
+    "name": "Bielik-4.5B-v3.0-Instruct",
+    "organization": "speakleash",
+    "architecture": "llama",
+    "parameter_count": 4757260288,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/spotapovadm/sweep-next-edit-1.5B",
+    "name": "sweep-next-edit-1.5B",
+    "organization": "spotapovadm",
+    "parameter_count": 1500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/sriram882004/SQL-Socratic-Models",
+    "name": "SQL-Socratic-Models",
+    "organization": "sriram882004",
+    "architecture": "phi",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/stabilityai/stablelm-2-12b",
+    "name": "stablelm-2-12b",
+    "organization": "stabilityai",
+    "architecture": "stablelm",
+    "parameter_count": 12143185920,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/stabilityai/stablelm-2-1_6b",
+    "name": "stablelm-2-1_6b",
+    "organization": "stabilityai",
+    "architecture": "stablelm",
+    "parameter_count": 1644515328,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/stabilityai/stablelm-3b-4e1t",
+    "name": "stablelm-3b-4e1t",
+    "organization": "stabilityai",
+    "architecture": "stablelm",
+    "parameter_count": 2795443200,
+    "license": "CC-BY-SA-4.0"
+  },
+  {
+    "purl": "pkg:huggingface/stepfun-ai/step3",
+    "name": "step3",
+    "organization": "stepfun-ai",
+    "architecture": "step3_vl",
+    "parameter_count": 320969912832,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/steven123123/llamita-44-x",
+    "name": "llamita-44-x",
+    "organization": "steven123123"
+  },
+  {
+    "purl": "pkg:huggingface/swazona/adam-gemma4-e4b",
+    "name": "adam-gemma4-e4b",
+    "organization": "swazona",
+    "architecture": "qwen",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/t-tech/T-lite-it-2.1",
+    "name": "T-lite-it-2.1",
+    "organization": "t-tech",
+    "architecture": "qwen3",
+    "parameter_count": 8188711936,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/t-tech/T-pro-it-2.0-AWQ",
+    "name": "T-pro-it-2.0",
+    "organization": "t-tech",
+    "architecture": "qwen3",
+    "parameter_count": 33246967680,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/tejaswinirb01/vidyut-cse-ai-gguf",
+    "name": "vidyut-cse-ai",
+    "organization": "tejaswinirb01"
+  },
+  {
+    "purl": "pkg:huggingface/tencent/HY-MT1.5-1.8B-GGUF",
+    "name": "HY-MT1.5-1.8B",
+    "organization": "tencent",
+    "parameter_count": 1800000000
+  },
+  {
+    "purl": "pkg:huggingface/tencent/HY-MT1.5-7B",
+    "name": "HY-MT1.5-7B",
+    "organization": "tencent",
+    "architecture": "hunyuan_v1_dense",
+    "parameter_count": 8029540352
+  },
+  {
+    "purl": "pkg:huggingface/tencent/Hunyuan-1.8B-Pretrain",
+    "name": "Hunyuan-1.8B-Pretrain",
+    "organization": "tencent",
+    "architecture": "hunyuan_v1_dense",
+    "parameter_count": 1791080448
+  },
+  {
+    "purl": "pkg:huggingface/tencent/Hunyuan-4B-Pretrain",
+    "name": "Hunyuan-4B-Pretrain",
+    "organization": "tencent",
+    "architecture": "hunyuan_v1_dense",
+    "parameter_count": 4221757440
+  },
+  {
+    "purl": "pkg:huggingface/tencent/HunyuanOCR",
+    "name": "HunyuanOCR",
+    "organization": "tencent",
+    "architecture": "hunyuan_vl",
+    "parameter_count": 996208112,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/tencent/Hy-MT1.5-1.8B-2bit",
+    "name": "Hy-MT1.5-1.8B-2bit",
+    "organization": "tencent",
+    "architecture": "hunyuan_v1_dense",
+    "parameter_count": 1791080448
+  },
+  {
+    "purl": "pkg:huggingface/tencent/WeDLM-7B-Base",
+    "name": "WeDLM-7B-Base",
+    "organization": "tencent",
+    "architecture": "wedlm",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/tencent/WeDLM-7B-Instruct",
+    "name": "WeDLM-7B-Instruct",
+    "organization": "tencent",
+    "architecture": "wedlm",
+    "parameter_count": 7615616512,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/tencent/WeDLM-8B-Base",
+    "name": "WeDLM-8B-Base",
+    "organization": "tencent",
+    "architecture": "wedlm",
+    "parameter_count": 8190735360,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/testingtest111/minigen-f16",
+    "name": "minigen",
+    "organization": "testingtest111",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/tfl35/ti-analyst-4b-150",
+    "name": "ti-analyst-4b-150",
+    "organization": "tfl35",
+    "parameter_count": 4000000000
+  },
+  {
+    "purl": "pkg:huggingface/thalytavius/pad2-qwen3.5-0.8b-base",
+    "name": "pad2-qwen3.5-0.8b-base",
+    "organization": "thalytavius",
+    "architecture": "qwen",
+    "parameter_count": 800000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/thejemish/crop-gemma4-e2b-GGUF",
+    "name": "crop-gemma4-e2b",
+    "organization": "thejemish",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/thejesraj/wos-meeting-agent",
+    "name": "wos-meeting-agent",
+    "organization": "thejesraj",
+    "architecture": "qwen",
+    "parameter_count": 7615616512
+  },
+  {
+    "purl": "pkg:huggingface/thirteenbit/lolzinventor_Qwen3.5-9B-Base-ZitGen-V2-GGUF",
+    "name": "lolzinventor_Qwen3.5-9B-Base-ZitGen-V2",
+    "organization": "thirteenbit",
+    "architecture": "qwen",
+    "parameter_count": 9000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/thorin1011/puffpuff-v1.1-parts",
+    "name": "puffpuff-v1.1-parts",
+    "organization": "thorin1011"
+  },
+  {
+    "purl": "pkg:huggingface/tiiuae/Falcon-H1-Tiny-90M-Instruct-GGUF",
+    "name": "Falcon-H1-Tiny-90M-Instruct",
+    "organization": "tiiuae",
+    "architecture": "falcon",
+    "parameter_count": 90000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/tiiuae/Falcon3-10B-Base",
+    "name": "Falcon3-10B-Base",
+    "organization": "tiiuae",
+    "architecture": "llama",
+    "parameter_count": 10305653760,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/tiiuae/Falcon3-1B-Base",
+    "name": "Falcon3-1B-Base",
+    "organization": "tiiuae",
+    "architecture": "llama",
+    "parameter_count": 1000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/tiiuae/Falcon3-7B-Base",
+    "name": "Falcon3-7B-Base",
+    "organization": "tiiuae",
+    "architecture": "llama",
+    "parameter_count": 7455550464,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/tiiuae/falcon-11B",
+    "name": "falcon-11B",
+    "organization": "tiiuae",
+    "architecture": "falcon",
+    "parameter_count": 11102822400,
+    "license": "Falcon2-11B is licenced under [TII Falcon License 2.0](https://falconllm-staging.tii.ae/falcon-2-terms-and-conditions.html), the permissive Apache 2.0-based software license which includes an [acceptable use policy](https://falconllm-staging.tii.ae/falcon-2-acceptable-use-policy.html) that promotes the responsible use of AI"
+  },
+  {
+    "purl": "pkg:huggingface/tiiuae/falcon-7b",
+    "name": "falcon-7b",
+    "organization": "tiiuae",
+    "architecture": "falcon",
+    "parameter_count": 7217189760,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/tiiuae/falcon-mamba-7b-instruct",
+    "name": "falcon-mamba-7b-instruct",
+    "organization": "tiiuae",
+    "architecture": "falcon",
+    "parameter_count": 7272665088,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/timmyd69/Lama2-7b-chat-hf-oslo-merged-model-Q2_K-GGUF",
+    "name": "Lama2-7b-chat-hf-oslo-merged-model",
+    "organization": "timmyd69",
+    "architecture": "llama",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/timteh673/Qwen3.5-397B-A17B-Opus-4.6-Reasoning-Uncensored-GGUF",
+    "name": "Qwen3.5-397B-A17B-Opus-4.6-Reasoning-Uncensored",
+    "organization": "timteh673",
+    "architecture": "qwen",
+    "parameter_count": 397000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/tobil/qmd-query-expansion-1.7B-gguf",
+    "name": "qmd-query-expansion-1.7B",
+    "organization": "tobil",
+    "architecture": "qwen3",
+    "parameter_count": 1700000000,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/togethercomputer/RedPajama-INCITE-7B-Base",
+    "name": "RedPajama-INCITE-7B-Base",
+    "organization": "togethercomputer",
+    "architecture": "gpt_neox",
+    "parameter_count": 7000000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/totoku/apex-models",
+    "name": "apex-models",
+    "organization": "totoku",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/tyfach16/DarkIdol-Llama-3.1-13.3B-Instruct-1.2-Uncensored-i1-GGUF",
+    "name": "DarkIdol-Llama-3.1-13.3B-Instruct-1.2-Uncensored-i1",
+    "organization": "tyfach16",
+    "architecture": "llama",
+    "parameter_count": 13264949248,
+    "license": "Llama-3.1"
+  },
+  {
+    "purl": "pkg:huggingface/unokayish182/yall4gettingahuggingfacemodel",
+    "name": "yall4gettingahuggingfacemodel",
+    "organization": "unokayish182",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/unsloth/Llama-3.2-3B-Instruct-bnb-4bit",
+    "name": "Llama-3.2-3B-Instruct-bnb-4bit",
+    "organization": "unsloth",
+    "architecture": "llama",
+    "parameter_count": 3301123016,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/unsloth/gemma-2-2b-it-bnb-4bit",
+    "name": "gemma-2-2b-it-bnb-4bit",
+    "organization": "unsloth",
+    "architecture": "gemma",
+    "parameter_count": 2677836404,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/unsloth/gemma-3-1b-it-unsloth-bnb-4bit",
+    "name": "gemma-3-1b-it-unsloth-bnb-4bit",
+    "organization": "unsloth",
+    "architecture": "gemma",
+    "parameter_count": 1021095818,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/unsloth/tinyllama-bnb-4bit",
+    "name": "tinyllama-bnb-4bit",
+    "organization": "unsloth",
+    "architecture": "llama",
+    "parameter_count": 1130479968,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/uukuguy/speechless-zephyr-code-functionary-7b",
+    "name": "speechless-zephyr-code-functionary-7b",
+    "organization": "uukuguy",
+    "architecture": "mistral",
+    "parameter_count": 7241732096,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/vathvathv/my-sea-lion-quants",
+    "name": "my-sea-lion-quants",
+    "organization": "vathvathv",
+    "architecture": "qwen"
+  },
+  {
+    "purl": "pkg:huggingface/vazad/bonsai-1.7b-iq2_bn",
+    "name": "bonsai-1.7b-iq2_bn",
+    "organization": "vazad",
+    "parameter_count": 1700000000
+  },
+  {
+    "purl": "pkg:huggingface/velyan/Llama-3.2-3B-Instruct-IQ3_M-GGUF",
+    "name": "Llama-3.2-3B-Instruct-IQ3_M",
+    "organization": "velyan",
+    "architecture": "llama",
+    "parameter_count": 3000000000,
+    "license": "Llama-3.2"
+  },
+  {
+    "purl": "pkg:huggingface/velyan/gemma-3n-E4B-it-Q4_K_M-GGUF",
+    "name": "gemma-3n-E4B-it",
+    "organization": "velyan",
+    "architecture": "gemma",
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/vexp-ai/vexp-devmind-v1-GGUF",
+    "name": "vexp-devmind-v1",
+    "organization": "vexp-ai",
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/veyra-ai/veyra2-30m-base-2b-tokens",
+    "name": "veyra2-30m-base-2b-tokens",
+    "organization": "veyra-ai",
+    "architecture": "llama",
+    "parameter_count": 34611712,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/vikasit-ai/Vikasit-AI-0.5B-Writer",
+    "name": "Vikasit-AI-0.5B-Writer",
+    "organization": "vikasit-ai",
+    "parameter_count": 500000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/vikasit-ai/Vikasit-AI-0.8B-Writer",
+    "name": "Vikasit-AI-0.8B-Writer",
+    "organization": "vikasit-ai",
+    "parameter_count": 800000000,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/virgiliolrf2/bagley-v10",
+    "name": "bagley-v10",
+    "organization": "virgiliolrf2",
+    "architecture": "llama",
+    "parameter_count": 8031309824,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/waltervix/OpenELM-3B-Instruct-Q2_K-GGUF",
+    "name": "OpenELM-3B-Instruct",
+    "organization": "waltervix",
+    "architecture": "openelm",
+    "parameter_count": 3000000000,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/wanabmeya/clip_vision_h.safetensors",
+    "name": "clip_vision_h.safetensors",
+    "organization": "wanabmeya",
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/wasmdashai/vits-ar-sa-huba-v2",
+    "name": "vits-ar-sa-huba-v2",
+    "organization": "wasmdashai",
+    "architecture": "vits",
+    "parameter_count": 83014902
+  },
+  {
+    "purl": "pkg:huggingface/wattsonandme/survival-qwen-0.5b",
+    "name": "survival-qwen-0.5b",
+    "organization": "wattsonandme",
+    "architecture": "qwen",
+    "parameter_count": 494032768,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/wbell7/stark-translate-models",
+    "name": "stark-translate-models",
+    "organization": "wbell7",
+    "architecture": "gemma"
+  },
+  {
+    "purl": "pkg:huggingface/wellyton5/kelly-llama3.1-8b",
+    "name": "kelly-llama3.1-8b",
+    "organization": "wellyton5",
+    "architecture": "llama",
+    "parameter_count": 8000000000
+  },
+  {
+    "purl": "pkg:huggingface/xianghuai/Breeze-7B-Instruct-v1_0-VS-Mistra-newprompt",
+    "name": "Breeze-7B-Instruct-v1_0-VS-Mistra-newprompt",
+    "organization": "xianghuai",
+    "architecture": "mpt",
+    "parameter_count": 7487098880,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/xniffing/lama_creo_mlx_gguf",
+    "name": "lama_creo_mlx_gguf",
+    "organization": "xniffing",
+    "architecture": "qwen",
+    "parameter_count": 3085938688,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/xyottax/Meta-Llama-3.1-8B-Instruct-Q3_K_S-GGUF",
+    "name": "Meta-Llama-3.1-8B-Instruct",
+    "organization": "xyottax",
+    "architecture": "llama",
+    "parameter_count": 8000000000,
+    "license": "Llama-3.1"
+  },
+  {
+    "purl": "pkg:huggingface/y3chnx/leah-sft",
+    "name": "leah-sft",
+    "organization": "y3chnx",
+    "architecture": "qwen",
+    "parameter_count": 1543714304
+  },
+  {
+    "purl": "pkg:huggingface/yanolja/YanoljaNEXT-Rosetta-4B-2511-GGUF",
+    "name": "YanoljaNEXT-Rosetta-4B-2511",
+    "organization": "yanolja",
+    "architecture": "gemma3_text",
+    "parameter_count": 3880263168,
+    "license": "Gemma"
+  },
+  {
+    "purl": "pkg:huggingface/zai-org/AutoGLM-Phone-9B",
+    "name": "AutoGLM-Phone-9B",
+    "organization": "zai-org",
+    "architecture": "glm4v",
+    "parameter_count": 934400,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/zai-org/GLM-4-9B-0414",
+    "name": "GLM-4-9B-0414",
+    "organization": "zai-org",
+    "architecture": "glm4",
+    "parameter_count": 9400279040,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/zai-org/glm-4-9b-chat-1m",
+    "name": "glm-4-9b-chat-1m",
+    "organization": "zai-org",
+    "architecture": "chatglm",
+    "parameter_count": 9483857952,
+    "license": "other"
+  },
+  {
+    "purl": "pkg:huggingface/zer0int/CLIP-GmP-ViT-L-14",
+    "name": "CLIP-GmP-ViT-L-14",
+    "organization": "zer0int",
+    "architecture": "clip",
+    "parameter_count": 427616846,
+    "license": "MIT"
+  },
+  {
+    "purl": "pkg:huggingface/zimamedia/zenith-v0.1-GGUF",
+    "name": "zenith-v0.1",
+    "organization": "zimamedia",
+    "architecture": "gemma4",
+    "parameter_count": 5123178051,
+    "license": "Apache-2.0"
+  },
+  {
+    "purl": "pkg:huggingface/zxyt/stat-v4-qwen-medical-Q8_0-GGUF",
+    "name": "stat-v4-qwen-medical",
+    "organization": "zxyt",
+    "architecture": "qwen"
   }
 ]
