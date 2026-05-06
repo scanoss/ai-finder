@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.6] - 2026-05-06
+
+### Changed
+- Expanded the bundled model seed from 5 to 706 entries.
+
 ## [0.3.5] - 2026-05-05
 
 ### Fixed
