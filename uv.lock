@@ -23,7 +23,6 @@ dependencies = [
     { name = "ptelemetry" },
     { name = "python-levenshtein", version = "0.27.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "python-levenshtein", version = "0.27.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "python-tlsh" },
     { name = "pyyaml" },
     { name = "requests", version = "2.32.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "requests", version = "2.33.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -37,6 +36,9 @@ dev = [
     { name = "pytest", version = "9.0.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "pytest-cov" },
     { name = "pytest-mock" },
+]
+fuzzy = [
+    { name = "python-tlsh" },
 ]
 relationships = [
     { name = "tree-sitter", marker = "python_full_version >= '3.10'" },
@@ -61,7 +63,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.10" },
     { name = "python-levenshtein", specifier = ">=0.25.1" },
-    { name = "python-tlsh", specifier = ">=4.5.0" },
+    { name = "python-tlsh", marker = "extra == 'fuzzy'", specifier = ">=4.5.0" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "requests", specifier = ">=2.28" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0" },
@@ -78,7 +80,7 @@ requires-dist = [
     { name = "tree-sitter-rust", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
     { name = "tree-sitter-typescript", marker = "python_full_version >= '3.10' and extra == 'relationships'", specifier = ">=0.21" },
 ]
-provides-extras = ["relationships", "dev"]
+provides-extras = ["fuzzy", "relationships", "dev"]
 
 [[package]]
 name = "ai-finder-workspace"

@@ -27,7 +27,6 @@ dependencies = [
     "pyyaml>=6.0",
     "tomli>=2.0;python_version<'3.11'",
     "tqdm>=4.65",
-    "python-tlsh>=4.5.0",
     "requests>=2.28",
     "python-levenshtein>=0.25.1",
     "osslili>=1.6",
@@ -38,6 +37,10 @@ dependencies = [
 ai-finder = "ai_finder_cli.main:main"
 
 [project.optional-dependencies]
+# TLSH fuzzy hashing requires a C compiler on some platforms (e.g. Windows without build tools)
+fuzzy = [
+    "python-tlsh>=4.5.0",
+]
 # Relationship analysis requires tree-sitter (Python 3.10+ only)
 relationships = [
     "tree-sitter>=0.22;python_version>='3.10'",
