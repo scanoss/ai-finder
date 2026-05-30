@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.8] - 2026-05-29
+
+### Fixed
+- `python-tlsh` moved from hard dependencies to the optional `[fuzzy]` extra. `osslili` treats TLSH as optional and degrades gracefully without it, so forcing the install was unnecessary. This unblocks Windows users who lack a C compiler (MSVC / Build Tools).
+
 ## [0.3.7] - 2026-05-06
 
 ### Added
