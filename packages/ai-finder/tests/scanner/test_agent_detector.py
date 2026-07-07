@@ -57,6 +57,38 @@ graph = StateGraph(AgentState)
         assert len(findings) >= 1
         assert findings[0].agent_info.framework == "langgraph"
 
+    def test_detect_strands_agent(self, detector: AgentDetector) -> None:
+        code = """
+from strands import Agent, tool
+agent = Agent(name="assistant")
+"""
+        findings = list(detector.detect(code, Path("orchestrator.py")))
+
+        assert len(findings) >= 1
+        assert findings[0].agent_info.framework == "strands"
+
+    def test_strands_tool_import_is_not_agent(self, detector: AgentDetector) -> None:
+        code = """
+from strands import ToolContext, tool
+
+@tool(context=True)
+def search(q: str, tool_context: ToolContext) -> str:
+    return q
+"""
+        findings = list(detector.detect(code, Path("tools.py")))
+
+        assert findings == []
+
+    def test_strands_model_provider_import_is_not_agent(self, detector: AgentDetector) -> None:
+        code = """
+from strands.models.openai import OpenAIModel
+
+model = OpenAIModel(model_id="gpt-4.1-mini")
+"""
+        findings = list(detector.detect(code, Path("model_provider.py")))
+
+        assert findings == []
+
     def test_no_false_positives(self, detector: AgentDetector) -> None:
         code = """
 import requests

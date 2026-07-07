@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.3.9] - 2026-07-07
+
+### Fixed
+- Semantic detectors were never run. The scanner wired only the per-language SDK detectors; `AgentDetector`, `ToolsDetector`, `RAGDetector`, and `DatasetDetector` were exported but never instantiated, so a project's agents, tools, embeddings, and datasets were never detected. They now run on every source file alongside the SDK detector.
+- `@tool` false positive: the tool detector matched `@tool` anywhere on a line, so a docstring or comment mentioning `@tool` was reported as a tool. The decorator pattern is now anchored to the start of the (optionally indented) line.
+
+### Added
+- Strands agent detection: `from strands import Agent` / `strands.Agent` are recognized (joining langchain, crewai, autogen, and langgraph), without counting tool-only imports as agents.
+
 ## [0.3.8] - 2026-05-29
 
 ### Fixed

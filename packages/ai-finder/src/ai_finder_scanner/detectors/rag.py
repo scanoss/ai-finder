@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from ..models import EmbeddingInfo, Finding, FindingType, VectorStoreInfo
+from .base import BaseDetector
 
 
 @dataclass
@@ -28,7 +29,7 @@ class VectorStorePattern:
     provider: str
 
 
-class RAGDetector:
+class RAGDetector(BaseDetector):
     """Detect embeddings and vector stores in code."""
 
     EMBEDDING_PATTERNS = [

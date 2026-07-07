@@ -8,18 +8,22 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 
 from .detectors import (
+    AgentDetector,
     CppDetector,
     CSharpDetector,
+    DatasetDetector,
     GoDetector,
     JavaDetector,
     JavaScriptDetector,
     KotlinDetector,
     PHPDetector,
     PythonDetector,
+    RAGDetector,
     RubyDetector,
     RustDetector,
     ScalaDetector,
     SwiftDetector,
+    ToolsDetector,
 )
 from .detectors.base import BaseDetector
 from .discovery import FileDiscovery
@@ -94,6 +98,17 @@ class Scanner:
             SwiftDetector(),
             KotlinDetector(),
             ScalaDetector(),
+        ]
+
+        # Semantic detectors: AI-component constructs (agents, tools, RAG
+        # embeddings/vector stores, datasets) that are orthogonal to SDK-import
+        # detection and run on the same source files. Kept in their own list so
+        # multiple run per file (the SDK dispatch below is one-detector-per-ext).
+        self._semantic_detectors: list[BaseDetector] = [
+            AgentDetector(),
+            ToolsDetector(),
+            RAGDetector(),
+            DatasetDetector(),
         ]
 
         # Manifest parsers by filename (11 formats)
@@ -245,18 +260,25 @@ class Scanner:
             full_path = path / file_path
             ext = file_path.suffix.lower()
 
-            detector = self._ext_to_detector.get(ext)
-            if detector:
-                try:
-                    content = full_path.read_text(encoding="utf-8", errors="ignore")
-                    for finding in detector.detect(content, file_path):
-                        findings.append(finding)
-                        sdk_findings += 1
-                        if finding.sdk_usage:
-                            sdk_name = finding.sdk_usage.sdk
-                            sdk_by_name[sdk_name] = sdk_by_name.get(sdk_name, 0) + 1
-                except OSError as e:
-                    logger.warning("Failed to read %s: %s", file_path, e)
+            sdk_detector = self._ext_to_detector.get(ext)
+            semantic = [d for d in self._semantic_detectors if ext in d.extensions]
+            if not sdk_detector and not semantic:
+                continue
+            try:
+                content = full_path.read_text(encoding="utf-8", errors="ignore")
+            except OSError as e:
+                logger.warning("Failed to read %s: %s", file_path, e)
+                continue
+            if sdk_detector:
+                for finding in sdk_detector.detect(content, file_path):
+                    findings.append(finding)
+                    sdk_findings += 1
+                    if finding.sdk_usage:
+                        sdk_name = finding.sdk_usage.sdk
+                        sdk_by_name[sdk_name] = sdk_by_name.get(sdk_name, 0) + 1
+            for detector in semantic:
+                for finding in detector.detect(content, file_path):
+                    findings.append(finding)
         track(
             "scan.detection.completed",
             {

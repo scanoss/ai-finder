@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from ..models import Finding, FindingType, ToolInfo
+from .base import BaseDetector
 
 
 @dataclass
@@ -19,12 +20,17 @@ class ToolPattern:
     source: str
 
 
-class ToolsDetector:
+class ToolsDetector(BaseDetector):
     """Detect function tools in code."""
 
     PATTERNS = [
-        # LangChain tools
-        ToolPattern(re.compile(r"@tool\b|from\s+langchain\.tools\s+import\s+tool"), "langchain"),
+        # Tool decorators (langchain / strands / etc.). Anchor the decorator to
+        # the start of the line (optionally indented) so prose that merely
+        # mentions "@tool" in a docstring or comment is not a false positive.
+        ToolPattern(
+            re.compile(r"^\s*@tool\b|from\s+langchain\.tools\s+import\s+tool"),
+            "langchain",
+        ),
         ToolPattern(re.compile(r"StructuredTool|BaseTool"), "langchain"),
         # OpenAI function calling
         ToolPattern(re.compile(r'"type":\s*"function"'), "openai"),

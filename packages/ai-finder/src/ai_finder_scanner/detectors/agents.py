@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from ..models import AgentInfo, Finding, FindingType
+from .base import BaseDetector
 
 
 @dataclass
@@ -20,7 +21,7 @@ class AgentPattern:
     agent_type: str | None = None
 
 
-class AgentDetector:
+class AgentDetector(BaseDetector):
     """Detect AI agent usage in code."""
 
     PATTERNS = [
@@ -54,6 +55,14 @@ class AgentDetector:
         AgentPattern(
             re.compile(r"from\s+langgraph\.|langgraph\.graph|StateGraph", re.IGNORECASE),
             "langgraph",
+        ),
+        # Strands Agents
+        AgentPattern(
+            re.compile(
+                r"from\s+strands\s+import\s+.*\bAgent\b|\bstrands\.Agent\b|\bstrands_agents\.Agent\b",
+                re.IGNORECASE,
+            ),
+            "strands",
         ),
     ]
 
