@@ -55,6 +55,14 @@ class AgentDetector:
             re.compile(r"from\s+langgraph\.|langgraph\.graph|StateGraph", re.IGNORECASE),
             "langgraph",
         ),
+        # Strands Agents
+        AgentPattern(
+            re.compile(
+                r"from\s+strands\s+import\s+.*\bAgent\b|\bstrands\.Agent\b|\bstrands_agents\.Agent\b",
+                re.IGNORECASE,
+            ),
+            "strands",
+        ),
     ]
 
     @property

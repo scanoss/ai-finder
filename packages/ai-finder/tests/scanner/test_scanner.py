@@ -68,6 +68,20 @@ class TestScanner:
         assert any(".py" in f for f in files_with_findings)
         assert any(".js" in f for f in files_with_findings)
 
+    def test_scan_wires_agent_and_tool_detectors(self, tmp_path: Path) -> None:
+        # Regression: the semantic detectors (agent/tool/RAG/dataset) must run
+        # during a scan, not just the per-language SDK detectors. A Strands
+        # agent app should surface agent + tool findings, not only sdk_usage.
+        (tmp_path / "orchestrator.py").write_text(
+            "from strands import Agent, tool\n\n@tool\ndef search(q: str) -> str:\n    return q\n"
+        )
+        result = Scanner().scan(tmp_path)
+        types = {f.type for f in result.findings}
+        assert FindingType.AGENT in types
+        assert FindingType.TOOL in types
+        agent = next(f for f in result.findings if f.type == FindingType.AGENT)
+        assert agent.agent_info and agent.agent_info.framework == "strands"
+
     def test_scan_empty_directory(self, tmp_path: Path) -> None:
         scanner = Scanner()
         result = scanner.scan(tmp_path)
