@@ -58,7 +58,7 @@ class AgentDetector:
         # Strands Agents
         AgentPattern(
             re.compile(
-                r"from\s+strands\s+import|from\s+strands\.|strands\.Agent\b|strands_agents",
+                r"from\s+strands\s+import\s+.*\bAgent\b|\bstrands\.Agent\b|\bstrands_agents\.Agent\b",
                 re.IGNORECASE,
             ),
             "strands",
