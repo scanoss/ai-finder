@@ -16,7 +16,7 @@ jobs:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
@@ -50,7 +50,7 @@ jobs:
       hashes: ${{ steps.hash.outputs.hashes }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -205,7 +205,7 @@ jobs:
           path: dist/
 
       - name: Sign with Sigstore
-        uses: sigstore/gh-action-sigstore-python@v3.3.0
+        uses: sigstore/gh-action-sigstore-python@v3.4.0
         with:
           inputs: dist/*.tar.gz dist/*.whl
           upload-signing-artifacts: true
