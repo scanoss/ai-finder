@@ -28,6 +28,18 @@ def search(query: str) -> str:
         assert len(findings) >= 1
         assert findings[0].type == FindingType.TOOL
 
+    def test_indented_tool_decorator_detected(self, detector: ToolsDetector) -> None:
+        # Real decorators are often indented (methods, nested defs).
+        code = "class A:\n    @tool(context=True)\n    def search(self, q: str) -> str:\n        return q\n"
+        findings = list(detector.detect(code, Path("tools.py")))
+        assert any(f.type == FindingType.TOOL for f in findings)
+
+    def test_at_tool_in_docstring_is_not_detected(self, detector: ToolsDetector) -> None:
+        # Prose mentioning "@tool" (docstring/comment) must NOT be a tool finding.
+        code = '"""Each agent is wrapped as a @tool function the orchestrator calls."""\n'
+        findings = list(detector.detect(code, Path("orchestrator.py")))
+        assert [f for f in findings if f.type == FindingType.TOOL] == []
+
     def test_detect_structured_tool(self, detector: ToolsDetector) -> None:
         code = """
 from langchain.tools import StructuredTool
