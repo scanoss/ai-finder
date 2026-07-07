@@ -30,7 +30,12 @@ def search(query: str) -> str:
 
     def test_indented_tool_decorator_detected(self, detector: ToolsDetector) -> None:
         # Real decorators are often indented (methods, nested defs).
-        code = "class A:\n    @tool(context=True)\n    def search(self, q: str) -> str:\n        return q\n"
+        code = (
+            "class A:\n"
+            "    @tool(context=True)\n"
+            "    def search(self, q: str) -> str:\n"
+            "        return q\n"
+        )
         findings = list(detector.detect(code, Path("tools.py")))
         assert any(f.type == FindingType.TOOL for f in findings)
 
