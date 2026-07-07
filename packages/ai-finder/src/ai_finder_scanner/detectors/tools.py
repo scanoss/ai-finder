@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from ..models import Finding, FindingType, ToolInfo
+from .base import BaseDetector
 
 
 @dataclass
@@ -19,7 +20,7 @@ class ToolPattern:
     source: str
 
 
-class ToolsDetector:
+class ToolsDetector(BaseDetector):
     """Detect function tools in code."""
 
     PATTERNS = [

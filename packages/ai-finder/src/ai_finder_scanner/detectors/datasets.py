@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from ..models import DatasetInfo, Finding, FindingType
+from .base import BaseDetector
 
 
 @dataclass
@@ -19,7 +20,7 @@ class DatasetPattern:
     source: str
 
 
-class DatasetDetector:
+class DatasetDetector(BaseDetector):
     """Detect dataset usage in code."""
 
     PATTERNS = [
