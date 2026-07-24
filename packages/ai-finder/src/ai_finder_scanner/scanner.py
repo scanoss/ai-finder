@@ -105,8 +105,9 @@ class Scanner:
             hash_model_files: Whether to compute a content SHA-256 for each
                 discovered model file. On by default: hashing is the only thing
                 that identifies a generically named shard, and 57% of real
-                weight-file basenames are generic. Costs roughly 10s per 5 GB at
-                typical disk throughput, hence the opt-out.
+                weight-file basenames are generic. The cost is disk-bound, so it
+                ranges from negligible on local NVMe to minutes over a network
+                mount for a large model directory, hence the opt-out.
         """
         # License detector
         self._license_detector = LicenseDetector() if detect_licenses else None
