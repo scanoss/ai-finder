@@ -247,6 +247,12 @@ class CycloneDXFormatter:
                 "name": filename,
             }
 
+            # Content hash, when the scanner computed one. Doubles as the key
+            # _enrich_components uses to resolve this component by hash, which is
+            # the only thing that identifies a generically named shard.
+            if info.sha256:
+                component["hashes"] = [{"alg": "SHA-256", "content": info.sha256}]
+
             # Build modelCard per CycloneDX 1.5 ML-BOM spec
             model_params: dict[str, Any] = {}
 
@@ -370,8 +376,18 @@ class CycloneDXFormatter:
             comp_type = component.get("type")
 
             if comp_type == "machine-learning-model":
-                # Enrich model from KB
-                model_data = enricher.lookup_model(name)
+                # Enrich model from KB, hash first. The component carries the
+                # digest the scanner computed; a filename lookup cannot resolve a
+                # generically named shard, a hash can.
+                sha256 = next(
+                    (
+                        h.get("content")
+                        for h in component.get("hashes", [])
+                        if h.get("alg") == "SHA-256"
+                    ),
+                    None,
+                )
+                model_data = enricher.lookup_model(name, sha256=sha256)
                 if model_data:
                     # Update PURL if we have a better one
                     if model_data.purl:

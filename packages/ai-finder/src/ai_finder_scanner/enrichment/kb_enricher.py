@@ -25,6 +25,22 @@ TelemetryCallback = Callable[[str, dict[str, Any]], None]
 T = TypeVar("T")
 
 
+def _as_digest(digest: str | bytes) -> bytes | None:
+    """Normalize a SHA-256 to the raw 32 bytes stored in `model_files.h`.
+
+    Accepts 64-char hex (what `hashlib.sha256().hexdigest()` gives) or the raw
+    bytes. Returns None for anything that is not a SHA-256, so a truncated or
+    misalgorithmed digest is a clean miss rather than a silently empty query.
+    """
+    if isinstance(digest, bytes):
+        return digest if len(digest) == 32 else None
+    try:
+        blob = bytes.fromhex(digest.strip())
+    except (ValueError, AttributeError):
+        return None
+    return blob if len(blob) == 32 else None
+
+
 def _classify_fetch_error(error: Exception) -> str:
     """Classify a fetch error for telemetry.
 
@@ -154,15 +170,102 @@ class KBEnricher:
             with contextlib.suppress(Exception):
                 self._telemetry(event, data)
 
-    def lookup_model(self, name: str) -> ModelEnrichment | None:
-        """Look up model by name or partial match.
+    def lookup_model_by_hash(self, sha256: str | bytes) -> ModelEnrichment | None:
+        """Look up a model by the content SHA-256 of one of its weight files.
+
+        Exact, and the only path that resolves a generically named shard:
+        `model-00003-of-00026.safetensors` shares no substring with any model name.
+
+        Args:
+            sha256: SHA-256 of the file contents, as 64-char hex or 32 raw bytes.
+
+        Returns:
+            ModelEnrichment if the hash is in the KB, None otherwise.
+        """
+        blob = _as_digest(sha256)
+        if blob is None or not self._conn:
+            return None
+
+        cache_key = f"sha256:{blob.hex()}"
+        if cache_key in self._model_cache:
+            self._track("enrichment.cache_hit", {"type": "model"})
+            return self._model_cache[cache_key]
+
+        try:
+            cursor = self._conn.execute(
+                """
+                SELECT m.purl, m.name, m.organization, m.architecture,
+                       m.architecture_family, m.parameter_count, m.license,
+                       m.source_url, m.task, m.base_model_purl, m.datasets
+                FROM model_files f JOIN models m ON m.id = f.model_id
+                WHERE f.h = ?
+                GROUP BY m.purl
+                ORDER BY m.purl
+                LIMIT 2
+                """,
+                (blob,),
+            )
+            rows = cursor.fetchall()
+        except sqlite3.Error as e:
+            # A pre-v3 KB has no model_files table. Not an error: the caller falls
+            # back to filename matching.
+            logger.debug("Model hash lookup failed: %s", e)
+            return None
+
+        if not rows:
+            self._track("enrichment.hash_miss", {"type": "model"})
+            self._cache_set(self._model_cache, cache_key, None)
+            return None
+
+        # LIMIT 2 is enough to tell "one purl" from "more than one" without
+        # dragging back every mirror. The first row wins; ORDER BY purl makes that
+        # deterministic so repeated scans of the same file agree.
+        row = rows[0]
+        datasets = None
+        if row["datasets"]:
+            with contextlib.suppress(json.JSONDecodeError):
+                datasets = json.loads(row["datasets"])
+
+        self._track(
+            "enrichment.hash_hit",
+            {"type": "model", "ambiguous": len(rows) > 1},
+        )
+        result = ModelEnrichment(
+            purl=row["purl"],
+            name=row["name"],
+            organization=row["organization"],
+            architecture=row["architecture"],
+            architecture_family=row["architecture_family"],
+            parameter_count=row["parameter_count"],
+            license=row["license"],
+            source_url=row["source_url"],
+            task=row["task"],
+            base_model_purl=row["base_model_purl"],
+            datasets=datasets,
+        )
+        self._cache_set(self._model_cache, cache_key, result)
+        return result
+
+    def lookup_model(self, name: str, sha256: str | bytes | None = None) -> ModelEnrichment | None:
+        """Look up model by content hash, then by name or partial match.
+
+        Resolution order is hash, then filename, then the live HuggingFace API.
+        The hash goes first because it is exact where the filename is a guess, and
+        because it is the only thing that identifies a generically named shard.
 
         Args:
             name: Model filename (e.g., "tinyllama.gguf").
+            sha256: Optional SHA-256 of the file contents. When it hits the KB,
+                the filename and live-API paths are skipped entirely.
 
         Returns:
             ModelEnrichment if found, None otherwise.
         """
+        if sha256:
+            hash_result = self.lookup_model_by_hash(sha256)
+            if hash_result:
+                return hash_result
+
         # Check session cache first
         if name in self._model_cache:
             self._track("enrichment.cache_hit", {"type": "model"})

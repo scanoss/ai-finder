@@ -644,6 +644,7 @@ def update(
             ctx["new_version"] = result.new_version
             ctx["sdks_updated"] = result.sdks_updated
             ctx["models_updated"] = result.models_updated
+            ctx["model_files_updated"] = result.model_files_updated
             ctx["mcp_servers_updated"] = result.mcp_servers_updated
 
             if output_format == "json":
@@ -653,6 +654,7 @@ def update(
                     "new_version": result.new_version,
                     "sdks_updated": result.sdks_updated,
                     "models_updated": result.models_updated,
+                    "model_files_updated": result.model_files_updated,
                     "mcp_servers_updated": result.mcp_servers_updated,
                     "error": result.error,
                 }
@@ -663,6 +665,7 @@ def update(
                     click.echo(f"  Version: {result.previous_version} -> {result.new_version}")
                     click.echo(f"  SDKs updated: {result.sdks_updated}")
                     click.echo(f"  Models updated: {result.models_updated}")
+                    click.echo(f"  Model file hashes updated: {result.model_files_updated}")
                     click.echo(f"  MCP servers updated: {result.mcp_servers_updated}")
                     telemetry.track_feature("kb.update", "result", "success")
                 else:

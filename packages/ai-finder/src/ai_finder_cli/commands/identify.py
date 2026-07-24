@@ -142,7 +142,9 @@ def identify(file: Path, output_format: str, no_enrich: bool, kb_path: Path | No
                     enable_live_fallback=True,
                     telemetry_callback=telemetry.track_event,
                 ) as enricher:
-                    model_data = enricher.lookup_model(file_path.name)
+                    # Hash first: the digest above is exact, where the filename is
+                    # a guess that cannot work at all on a generically named shard.
+                    model_data = enricher.lookup_model(file_path.name, sha256=sha256)
                     if model_data:
                         info["kb_match"] = True
                         info["known_model"] = model_data.purl

@@ -63,7 +63,13 @@ jobs:
           version: "latest"
 
       - name: Install build dependencies
-        run: uv pip install --system build
+        run: |
+          uv pip install --system build
+          # create_seed_db.py (below) imports ai_finder_kb, whose __init__ pulls
+          # in sync -> requests, so the package's runtime deps must be present.
+          # The script reads the source tree via sys.path rather than this
+          # installed copy, so it still sees the telemetry key injected later.
+          uv pip install --system ./packages/ai-finder
 
       - name: Inject telemetry ingest key
         env:
@@ -95,11 +101,35 @@ jobs:
           assert telemetry._INGEST_KEY_PLACEHOLDER == "__TELEMETRY_INGEST_KEY__", "placeholder constant was clobbered"
           PY
 
+      # seed.db is generated, not committed: ~25 MB of undeltifiable binary
+      # regenerated on every seed sync, and a committed copy silently drifts from
+      # the seed JSONs. It must exist before the build so hatchling's `artifacts`
+      # entry can pull it into the wheel.
+      - name: Build seed database
+        run: |
+          python scripts/update_seed_checksums.py --verify
+          python scripts/create_seed_db.py
+
       - name: Build package
         run: |
           cd packages/ai-finder && python -m build && cd ../..
           mkdir -p dist
           cp packages/ai-finder/dist/* dist/
+
+      # A wheel with no seed.db still installs and works (the KB seeds itself from
+      # the JSONs), but every user pays the seeding cost on first run. Fail the
+      # release instead: this is exactly the silent regression that dropping the
+      # committed binary could introduce.
+      - name: Verify seed.db is in the wheel
+        run: |
+          set -euo pipefail
+          wheel=$(ls dist/*.whl)
+          if ! python -m zipfile -l "$wheel" | grep -q 'ai_finder_kb/data/seed.db'; then
+            echo "::error::seed.db is missing from $wheel"
+            python -m zipfile -l "$wheel" | grep ai_finder_kb || true
+            exit 1
+          fi
+          echo "seed.db present in $wheel"
 
       - name: Generate hashes
         id: hash

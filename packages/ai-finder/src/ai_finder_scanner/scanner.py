@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import time
 from pathlib import Path
@@ -71,18 +72,45 @@ TelemetryCallback = Callable[[str, dict[str, Any]], None]
 
 logger = logging.getLogger(__name__)
 
+# Read size for the streaming model-file hash. Model files run to tens of GB, so
+# they are never read whole.
+_HASH_CHUNK_SIZE = 65536
+
+
+def compute_model_sha256(file_path: Path) -> str | None:
+    """Stream a file through SHA-256, returning 64-char hex.
+
+    Returns None if the file cannot be read: an unreadable weight file should cost
+    us the hash, not the whole scan.
+    """
+    hasher = hashlib.sha256()
+    try:
+        with open(file_path, "rb") as handle:
+            for chunk in iter(lambda: handle.read(_HASH_CHUNK_SIZE), b""):
+                hasher.update(chunk)
+    except OSError as e:
+        logger.warning("Failed to hash %s: %s", file_path, e)
+        return None
+    return hasher.hexdigest()
+
 
 class Scanner:
     """Main scanner that orchestrates file discovery, detection, and parsing."""
 
-    def __init__(self, detect_licenses: bool = True) -> None:
+    def __init__(self, detect_licenses: bool = True, hash_model_files: bool = True) -> None:
         """Initialize scanner with default detectors and parsers.
 
         Args:
             detect_licenses: Whether to detect licenses using osslili.
+            hash_model_files: Whether to compute a content SHA-256 for each
+                discovered model file. On by default: hashing is the only thing
+                that identifies a generically named shard, and 57% of real
+                weight-file basenames are generic. Costs roughly 10s per 5 GB at
+                typical disk throughput, hence the opt-out.
         """
         # License detector
         self._license_detector = LicenseDetector() if detect_licenses else None
+        self._hash_model_files = hash_model_files
 
         # SDK detectors by extension (12 languages)
         self._detectors: list[BaseDetector] = [
@@ -333,6 +361,7 @@ class Scanner:
         # Scan model files
         track("scan.detection.started", {"phase": "model"})
         model_findings = 0
+        model_hashed = 0
         model_formats: dict[str, int] = {}
         for file_path in file_cache["model"]:
             files_scanned += 1
@@ -349,11 +378,18 @@ class Scanner:
                     if model_finding.model_info:
                         fmt = model_finding.model_info.format
                         model_formats[fmt] = model_formats.get(fmt, 0) + 1
+                        # Hash after parsing so a parse failure costs no I/O.
+                        if self._hash_model_files:
+                            digest = compute_model_sha256(full_path)
+                            if digest:
+                                model_finding.model_info.sha256 = digest
+                                model_hashed += 1
         track(
             "scan.detection.completed",
             {
                 "phase": "model",
                 "findings": model_findings,
+                "hashed": model_hashed,
                 "formats": list(model_formats.keys()),
             },
         )

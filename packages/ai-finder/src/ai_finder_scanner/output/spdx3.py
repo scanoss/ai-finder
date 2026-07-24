@@ -485,10 +485,23 @@ class SPDX3Formatter:
             if hyperparams:
                 element["ai_hyperparameter"] = hyperparams
 
-        # Enrich from KB if available
+            # Content hash, when the scanner computed one.
+            if info.sha256:
+                element["verifiedUsing"] = [
+                    {"type": "Hash", "algorithm": "sha256", "hashValue": info.sha256}
+                ]
+
+        # Enrich from KB if available, hash first: a filename lookup cannot resolve
+        # a generically named shard, a hash can.
         if enricher:
-            model_data = enricher.lookup_model(filename)
+            model_data = enricher.lookup_model(filename, sha256=info.sha256 if info else None)
             if model_data:
+                # The resolved purl is the whole point of the lookup: on a hash hit
+                # this names the model that a generic shard filename never could.
+                # `software_packageUrl` is the spec property on software_Package,
+                # which ai_AIPackage inherits.
+                if model_data.purl:
+                    element["software_packageUrl"] = model_data.purl
                 if model_data.license:
                     element["software_declaredLicense"] = model_data.license
                 if model_data.source_url:

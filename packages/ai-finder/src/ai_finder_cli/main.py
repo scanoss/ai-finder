@@ -77,6 +77,13 @@ def main(ctx: click.Context, no_telemetry: bool) -> None:
     help="Disable automatic KB enrichment",
 )
 @click.option(
+    "--no-model-hash",
+    is_flag=True,
+    help="Skip computing a SHA-256 for each model file. Faster on large local "
+    "model directories, but generically named shards (model-00001-of-00026."
+    "safetensors) can then only be matched by filename, which does not work.",
+)
+@click.option(
     "--kb-path",
     default=None,
     type=click.Path(path_type=Path),
@@ -111,6 +118,7 @@ def scan(
     quiet: bool,
     relationships: bool,
     no_enrich: bool,
+    no_model_hash: bool,
     kb_path: Path | None,
     spdx_version: str | None,
     spdx_version_alias: str | None,
@@ -138,6 +146,7 @@ def scan(
                 "quiet": quiet,
                 "enrich": not no_enrich,
                 "relationships": relationships,
+                "model_hash": not no_model_hash,
             },
         ) as ctx:
             # Emit discrete feature events for funnel analysis
@@ -146,8 +155,10 @@ def scan(
                 telemetry.track_feature("scan", "enrich", "enabled")
             if relationships:
                 telemetry.track_feature("scan", "relationships", "enabled")
+            if no_model_hash:
+                telemetry.track_feature("scan", "model_hash", "disabled")
 
-            scanner = Scanner()
+            scanner = Scanner(hash_model_files=not no_model_hash)
 
             if not quiet:
                 click.echo(f"Scanning {path}...", err=True)

@@ -64,6 +64,49 @@ jobs:
           files: coverage.xml
           fail_ci_if_error: false
 
+  # Proves the seed JSONs, version.json and seed.db cannot drift apart. Runs with
+  # no secrets, so it gates the seed-sync PRs opened from the signature corpus the
+  # same way it gates a hand edit.
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+      - name: Set up Python
+        run: uv python install 3.11
+      # create_seed_db.py imports ai_finder_kb, whose __init__ pulls in sync ->
+      # requests, so the package's runtime deps have to be present.
+      - name: Install dependencies
+        run: uv sync --locked --all-packages
+      - name: Verify version.json matches the seed files
+        run: uv run python scripts/update_seed_checksums.py --verify
+      - name: Rebuild seed.db from the seed JSONs
+        run: uv run python scripts/create_seed_db.py
+      - name: Check the rebuilt database
+        run: |
+          set -euo pipefail
+          uv run python - <<'PY'
+          import sqlite3, sys
+          db = sqlite3.connect("packages/ai-finder/src/ai_finder_kb/data/seed.db")
+          models = db.execute("SELECT COUNT(*) FROM models").fetchone()[0]
+          files = db.execute("SELECT COUNT(*) FROM model_files").fetchone()[0]
+          orphans = db.execute(
+              "SELECT COUNT(*) FROM model_files f "
+              "LEFT JOIN models m ON m.id = f.model_id WHERE m.id IS NULL"
+          ).fetchone()[0]
+          bad = db.execute("SELECT COUNT(*) FROM model_files WHERE length(h) != 32").fetchone()[0]
+          print(f"models={models} model_files={files} orphans={orphans} bad_digests={bad}")
+          if not models:
+              sys.exit("::error::seed.db has no models")
+          if orphans:
+              sys.exit(f"::error::{orphans} model_files rows reference a missing model")
+          if bad:
+              sys.exit(f"::error::{bad} model_files rows have a non-32-byte digest")
+          PY
+
   validate:
     runs-on: ubuntu-latest
     steps:

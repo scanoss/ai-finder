@@ -43,6 +43,7 @@ class SyncResult:
     new_version: int
     sdks_updated: int = 0
     models_updated: int = 0
+    model_files_updated: int = 0
     mcp_servers_updated: int = 0
     error: str | None = None
     fetch_errors: list[str] = field(default_factory=list)  # Track which fetches failed
@@ -54,6 +55,7 @@ class KBSync:
     VERSION_FILE = "version.json"
     SDK_FILE = "sdks.json"
     MODELS_FILE = "models.json"
+    MODEL_FILES_FILE = "model_files.json"
     MCP_SERVERS_FILE = "mcp_servers.json"
 
     def __init__(
@@ -229,6 +231,13 @@ class KBSync:
             if model_error:
                 fetch_errors.append(model_error)
 
+            # After _sync_models: model_files rows are keyed to models by purl.
+            model_files_count, model_files_error = self._sync_model_files(
+                checksums.get(self.MODEL_FILES_FILE)
+            )
+            if model_files_error:
+                fetch_errors.append(model_files_error)
+
             mcp_count, mcp_error = self._sync_mcp_servers(checksums.get(self.MCP_SERVERS_FILE))
             if mcp_error:
                 fetch_errors.append(mcp_error)
@@ -243,6 +252,7 @@ class KBSync:
                     new_version=local_version,
                     sdks_updated=0,  # Rolled back
                     models_updated=0,
+                    model_files_updated=0,
                     mcp_servers_updated=0,
                     error=f"Sync failure: {'; '.join(fetch_errors)}",
                     fetch_errors=fetch_errors,
@@ -268,6 +278,7 @@ class KBSync:
                 new_version=remote_version,
                 sdks_updated=sdks_count,
                 models_updated=models_count,
+                model_files_updated=model_files_count,
                 mcp_servers_updated=mcp_count,
             )
 
@@ -354,14 +365,22 @@ class KBSync:
                 self.db.execute(
                     """
                     INSERT INTO models
-                    (purl, name, organization, architecture, parameter_count, license, source)
-                    VALUES (?, ?, ?, ?, ?, ?, 'seed')
+                    (purl, name, organization, architecture, architecture_family,
+                     parameter_count, license, format, quantization, task,
+                     base_model_purl, source_url, source)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'seed')
                     ON CONFLICT(purl) DO UPDATE SET
                         name = excluded.name,
                         organization = excluded.organization,
                         architecture = excluded.architecture,
+                        architecture_family = excluded.architecture_family,
                         parameter_count = excluded.parameter_count,
                         license = excluded.license,
+                        format = excluded.format,
+                        quantization = excluded.quantization,
+                        task = excluded.task,
+                        base_model_purl = excluded.base_model_purl,
+                        source_url = excluded.source_url,
                         updated_at = datetime('now')
                     WHERE source = 'seed'
                     """,
@@ -370,8 +389,14 @@ class KBSync:
                         model["name"],
                         model.get("organization"),
                         model.get("architecture"),
+                        model.get("architecture_family"),
                         model.get("parameter_count"),
                         model.get("license"),
+                        model.get("format"),
+                        model.get("quantization"),
+                        model.get("task"),
+                        model.get("base_model_purl"),
+                        model.get("source_url"),
                     ),
                 )
                 count += 1
@@ -382,6 +407,81 @@ class KBSync:
 
         if insert_errors:
             return count, f"Failed to insert {len(insert_errors)} models: {insert_errors[0]}"
+        return count, None
+
+    def _sync_model_files(self, checksum: str | None = None) -> tuple[int, str | None]:
+        """Sync file-level model hashes from remote.
+
+        Must run after `_sync_models`: rows are keyed to `models` by purl, and a
+        row whose purl is not in the KB is skipped rather than treated as an error
+        (the FK would reject it, and it could never resolve to a purl anyway).
+
+        Args:
+            checksum: Optional SHA256 checksum to verify file integrity.
+
+        Returns:
+            Tuple of (count, error). Error is None if all operations succeeded.
+        """
+        model_files, fetch_error = self._fetch_json(self.MODEL_FILES_FILE, checksum)
+        if fetch_error is not None:
+            return 0, fetch_error
+
+        if not model_files:
+            return 0, None  # Empty list is valid, not an error
+
+        # One query instead of ~100k correlated lookups: the artifact carries ~20k
+        # purls across ~100k rows.
+        model_ids = {
+            row["purl"]: row["id"]
+            for row in self.db.execute("SELECT id, purl FROM models").fetchall()
+        }
+
+        # Replace wholesale rather than upserting. The remote artifact is
+        # regenerated from the corpus every sync, so a row that has disappeared
+        # from it (a signature withdrawn, or a purl demoted to a mirror) must stop
+        # resolving here too — an upsert would leave it behind forever.
+        self.db.execute(
+            "DELETE FROM model_files WHERE model_id IN "
+            "(SELECT id FROM models WHERE source = 'seed')"
+        )
+
+        count = 0
+        skipped = 0
+        insert_errors: list[str] = []
+        for entry in model_files:
+            model_id = model_ids.get(entry.get("purl"))
+            if model_id is None:
+                skipped += 1
+                continue
+            try:
+                digest = bytes.fromhex(entry["sha256"])
+            except (KeyError, ValueError, TypeError):
+                skipped += 1
+                continue
+            if len(digest) != 32:
+                skipped += 1
+                continue
+            try:
+                self.db.execute(
+                    """
+                    INSERT OR REPLACE INTO model_files (h, model_id, path, size_bytes)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (digest, model_id, entry.get("path"), entry.get("size_bytes")),
+                )
+                count += 1
+            except Exception as e:
+                error_msg = f"model file {entry.get('path')}: {e}"
+                logger.warning(f"Failed to sync {error_msg}")
+                insert_errors.append(error_msg)
+
+        if skipped:
+            logger.debug("Skipped %d model_files rows (unknown purl or bad digest)", skipped)
+        if insert_errors:
+            return (
+                count,
+                f"Failed to insert {len(insert_errors)} model files: {insert_errors[0]}",
+            )
         return count, None
 
     def _sync_mcp_servers(self, checksum: str | None = None) -> tuple[int, str | None]:

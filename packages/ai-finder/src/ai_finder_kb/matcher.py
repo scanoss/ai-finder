@@ -4,12 +4,31 @@ from __future__ import annotations
 
 import json
 import logging
+import sqlite3
 from collections.abc import Iterator
 
 from .database import Database
 from .models import MCPMatch, ModelMatch, SDKMatch
 
 logger = logging.getLogger(__name__)
+
+
+def _as_digest(digest: str | bytes) -> bytes | None:
+    """Normalize a SHA-256 to the raw 32 bytes stored in `model_files.h`.
+
+    Accepts 64-char hex (what `hashlib.sha256().hexdigest()` and the seed JSON
+    give) or the raw bytes. Returns None for anything that is not a SHA-256, so a
+    caller passing a truncated or misalgorithmed digest gets a clean miss rather
+    than a silently empty query.
+    """
+    if isinstance(digest, bytes):
+        return digest if len(digest) == 32 else None
+    try:
+        blob = bytes.fromhex(digest.strip())
+    except (ValueError, AttributeError):
+        return None
+    return blob if len(blob) == 32 else None
+
 
 # Common model file extensions to strip
 MODEL_EXTENSIONS = (
@@ -132,11 +151,65 @@ class Matcher:
                     break
         return name_lower
 
+    def match_model_by_hash(self, digest: str | bytes) -> ModelMatch | None:
+        """Match a model weight file by its content SHA-256.
+
+        This is the only resolution path that works on a generically named shard:
+        no substring of `model-00003-of-00026.safetensors` will ever match a
+        `models.name`, but its hash is exact.
+
+        Args:
+            digest: SHA-256 of the file contents, as 64-char hex or 32 raw bytes.
+
+        Returns:
+            ModelMatch if found, None otherwise. Confidence is 1.0 for an
+            unambiguous hit and 0.95 when the same bytes are published under more
+            than one purl, in which case the lowest purl is chosen so repeated
+            scans of the same file agree.
+        """
+        blob = _as_digest(digest)
+        if blob is None:
+            return None
+
+        try:
+            cursor = self.db.execute(
+                "SELECT m.purl, m.name, m.organization, m.architecture, m.format, "
+                "m.parameter_count, m.license "
+                "FROM model_files f JOIN models m ON m.id = f.model_id "
+                "WHERE f.h = ? GROUP BY m.purl ORDER BY m.purl",
+                (blob,),
+            )
+            rows = cursor.fetchall()
+        except sqlite3.Error as e:
+            # A pre-v3 KB has no model_files table. Not an error: the caller falls
+            # back to filename matching.
+            logger.debug("model_files lookup failed: %s", e)
+            return None
+
+        if not rows:
+            return None
+
+        row = rows[0]
+        return ModelMatch(
+            purl=row["purl"],
+            name=row["name"],
+            organization=row["organization"],
+            architecture=row["architecture"],
+            format=row["format"],
+            parameter_count=row["parameter_count"],
+            license=row["license"],
+            confidence=1.0 if len(rows) == 1 else 0.95,
+        )
+
     def match_model(self, filename: str) -> ModelMatch | None:
         """Match model filename against known models.
 
         Uses fuzzy matching on model name. Returns the best match
         (longest model name match) to handle base/fine-tuned variants.
+
+        Prefer `match_model_by_hash` when the file contents are available: this
+        cannot identify a generically named shard, and 57% of real weight-file
+        basenames are generic.
 
         Args:
             filename: Model filename to match.

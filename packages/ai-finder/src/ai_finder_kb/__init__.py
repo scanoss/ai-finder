@@ -1,5 +1,7 @@
 """AI Finder Knowledge Base library."""
 
+import os
+from contextlib import suppress
 from pathlib import Path
 from typing import Any, Optional
 
@@ -21,6 +23,7 @@ __all__ = [
     "SyncStatus",
     "SyncResult",
     "get_seed_db_path",
+    "build_seed_db",
 ]
 
 
@@ -49,6 +52,35 @@ def get_seed_db_path() -> Optional[Path]:
     return None
 
 
+def build_seed_db() -> Optional[Path]:
+    """Build the bundled seed database from the seed JSONs.
+
+    seed.db is generated rather than committed, and release.yml builds it into the
+    wheel. A source checkout has the seed JSONs but no seed.db, so build it on
+    demand. Returns the path, or None if the package directory is not writable
+    (a read-only install), in which case the caller seeds the user database
+    directly from the JSONs instead.
+    """
+    from .seed import create_seed_db
+
+    data_dir = Path(__file__).parent / "data"
+    target = data_dir / "seed.db"
+    try:
+        data_dir.mkdir(parents=True, exist_ok=True)
+        # Build to a temp file in the same directory and rename, so two processes
+        # racing on a fresh checkout cannot leave a half-written seed.db behind.
+        tmp = data_dir / f"seed.db.{os.getpid()}.tmp"
+        try:
+            create_seed_db(tmp)
+            os.replace(tmp, target)
+        finally:
+            with suppress(OSError):
+                tmp.unlink()
+    except OSError:
+        return None
+    return target if target.exists() else None
+
+
 class KnowledgeBase:
     """High-level facade for KB operations."""
 
@@ -75,6 +107,9 @@ class KnowledgeBase:
         # Initialize from seed if this is a fresh database
         if self._db.get_version() == 0 and self._use_seed:
             seed_path = get_seed_db_path()
+            if seed_path is None:
+                # Source checkout, or a wheel built without the generated seed.db.
+                seed_path = build_seed_db()
             if seed_path and seed_path.exists():
                 import shutil
 
@@ -82,7 +117,12 @@ class KnowledgeBase:
                 shutil.copy(seed_path, self._db_path)
                 self._db.connect()
             else:
+                # Read-only install with no seed.db: seed this database directly
+                # from the seed JSONs, which always ship in the wheel.
+                from .seed import seed_database
+
                 self._db.initialize()
+                seed_database(self._db)
 
         self._matcher = Matcher(self._db)
 

@@ -53,6 +53,10 @@ class ModelInfo:
     architecture: str | None = None
     parameter_count: int | None = None
     quantization: str | None = None
+    # Content SHA-256, as 64-char hex. Set by the scanner unless hashing was
+    # disabled. This is what resolves a generically named shard to a purl; the
+    # filename cannot (57% of real weight-file basenames are generic).
+    sha256: str | None = None
 
 
 @dataclass

@@ -189,6 +189,12 @@ class SPDX23Formatter:
                 comment_parts.append(f"parameters: {info.parameter_count:,}")
             package["comment"] = ", ".join(comment_parts)
 
+            # Content hash, when the scanner computed one. Doubles as the key
+            # _enrich_packages uses to resolve this package by hash, which is the
+            # only thing that identifies a generically named shard.
+            if info.sha256:
+                package["checksums"] = [{"algorithm": "SHA256", "checksumValue": info.sha256}]
+
             # Add external references for model metadata (SPDX 2.3 compatible)
             # Using OTHER category for AI/ML specific references
             ext_refs = []
@@ -302,8 +308,18 @@ class SPDX23Formatter:
             purpose = package.get("primaryPackagePurpose")
 
             if purpose == "APPLICATION":
-                # This is a model file - enrich from KB
-                model_data = enricher.lookup_model(name)
+                # This is a model file - enrich from KB, hash first. The package
+                # carries the digest the scanner computed; a filename lookup
+                # cannot resolve a generically named shard, a hash can.
+                sha256 = next(
+                    (
+                        c.get("checksumValue")
+                        for c in package.get("checksums", [])
+                        if c.get("algorithm") == "SHA256"
+                    ),
+                    None,
+                )
+                model_data = enricher.lookup_model(name, sha256=sha256)
                 if model_data:
                     # Add license
                     if model_data.license and "licenseConcluded" not in package:
@@ -319,6 +335,20 @@ class SPDX23Formatter:
                     if model_data.task:
                         comment_parts.append(f"task: {model_data.task}")
                     package["comment"] = ", ".join(filter(None, comment_parts))
+
+                    # The resolved purl is the whole point of the lookup: on a hash
+                    # hit this names the model that a generic shard filename never
+                    # could.
+                    if model_data.purl:
+                        ext_refs = package.get("externalRefs", [])
+                        ext_refs.append(
+                            {
+                                "referenceCategory": "PACKAGE-MANAGER",
+                                "referenceType": "purl",
+                                "referenceLocator": model_data.purl,
+                            }
+                        )
+                        package["externalRefs"] = ext_refs
 
                     # Add external refs for source
                     if model_data.source_url:

@@ -65,6 +65,16 @@ dev = [
 Homepage = "https://scanoss.com"
 Repository = "https://github.com/scanoss/ai-finder"
 
+[tool.hatch.build]
+# seed.db is generated, not committed (it is ~25 MB of undeltifiable binary that
+# would bloat git history at every sync, and a committed copy silently drifts from
+# the seed JSONs). release.yml runs scripts/create_seed_db.py before building and
+# then asserts the wheel contains it. Listed here because hatchling honours
+# .gitignore and would otherwise leave it out of the wheel.
+artifacts = [
+    "src/ai_finder_kb/data/seed.db",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = [
     "src/ai_finder_cli",

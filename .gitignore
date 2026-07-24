@@ -72,5 +72,7 @@ ENV/
 .mypy_cache/
 .ruff_cache/
 
-# Seed database (will be generated/downloaded)
-!packages/scanoss-ai-kb/src/scanoss_ai_kb/data/seed.db
+# Generated seed database. Built by scripts/create_seed_db.py, shipped in the
+# wheel, never committed: it is ~25 MB of undeltifiable binary regenerated on
+# every seed sync, and a committed copy silently drifts from the seed JSONs.
+packages/ai-finder/src/ai_finder_kb/data/seed.db

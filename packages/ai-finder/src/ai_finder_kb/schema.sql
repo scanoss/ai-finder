@@ -43,6 +43,30 @@ CREATE TABLE IF NOT EXISTS models (
     updated_at TEXT DEFAULT (datetime('now'))
 );
 
+-- File-level SHA-256 of model weight files, mapped to the model they belong to.
+--
+-- Identification by filename cannot work for the majority of real inputs: 57% of
+-- weight-file basenames are generic (pytorch_model.bin, model.safetensors) and
+-- 99% for sharded safetensors, so no substring of model-00003-of-00026.safetensors
+-- will ever match a models.name. A content hash is the only thing that does.
+--
+-- models.sha256 is the wrong shape for this (a model averages 4.5 weight files),
+-- which is why this is a child table. `h` is the raw 32-byte digest, not 64-char
+-- hex: at ~100k rows that halves the on-disk index for the same data.
+CREATE TABLE IF NOT EXISTS model_files (
+    h BLOB NOT NULL,              -- 32-byte sha256 of the file contents
+    model_id INTEGER NOT NULL REFERENCES models(id) ON DELETE CASCADE,
+    path TEXT,                    -- repo-relative path, e.g. model-00001-of-00026.safetensors
+    size_bytes INTEGER,
+    UNIQUE(h, model_id, path)
+);
+
+-- The lookup index. Not UNIQUE on h alone: ~1% of hashes are byte-identical
+-- weights published under unrelated purls that did not cluster, and a model's
+-- shards legitimately share the table.
+CREATE INDEX IF NOT EXISTS idx_model_files_h ON model_files(h);
+CREATE INDEX IF NOT EXISTS idx_model_files_model_id ON model_files(model_id);
+
 -- Known packages (PyPI, npm, etc.)
 CREATE TABLE IF NOT EXISTS packages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,7 +135,7 @@ CREATE TABLE IF NOT EXISTS sync_state (
 );
 
 -- Insert initial schema version
-INSERT OR IGNORE INTO schema_version (version) VALUES (2);
+INSERT OR IGNORE INTO schema_version (version) VALUES (3);
 
 -- Initialize KB sync state
 INSERT OR IGNORE INTO sync_state (key, value) VALUES ('kb_version', '0');
