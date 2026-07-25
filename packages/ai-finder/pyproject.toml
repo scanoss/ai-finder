@@ -81,6 +81,18 @@ packages = [
     "src/ai_finder_kb",
     "src/ai_finder_scanner",
 ]
+# The seed JSONs are the source of record in git; seed.db is the shipped artifact.
+# They never travel together: git holds the JSONs and not the database, the wheel
+# holds the database and not the JSONs, and release.yml is the only place the two
+# meet. Shipping both duplicated ~33 MB of identical data in every install.
+#
+# Nothing reads these at runtime. They feed scripts/create_seed_db.py at build
+# time, and `kb update` fetches the remote copies over HTTP rather than reading
+# local ones. release.yml verifies both halves of this: seed.db present and
+# correctly populated, JSONs absent.
+exclude = [
+    "src/ai_finder_kb/seed/*.json",
+]
 
 [tool.hatch.build.targets.wheel.sources]
 "src" = ""

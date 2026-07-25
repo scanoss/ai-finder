@@ -85,6 +85,10 @@ jobs:
         run: uv run python scripts/update_seed_checksums.py --verify
       - name: Rebuild seed.db from the seed JSONs
         run: uv run python scripts/create_seed_db.py
+      # Same script the release uses, so a seed change is checked identically on a
+      # PR and at release time. Counts come from the JSONs, never hardcoded.
+      - name: Verify the database matches the seed JSONs
+        run: uv run python scripts/verify_seed_db.py
       - name: Check the rebuilt database
         run: |
           set -euo pipefail

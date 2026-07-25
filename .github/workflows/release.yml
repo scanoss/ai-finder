@@ -107,8 +107,13 @@ jobs:
       # entry can pull it into the wheel.
       - name: Build seed database
         run: |
+          set -euo pipefail
           python scripts/update_seed_checksums.py --verify
           python scripts/create_seed_db.py
+          # Counts are derived from the seed JSONs, never hardcoded, so they cannot
+          # drift as the corpus grows. --write-counts saves them for the wheel
+          # check below, where the JSONs are deliberately no longer present.
+          python scripts/verify_seed_db.py --write-counts dist-seed-counts.json
 
       - name: Build package
         run: |
@@ -116,20 +121,62 @@ jobs:
           mkdir -p dist
           cp packages/ai-finder/dist/* dist/
 
-      # A wheel with no seed.db still installs and works (the KB seeds itself from
-      # the JSONs), but every user pays the seeding cost on first run. Fail the
-      # release instead: this is exactly the silent regression that dropping the
-      # committed binary could introduce.
-      - name: Verify seed.db is in the wheel
+      # The seed JSONs are the source of record in git; seed.db is the artifact
+      # shipped in the wheel. They never travel together, so this is the only place
+      # the two are checked against each other. A wheel with a missing, empty or
+      # truncated seed.db installs and runs perfectly happily and simply fails to
+      # identify anything, which is exactly the silent regression worth failing a
+      # release over.
+      - name: Verify the wheel ships a correctly seeded database
         run: |
           set -euo pipefail
           wheel=$(ls dist/*.whl)
+          echo "Inspecting $wheel"
+
+          # 1. seed.db must be present.
           if ! python -m zipfile -l "$wheel" | grep -q 'ai_finder_kb/data/seed.db'; then
-            echo "::error::seed.db is missing from $wheel"
+            echo "::error::seed.db is missing from the wheel"
             python -m zipfile -l "$wheel" | grep ai_finder_kb || true
             exit 1
           fi
-          echo "seed.db present in $wheel"
+
+          # 2. The seed JSONs must NOT be present. They are ~33 MB of data already
+          #    inside seed.db, and shipping both doubles the install for nothing.
+          if python -m zipfile -l "$wheel" | grep -E 'ai_finder_kb/seed/.*\.json'; then
+            echo "::error::the wheel ships seed JSONs; only seed.db belongs in it"
+            exit 1
+          fi
+
+          # 3. Install it and verify the database that a real user would get,
+          #    against the counts recorded before packaging.
+          python -m venv /tmp/wheelcheck
+          /tmp/wheelcheck/bin/python -m pip install --quiet "$wheel"
+          installed=$(/tmp/wheelcheck/bin/python -c "import ai_finder_kb, pathlib; print(pathlib.Path(ai_finder_kb.__file__).parent / 'data/seed.db')")
+          python scripts/verify_seed_db.py --db "$installed" --expect-counts dist-seed-counts.json
+
+          # 4. The installed CLI must resolve a real hash out of that database,
+          #    which is the behaviour all of the above exists to protect.
+          /tmp/wheelcheck/bin/python - <<'PY'
+          import pathlib, sqlite3, sys
+          import ai_finder_kb
+          from ai_finder_scanner.enrichment import KBEnricher
+
+          db = pathlib.Path(ai_finder_kb.__file__).parent / "data/seed.db"
+          con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+          row = con.execute(
+              "SELECT hex(f.h), m.purl FROM model_files f "
+              "JOIN models m ON m.id = f.model_id LIMIT 1"
+          ).fetchone()
+          con.close()
+          if not row:
+              sys.exit("::error::installed seed.db has no joinable model_files row")
+          digest, want = row
+          with KBEnricher(db_path=db, enable_live_fallback=False) as e:
+              got = e.lookup_model_by_hash(digest.lower())
+          if got is None or got.purl != want:
+              sys.exit(f"::error::hash lookup failed in the installed wheel: {got} != {want}")
+          print(f"installed wheel resolves {digest[:16].lower()}... -> {want}")
+          PY
 
       - name: Generate hashes
         id: hash
