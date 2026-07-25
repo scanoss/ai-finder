@@ -19,6 +19,13 @@ Usage:
 `--write-counts` then `--expect-counts` lets the release pipeline prove the
 database inside the *installed wheel* matches the one built from the JSONs, at a
 point where the JSONs are no longer around to compare against.
+
+A seed with no model_files.json is accepted, and the hash-lookup assertions are
+skipped and reported as skipped. That state is a real point in the rollout, not a
+broken build: the code that reads file hashes must be released before the hashes
+are published, or clients that predate it request an artifact their remote has
+only just started advertising, fail the sync and roll back. Once model_files.json
+is present the assertions apply in full.
 """
 
 from __future__ import annotations
@@ -70,7 +77,7 @@ def db_counts(db_path: Path) -> dict[str, int]:
         con.close()
 
 
-def integrity_checks(db_path: Path) -> list[str]:
+def integrity_checks(db_path: Path, expect_model_files: bool = True) -> list[str]:
     """Structural problems that a row count alone would not catch."""
     problems: list[str] = []
     con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
@@ -87,11 +94,13 @@ def integrity_checks(db_path: Path) -> list[str]:
             problems.append(f"{bad} model_files rows have a digest that is not 32 bytes")
 
         # The whole point of the table: a hash lookup has to resolve to a purl.
-        row = con.execute(
-            "SELECT m.purl FROM model_files f JOIN models m ON m.id = f.model_id LIMIT 1"
-        ).fetchone()
-        if not row or not row[0]:
-            problems.append("no model_files row joins to a model purl")
+        # Only assertable when the seed actually carries hashes; see main().
+        if expect_model_files:
+            row = con.execute(
+                "SELECT m.purl FROM model_files f JOIN models m ON m.id = f.model_id LIMIT 1"
+            ).fetchone()
+            if not row or not row[0]:
+                problems.append("no model_files row joins to a model purl")
 
         # kb_version must match the seed it was built from, or a fresh install
         # either re-downloads everything or downgrades itself from an older remote.
@@ -163,10 +172,21 @@ def main() -> None:
 
     if not actual.get("models"):
         problems.append("models table is empty")
-    if not actual.get("model_files"):
+
+    # A seed without model_files.json is a valid state, not a broken build: the
+    # hashes are published separately from the code that reads them, and the code
+    # has to ship first. A client that gets model_files.json advertised before it
+    # can request it fails its sync and rolls back, so the ordering is deliberate.
+    # Say so out loud rather than passing quietly, because a database that cannot
+    # resolve a hash is exactly what this script exists to catch when hashes are
+    # expected.
+    expect_model_files = expected.get("model_files", 0) > 0
+    if not expect_model_files:
+        print("  note: seed carries no file hashes, so hash lookup is NOT verified")
+    elif not actual.get("model_files"):
         problems.append("model_files table is empty, so no hash lookup can ever hit")
 
-    problems.extend(integrity_checks(args.db))
+    problems.extend(integrity_checks(args.db, expect_model_files=expect_model_files))
 
     if problems:
         print("\nFAILED", file=sys.stderr)

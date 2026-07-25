@@ -156,7 +156,17 @@ jobs:
 
           # 4. The installed CLI must resolve a real hash out of that database,
           #    which is the behaviour all of the above exists to protect.
-          /tmp/wheelcheck/bin/python - <<'PY'
+          #
+          #    Skipped when the seed publishes no file hashes. The code that reads
+          #    them ships before they are published, because a client older than
+          #    that code will request an artifact its remote has only just begun
+          #    advertising, fail the sync and roll back. Step 3 already fails if
+          #    model_files.json is present and the table is not, so a skip here
+          #    cannot hide a truncated database.
+          if [ ! -s packages/ai-finder/src/ai_finder_kb/seed/model_files.json ]; then
+            echo "::notice::seed publishes no file hashes; skipping the hash lookup check"
+          else
+            /tmp/wheelcheck/bin/python - <<'PY'
           import pathlib, sqlite3, sys
           import ai_finder_kb
           from ai_finder_scanner.enrichment import KBEnricher
@@ -177,6 +187,7 @@ jobs:
               sys.exit(f"::error::hash lookup failed in the installed wheel: {got} != {want}")
           print(f"installed wheel resolves {digest[:16].lower()}... -> {want}")
           PY
+          fi
 
       - name: Generate hashes
         id: hash
