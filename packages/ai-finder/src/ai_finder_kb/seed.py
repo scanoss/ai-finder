@@ -204,8 +204,45 @@ def seed_database(db: Database) -> dict[str, int]:
         "model_files": seed_model_files(db),
         "mcp_servers": seed_mcp_servers(db),
     }
+    stamp_seed_version(db)
     db.commit()
     return counts
+
+
+def stamp_seed_version(db: Database) -> int:
+    """Record the seed's own version in sync_state, returning what was stamped.
+
+    Without this a freshly seeded database claims kb_version 0 while holding the
+    content of whatever version.json shipped with it. Two consequences, both bad:
+
+    * `kb update` re-downloads every artifact on first run for data the client
+      already has, currently ~33 MB.
+    * Worse, if the remote is *older* than the bundled seed (normal right after a
+      release, since the remote only moves when a seed sync lands), 0 < remote
+      still reads as "update available" and the sync overwrites the newer bundled
+      rows with the remote's staler ones, nulling columns the old artifact does
+      not carry.
+
+    Returns 0 and leaves sync_state alone when version.json is missing or
+    unreadable, which keeps a hand-built database working.
+    """
+    version_file = SEED_DIR / "version.json"
+    try:
+        with open(version_file) as f:
+            version = int(json.load(f).get("version", 0))
+    except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
+        print(f"Warning: could not read seed version from {version_file}: {e}")
+        return 0
+
+    if version <= 0:
+        return 0
+
+    db.execute(
+        "INSERT OR REPLACE INTO sync_state (key, value, updated_at) "
+        "VALUES ('kb_version', ?, datetime('now'))",
+        (str(version),),
+    )
+    return version
 
 
 def create_seed_db(output_path: Path) -> None:

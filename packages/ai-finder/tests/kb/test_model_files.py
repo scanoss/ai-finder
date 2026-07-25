@@ -207,3 +207,113 @@ class TestSyncModelFiles:
         assert (count, error) == (0, "boom")
         # A failed fetch must not have wiped the existing rows.
         assert Matcher(db_with_model_files).match_model_by_hash(SHARD_HEX) is not None
+
+
+class TestRemoteWithoutModelFiles:
+    """A client newer than the remote is the normal state right after a release.
+
+    The remote only gains model_files.json when a seed sync lands there, so for a
+    while every `kb update` talks to a remote that does not publish it. Requesting
+    it anyway returns 404, which sync treats as a fatal fetch error and rolls the
+    whole sync back, so `kb update` would fail outright for everyone. version.json
+    is the remote's own manifest of what it publishes, so it decides.
+    """
+
+    def _remote(self, monkeypatch, sync, checksums):
+        """Stub a remote whose version.json advertises exactly `checksums`."""
+        requested: list[str] = []
+
+        def fake_fetch(filename, checksum=None):
+            requested.append(filename)
+            if filename == sync.VERSION_FILE:
+                return {"version": 9, "checksums": checksums}, None
+            if filename == sync.MODEL_FILES_FILE:
+                # What raw.githubusercontent actually does for an absent file.
+                return None, f"Failed to fetch {filename}: 404 Client Error: Not Found"
+            return [], None
+
+        monkeypatch.setattr(sync, "_fetch_json", fake_fetch)
+        return requested
+
+    def test_unadvertised_artifact_is_not_requested(self, db_with_model_files, monkeypatch):
+        sync = KBSync(db_with_model_files)
+        requested = self._remote(monkeypatch, sync, {"sdks.json": "x", "models.json": "y"})
+
+        result = sync.sync()
+
+        assert result.success is True, result.error
+        assert result.new_version == 9
+        assert "model_files.json" not in requested
+        assert result.model_files_updated == 0
+
+    def test_existing_hashes_survive_an_older_remote(self, db_with_model_files, monkeypatch):
+        """Syncing against a remote with no hashes must not wipe the ones we have."""
+        sync = KBSync(db_with_model_files)
+        self._remote(monkeypatch, sync, {"sdks.json": "x"})
+
+        assert sync.sync().success is True
+        assert Matcher(db_with_model_files).match_model_by_hash(SHARD_HEX) is not None
+
+    def test_advertised_but_missing_is_still_an_error(self, db_with_model_files, monkeypatch):
+        """If version.json claims the artifact, a 404 is a genuine inconsistency
+        and must fail loudly rather than be silently tolerated."""
+        sync = KBSync(db_with_model_files)
+        requested = self._remote(
+            monkeypatch, sync, {"sdks.json": "x", "model_files.json": "deadbeef"}
+        )
+
+        result = sync.sync()
+
+        assert result.success is False
+        assert "model_files.json" in requested
+        assert any("model_files" in e for e in result.fetch_errors)
+
+
+class TestSeedVersionStamping:
+    """A freshly seeded database must claim the version of the seed it holds."""
+
+    def _seed_dir(self, tmp_path, monkeypatch, version):
+        import ai_finder_kb.seed as seed_module
+
+        d = tmp_path / "seed"
+        d.mkdir()
+        (d / "version.json").write_text(json.dumps({"version": version, "checksums": {}}))
+        monkeypatch.setattr(seed_module, "SEED_DIR", d)
+        return d
+
+    def test_stamps_the_bundled_version(self, temp_db_path, tmp_path, monkeypatch):
+        from ai_finder_kb.seed import seed_database
+
+        self._seed_dir(tmp_path, monkeypatch, 6)
+        with Database(temp_db_path) as db:
+            db.initialize()
+            seed_database(db)
+            row = db.execute("SELECT value FROM sync_state WHERE key='kb_version'").fetchone()
+            assert row[0] == "6"
+
+    def test_prevents_a_downgrade_from_an_older_remote(self, temp_db_path, tmp_path, monkeypatch):
+        """The real point of stamping. A seed at 6 against a remote at 5 must read
+        as up to date, not as an update that overwrites newer bundled rows with
+        staler ones and nulls columns the old artifact does not carry."""
+        from ai_finder_kb.seed import seed_database
+
+        self._seed_dir(tmp_path, monkeypatch, 6)
+        with Database(temp_db_path) as db:
+            db.initialize()
+            seed_database(db)
+            sync = KBSync(db)
+            monkeypatch.setattr(
+                sync, "_fetch_json", lambda f, checksum=None: ({"version": 5}, None)
+            )
+            status = sync.check_for_updates()
+            assert status.local_version == 6
+            assert status.update_available is False
+
+    def test_missing_version_file_is_not_fatal(self, temp_db_path, tmp_path, monkeypatch):
+        import ai_finder_kb.seed as seed_module
+        from ai_finder_kb.seed import stamp_seed_version
+
+        monkeypatch.setattr(seed_module, "SEED_DIR", tmp_path / "absent")
+        with Database(temp_db_path) as db:
+            db.initialize()
+            assert stamp_seed_version(db) == 0

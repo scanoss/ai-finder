@@ -232,11 +232,26 @@ class KBSync:
                 fetch_errors.append(model_error)
 
             # After _sync_models: model_files rows are keyed to models by purl.
-            model_files_count, model_files_error = self._sync_model_files(
-                checksums.get(self.MODEL_FILES_FILE)
-            )
-            if model_files_error:
-                fetch_errors.append(model_files_error)
+            #
+            # Only fetched when version.json advertises it. A remote published
+            # before file-level hashes existed has no model_files.json, and
+            # requesting it there returns 404, which this method treats as a fatal
+            # fetch error and rolls the whole sync back. That would break `kb
+            # update` outright for every client newer than the remote, which is
+            # the normal state of affairs right after a release. version.json is
+            # the remote's own manifest of what it publishes, so trust it.
+            model_files_count = 0
+            if self.MODEL_FILES_FILE in checksums:
+                model_files_count, model_files_error = self._sync_model_files(
+                    checksums[self.MODEL_FILES_FILE]
+                )
+                if model_files_error:
+                    fetch_errors.append(model_files_error)
+            else:
+                logger.debug(
+                    "Remote does not advertise %s; skipping file-hash sync",
+                    self.MODEL_FILES_FILE,
+                )
 
             mcp_count, mcp_error = self._sync_mcp_servers(checksums.get(self.MCP_SERVERS_FILE))
             if mcp_error:

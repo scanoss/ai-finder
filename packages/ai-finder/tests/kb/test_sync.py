@@ -350,8 +350,11 @@ class TestKBSync:
             # Should fail due to partial fetch failure
             assert result.success is False
             assert "Sync failure" in result.error
-            # models, model_files and mcp_servers failed
-            assert len(result.fetch_errors) == 3
+            # models and mcp_servers failed. model_files is NOT among them: this
+            # version.json carries no checksums, so the remote does not advertise
+            # that artifact and it is never requested.
+            assert len(result.fetch_errors) == 2
+            assert not any("model_files" in e for e in result.fetch_errors)
             # All counts are 0 because we rolled back
             assert result.sdks_updated == 0
             assert result.models_updated == 0

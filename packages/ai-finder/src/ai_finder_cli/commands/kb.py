@@ -176,7 +176,7 @@ def status(kb_path: Path | None, output_format: str) -> None:
 
                 # Count rows per known table
                 table_counts: dict[str, int] = {}
-                for table in ("sdks", "models", "mcp_servers"):
+                for table in ("sdks", "models", "model_files", "mcp_servers"):
                     try:
                         cursor = db.execute(f"SELECT COUNT(*) FROM {table}")  # noqa: S608
                         row = cursor.fetchone()
