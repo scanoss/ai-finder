@@ -21,5 +21,6 @@ CREATE TABLE IF NOT EXISTS model_files (
 CREATE INDEX IF NOT EXISTS idx_model_files_h ON model_files(h);
 CREATE INDEX IF NOT EXISTS idx_model_files_model_id ON model_files(model_id);
 
--- Update schema version
-INSERT INTO schema_version (version) VALUES (3);
+-- Update schema version. OR IGNORE like schema.sql: every statement above is
+-- idempotent, so a re-applied migration must not fail on the version row alone.
+INSERT OR IGNORE INTO schema_version (version) VALUES (3);

@@ -100,7 +100,9 @@ class TestCycloneDXFindingToComponent:
         component = formatter._finding_to_component(finding)
         assert component is not None
         assert component["type"] == "machine-learning-model"
-        assert component["name"] == "llama-3-8b.gguf"
+        # Full path, not the basename: components are keyed by name, so a basename
+        # would collapse same-named shards in different directories.
+        assert component["name"] == "models/llama-3-8b.gguf"
         assert "modelCard" in component
         assert "modelParameters" in component["modelCard"]
         assert component["modelCard"]["modelParameters"]["learningType"] == "supervised"

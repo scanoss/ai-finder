@@ -150,7 +150,9 @@ class TestSbomCarriesHashDerivedPurl:
     def test_cyclonedx(self, findings, kb_path, shard_digest):
         with KBEnricher(db_path=kb_path, enable_live_fallback=False) as enricher:
             doc = CycloneDXFormatter().format(findings, enricher=enricher)
-        component = next(c for c in json.loads(doc)["components"] if c["name"] == SHARD_NAME)
+        component = next(
+            c for c in json.loads(doc)["components"] if c["name"] == f"models/{SHARD_NAME}"
+        )
         assert component["purl"] == PURL
         assert component["hashes"] == [{"alg": "SHA-256", "content": shard_digest}]
         assert component["licenses"] == [{"license": {"id": "Apache-2.0"}}]
@@ -158,7 +160,9 @@ class TestSbomCarriesHashDerivedPurl:
     def test_spdx23(self, findings, kb_path, shard_digest):
         with KBEnricher(db_path=kb_path, enable_live_fallback=False) as enricher:
             doc = SPDX23Formatter().format(findings, enricher=enricher)
-        package = next(p for p in json.loads(doc)["packages"] if p["name"] == SHARD_NAME)
+        package = next(
+            p for p in json.loads(doc)["packages"] if p["name"] == f"models/{SHARD_NAME}"
+        )
         assert package["checksums"] == [{"algorithm": "SHA256", "checksumValue": shard_digest}]
         assert package["licenseConcluded"] == "Apache-2.0"
         purls = [
@@ -178,4 +182,84 @@ class TestSbomCarriesHashDerivedPurl:
         assert element["software_declaredLicense"] == "Apache-2.0"
         assert element["verifiedUsing"] == [
             {"type": "Hash", "algorithm": "sha256", "hashValue": shard_digest}
+        ]
+
+
+class TestSameBasenameInDifferentDirectories:
+    """Two models whose weight files share a basename must both reach the SBOM.
+
+    The writers key components/packages by name. Keyed on the basename, a second
+    `model.safetensors` in another directory collapsed into the first and vanished
+    from the document, taking its digest with it, so hash-first resolution could
+    never fire for it. The generic basenames this whole path exists to identify
+    are precisely the ones that collide.
+    """
+
+    DIGEST_A = "aa" * 32
+    DIGEST_B = "bb" * 32
+
+    @pytest.fixture
+    def findings(self):
+        return ScanResult(
+            root_path=".",
+            findings=[
+                Finding(
+                    type=FindingType.MODEL_FILE,
+                    file_path=f"{d}/model.safetensors",
+                    confidence=1.0,
+                    model_info=ModelInfo(format="safetensors", sha256=digest),
+                )
+                for d, digest in (("modelA", self.DIGEST_A), ("modelB", self.DIGEST_B))
+            ],
+        )
+
+    def test_cyclonedx_keeps_both(self, findings):
+        doc = json.loads(CycloneDXFormatter().format(findings))
+        models = [c for c in doc["components"] if c.get("type") == "machine-learning-model"]
+        assert {c["name"] for c in models} == {
+            "modelA/model.safetensors",
+            "modelB/model.safetensors",
+        }
+        digests = {h["content"] for c in models for h in c.get("hashes", [])}
+        assert digests == {self.DIGEST_A, self.DIGEST_B}
+
+    def test_spdx23_keeps_both(self, findings):
+        doc = json.loads(SPDX23Formatter().format(findings))
+        pkgs = [p for p in doc["packages"] if p.get("checksums")]
+        assert {p["name"] for p in pkgs} == {
+            "modelA/model.safetensors",
+            "modelB/model.safetensors",
+        }
+        digests = {c["checksumValue"] for p in pkgs for c in p["checksums"]}
+        assert digests == {self.DIGEST_A, self.DIGEST_B}
+
+    def test_spdx3_keeps_both(self, findings):
+        doc = json.loads(SPDX3Formatter().format(findings))
+        els = [e for e in doc["@graph"] if e.get("verifiedUsing")]
+        assert {e["name"] for e in els} == {
+            "modelA/model.safetensors",
+            "modelB/model.safetensors",
+        }
+        digests = {h["hashValue"] for e in els for h in e["verifiedUsing"]}
+        assert digests == {self.DIGEST_A, self.DIGEST_B}
+
+    def test_windows_paths_are_normalized(self):
+        """A backslash path must not produce a differently-named duplicate."""
+        result = ScanResult(
+            root_path=".",
+            findings=[
+                Finding(
+                    type=FindingType.MODEL_FILE,
+                    file_path="modelA\\model.safetensors",
+                    confidence=1.0,
+                    model_info=ModelInfo(format="safetensors", sha256=self.DIGEST_A),
+                )
+            ],
+        )
+        cdx = json.loads(CycloneDXFormatter().format(result))
+        names = [c["name"] for c in cdx["components"] if c.get("type") == "machine-learning-model"]
+        assert names == ["modelA/model.safetensors"]
+        spdx = json.loads(SPDX23Formatter().format(result))
+        assert [p["name"] for p in spdx["packages"] if p.get("checksums")] == [
+            "modelA/model.safetensors"
         ]

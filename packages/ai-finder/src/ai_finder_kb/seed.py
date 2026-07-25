@@ -133,7 +133,10 @@ def seed_model_files(db: Database) -> int:
             continue
         try:
             digest = bytes.fromhex(entry["sha256"])
-        except (KeyError, ValueError):
+        except (KeyError, ValueError, TypeError):
+            # TypeError covers a null or numeric sha256. model_files.json is
+            # machine-generated, so one bad row must skip rather than abort the
+            # whole build. Matches _sync_model_files, which already catches it.
             skipped += 1
             continue
         if len(digest) != 32:

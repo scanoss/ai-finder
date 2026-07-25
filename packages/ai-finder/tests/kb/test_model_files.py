@@ -141,6 +141,19 @@ class TestSeedModelFiles:
                         "path": "d.safetensors",
                     },
                     {"purl": "pkg:huggingface/o/known", "path": "e.safetensors"},
+                    # A null or numeric sha256 raises TypeError, not ValueError.
+                    # model_files.json is machine-generated, so one bad row must
+                    # skip rather than abort the entire seed build.
+                    {
+                        "sha256": None,
+                        "purl": "pkg:huggingface/o/known",
+                        "path": "f.safetensors",
+                    },
+                    {
+                        "sha256": 12345,
+                        "purl": "pkg:huggingface/o/known",
+                        "path": "g.safetensors",
+                    },
                 ]
             )
         )
@@ -317,3 +330,33 @@ class TestSeedVersionStamping:
         with Database(temp_db_path) as db:
             db.initialize()
             assert stamp_seed_version(db) == 0
+
+
+class TestMigrationIdempotency:
+    """Re-running the v3 migration must not fail.
+
+    Every statement in v003_add_model_files.sql is IF NOT EXISTS except the
+    schema_version stamp, which was a bare INSERT. Applying the file twice hit the
+    primary key on schema_version.version and surfaced as `Migration v3 failed`,
+    even though the migration had in fact already succeeded. schema.sql stamps the
+    same row with OR IGNORE.
+    """
+
+    def test_applying_v003_twice_is_safe(self, temp_db_path):
+        from pathlib import Path
+
+        import ai_finder_kb
+
+        migration = (
+            Path(ai_finder_kb.__file__).parent / "migrations/v003_add_model_files.sql"
+        ).read_text()
+
+        with Database(temp_db_path) as db:
+            db.initialize()
+            # initialize() already stamped version 3 via schema.sql; applying the
+            # migration on top is the case a re-run produces.
+            db.conn.executescript(migration)
+            db.conn.executescript(migration)
+            db.commit()
+            versions = [r[0] for r in db.execute("SELECT version FROM schema_version").fetchall()]
+            assert versions.count(3) == 1

@@ -71,6 +71,13 @@ class SPDX23Formatter:
             return "cargo"
         return "pypi"
 
+    def _normalize_path(self, path: str) -> str:
+        """Normalize file path for cross-platform consistency.
+
+        Converts Windows backslashes to forward slashes.
+        """
+        return path.replace("\\", "/")
+
     def _infer_purl_type_from_manifest(self, manifest_file: str) -> str:
         """Infer PURL type from manifest filename."""
         filename = manifest_file.split("/")[-1]
@@ -171,7 +178,12 @@ class SPDX23Formatter:
             info = finding.model_info
             package = {
                 "SPDXID": f"SPDXRef-Package-{idx}",
-                "name": finding.file_path.split("/")[-1],
+                # Full normalized path, not the basename: format() keys packages by
+                # name, so two shards both called model.safetensors in different
+                # directories would collapse into the first one seen and the second
+                # model would be missing from the SBOM entirely, checksum included.
+                # spdx3.py already does this; cyclonedx.py now matches.
+                "name": self._normalize_path(finding.file_path),
                 "downloadLocation": "NOASSERTION",
                 "filesAnalyzed": False,
                 "primaryPackagePurpose": "APPLICATION",
@@ -319,7 +331,10 @@ class SPDX23Formatter:
                     ),
                     None,
                 )
-                model_data = enricher.lookup_model(name, sha256=sha256)
+                # The package name is the full path, so pass the basename: the
+                # filename fallback matches against models.name and would never
+                # hit on a path. The hash lookup runs first regardless.
+                model_data = enricher.lookup_model(name.split("/")[-1], sha256=sha256)
                 if model_data:
                     # Add license
                     if model_data.license and "licenseConcluded" not in package:

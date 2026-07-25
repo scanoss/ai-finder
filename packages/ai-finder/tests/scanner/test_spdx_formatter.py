@@ -133,7 +133,9 @@ class TestSPDX23FindingToPackage:
         )
         package = formatter._finding_to_package(finding, 0)
         assert package is not None
-        assert package["name"] == "llama-3-8b.gguf"
+        # Full path, not the basename: packages are keyed by name, so a basename
+        # would collapse same-named shards in different directories.
+        assert package["name"] == "models/llama-3-8b.gguf"
         assert package["primaryPackagePurpose"] == "APPLICATION"
         assert "gguf" in package["comment"]
         assert "llama" in package["comment"]
