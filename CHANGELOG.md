@@ -13,6 +13,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.4.0] - 2026-07-25
+
+### Added
+- Model weight files are identified by content hash. A file's SHA-256 is looked up
+  in a new `model_files` table and resolved to a purl, license and organization.
+  This is what makes generically named files identifiable at all: 57% of real
+  weight-file basenames are generic (`pytorch_model.bin`, `model.safetensors`) and
+  99% for sharded safetensors, so no substring of
+  `model-00003-of-00026.safetensors` can ever match a model name. Filename
+  matching remains the fallback when a hash misses.
+- `ai-finder scan` computes a streaming SHA-256 over each discovered model file.
+  On by default; `--no-model-hash` skips it and falls back to filename matching.
+  The cost is disk-bound, so the opt-out is worth having on large local model
+  directories.
+- CycloneDX, SPDX 2.3 and SPDX 3.0 output carries the file digest and the
+  hash-resolved purl.
+- The model seed carries eleven fields per model instead of six. `format`,
+  `quantization`, `task`, `base_model_purl`, `source_url` and
+  `architecture_family` already existed as columns and were silently dropped on
+  seeding.
+
+### Changed
+- `seed.db` is no longer committed. It is built during the release from the seed
+  JSONs, verified against them, and shipped in the wheel; the JSONs are not
+  shipped. A source checkout builds it on demand. This removes the drift risk
+  between the JSONs and a stale committed binary.
+
+### Fixed
+- `ai-finder kb update` no longer fails against a remote that does not publish
+  file hashes. Previously a missing `model_files.json` aborted the sync.
+
+### Upgrading
+- If you ran `ai-finder kb update` against a remote already advertising seed
+  version 6 while on 0.3.9, your local KB recorded that version without the file
+  hashes, and a later update will see no work to do. Run
+  `ai-finder kb update --force` once to pull them.
+
 ## [0.3.9] - 2026-07-07
 
 ### Fixed
