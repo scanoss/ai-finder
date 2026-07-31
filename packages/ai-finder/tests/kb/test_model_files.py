@@ -360,3 +360,174 @@ class TestMigrationIdempotency:
             db.commit()
             versions = [r[0] for r in db.execute("SELECT version FROM schema_version").fetchall()]
             assert versions.count(3) == 1
+
+
+class TestRepoCreatedAtMigration:
+    """v004: the repo_created_at column and the v3 -> v4 upgrade path."""
+
+    def test_fresh_database_has_the_column_at_version_4(self, temp_db_path):
+        with Database(temp_db_path) as db:
+            db.initialize()
+            cols = [r[1] for r in db.execute("PRAGMA table_info(models)").fetchall()]
+            assert "repo_created_at" in cols
+            assert db.get_version() == 4
+            # The registration date and the row-audit stamp are distinct columns:
+            # same name upstream, different meaning here, and conflating them
+            # would compare registration dates against insertion times.
+            assert "created_at" in cols
+
+    def test_a_v3_database_is_migrated_on_open(self, temp_db_path):
+        """Simulate an existing pre-v4 install: no column, version stamped 3.
+
+        The stamp must be REPLACED, not just deleted: a fresh schema.sql stamps
+        only 4, so bare deletion empties the table, get_version() reads 0, and
+        initialize() re-runs schema.sql — whose CREATE TABLE IF NOT EXISTS
+        skips the existing models table and stamps 4 with the column still
+        missing. That is not the shape any real v3 install has."""
+        with Database(temp_db_path) as db:
+            db.initialize()
+            db.conn.executescript(
+                "ALTER TABLE models DROP COLUMN repo_created_at;"
+                "DELETE FROM schema_version WHERE version = 4;"
+                "INSERT OR IGNORE INTO schema_version (version) VALUES (3);"
+            )
+            db.commit()
+            assert db.get_version() == 3
+
+        with Database(temp_db_path) as db:
+            db.initialize()  # must apply v004
+            cols = [r[1] for r in db.execute("PRAGMA table_info(models)").fetchall()]
+            assert "repo_created_at" in cols
+            assert db.get_version() == 4
+
+    def test_seed_models_maps_created_at_to_repo_created_at(self, temp_db_path, monkeypatch):
+        """models.json speaks the corpus vocabulary (created_at = HF repo
+        registration date); the column is repo_created_at. The mapping is the
+        one line that ties them together."""
+        import ai_finder_kb.seed as seed_mod
+
+        rows = {
+            "models.json": [
+                {
+                    "purl": "pkg:huggingface/acme/m",
+                    "name": "m",
+                    "created_at": "2023-05-01T00:00:00Z",
+                },
+                {"purl": "pkg:huggingface/acme/undated", "name": "undated"},
+            ]
+        }
+        monkeypatch.setattr(seed_mod, "load_seed_data", lambda f: rows.get(f, []))
+        with Database(temp_db_path) as db:
+            db.initialize()
+            assert seed_mod.seed_models(db) == 2
+            got = dict(
+                db.execute("SELECT purl, repo_created_at FROM models ORDER BY purl").fetchall()
+            )
+            assert got["pkg:huggingface/acme/m"] == "2023-05-01T00:00:00Z"
+            assert got["pkg:huggingface/acme/undated"] is None
+
+
+def _downgrade_to_v3(db_path):
+    """Turn a freshly initialized DB into the shape of a real v3 install."""
+    with Database(db_path) as db:
+        db.initialize()
+        db.conn.executescript(
+            "ALTER TABLE models DROP COLUMN repo_created_at;"
+            "DELETE FROM schema_version WHERE version = 4;"
+            "INSERT OR IGNORE INTO schema_version (version) VALUES (3);"
+        )
+        db.commit()
+
+
+class TestMigrationReachesEveryOpenPath:
+    """The v004 review found migrations were unreachable from real usage:
+    KnowledgeBase copied the seed and reconnected without initialize(), an
+    existing user kb.db only hit the runner on the empty-DB branch, and scan/
+    identify open KBEnricher directly, which never touched ai_finder_kb at
+    all. Each open path gets its own regression test, because each was broken
+    separately."""
+
+    def test_knowledge_base_migrates_an_existing_v3_kb(self, temp_db_path):
+        from ai_finder_kb import KnowledgeBase
+
+        _downgrade_to_v3(temp_db_path)
+        kb = KnowledgeBase(db_path=temp_db_path, use_seed=False)
+        try:
+            assert kb.db.get_version() == 4
+            cols = [r[1] for r in kb.db.execute("PRAGMA table_info(models)").fetchall()]
+            assert "repo_created_at" in cols
+        finally:
+            kb.close()
+
+    def test_enricher_migrates_the_kb_it_opens(self, temp_db_path):
+        """scan and identify never construct KnowledgeBase; the enricher is
+        the only chance their database gets. A v3 KB with a hash row must
+        come back resolvable, not silently degrade to filename matching."""
+        import hashlib
+
+        from ai_finder_scanner.enrichment.kb_enricher import KBEnricher
+
+        _downgrade_to_v3(temp_db_path)
+        digest = hashlib.sha256(b"weights").hexdigest()
+        with Database(temp_db_path) as db:
+            db.execute(
+                "INSERT INTO models (purl, name, source) VALUES (?, 'm', 'seed')",
+                ("pkg:huggingface/acme/m",),
+            )
+            model_id = db.execute(
+                "SELECT id FROM models WHERE purl = ?", ("pkg:huggingface/acme/m",)
+            ).fetchone()[0]
+            db.execute(
+                "INSERT INTO model_files (h, model_id, path, size_bytes) VALUES (?, ?, ?, ?)",
+                (bytes.fromhex(digest), model_id, "model.safetensors", 4096),
+            )
+            db.commit()
+
+        with KBEnricher(db_path=temp_db_path, enable_live_fallback=False) as enricher:
+            result = enricher.lookup_model_by_hash(digest)
+        assert result is not None and result.purl == "pkg:huggingface/acme/m"
+        with Database(temp_db_path) as db:
+            assert db.get_version() == 4
+
+    def test_a_table_bearing_unstamped_db_is_not_falsely_stamped(self, temp_db_path):
+        """Version 0 with tables is a legacy database, not a fresh one.
+        Running schema.sql over it skips every existing table (IF NOT EXISTS)
+        and then stamps the current version for a schema that was never
+        brought forward. It must be treated as v1 and walked through the
+        ALTER-based migrations instead."""
+        import sqlite3 as sq
+
+        # A faithful minimal v1 shape: the tables the v2..v4 migrations touch,
+        # WITHOUT the columns they add, and no schema_version table at all.
+        conn = sq.connect(temp_db_path)
+        conn.executescript(
+            "CREATE TABLE sdks (id TEXT PRIMARY KEY, purl TEXT, patterns TEXT NOT NULL,"
+            " category TEXT, license TEXT, created_at TEXT);"
+            "CREATE TABLE models (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            " purl TEXT UNIQUE NOT NULL, name TEXT NOT NULL, organization TEXT,"
+            " version TEXT, format TEXT, architecture TEXT, architecture_family TEXT,"
+            " parameter_count INTEGER, quantization TEXT, sha256 TEXT, tlsh TEXT,"
+            " license TEXT, source_url TEXT, task TEXT, base_model_purl TEXT,"
+            " datasets TEXT, created_at TEXT, updated_at TEXT);"
+            "CREATE TABLE mcp_servers (id TEXT PRIMARY KEY, purl TEXT,"
+            " patterns TEXT NOT NULL, description TEXT, created_at TEXT);"
+            "CREATE TABLE packages (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            " purl TEXT UNIQUE NOT NULL, name TEXT NOT NULL, ecosystem TEXT NOT NULL,"
+            " version TEXT, license TEXT, summary TEXT, homepage TEXT, author TEXT,"
+            " is_ai_package INTEGER DEFAULT 1, ai_category TEXT, created_at TEXT,"
+            " updated_at TEXT);"
+            "CREATE TABLE sync_state (key TEXT PRIMARY KEY, value TEXT, updated_at TEXT);"
+            "INSERT INTO models (purl, name) VALUES ('pkg:huggingface/old/m', 'm');"
+        )
+        conn.commit()
+        conn.close()
+
+        with Database(temp_db_path) as db:
+            db.initialize()
+            cols = [r[1] for r in db.execute("PRAGMA table_info(models)").fetchall()]
+            assert "repo_created_at" in cols, "legacy DB must be walked forward, not stamped"
+            assert "source" in cols  # v002's column arrived too
+            assert db.get_version() == 4
+            # And the pre-existing data survived the walk.
+            row = db.execute("SELECT name FROM models WHERE purl = 'pkg:huggingface/old/m'")
+            assert row.fetchone()[0] == "m"

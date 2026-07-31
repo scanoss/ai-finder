@@ -39,6 +39,12 @@ CREATE TABLE IF NOT EXISTS models (
     base_model_purl TEXT,         -- Fine-tuned from
     datasets TEXT,                -- JSON array of dataset names
     source TEXT DEFAULT 'crawled',  -- seed, crawled, user
+    -- HF repo registration date from the seed (provenance.created_at in the
+    -- corpus; 'created_at' in models.json). Deliberately NOT named created_at:
+    -- that column below is this row's insertion audit stamp, and reusing the
+    -- name would compare registration dates against row-insertion times in the
+    -- oldest-candidate pick. Canonical whole-second UTC ('...Z') or NULL.
+    repo_created_at TEXT,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -135,7 +141,7 @@ CREATE TABLE IF NOT EXISTS sync_state (
 );
 
 -- Insert initial schema version
-INSERT OR IGNORE INTO schema_version (version) VALUES (3);
+INSERT OR IGNORE INTO schema_version (version) VALUES (4);
 
 -- Initialize KB sync state
 INSERT OR IGNORE INTO sync_state (key, value) VALUES ('kb_version', '0');

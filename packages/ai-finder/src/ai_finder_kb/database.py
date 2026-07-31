@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Optional
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 
 class Database:
@@ -61,13 +61,36 @@ class Database:
         """Initialize database schema and run pending migrations."""
         current_version = self.get_version()
 
-        # Fresh database - apply initial schema
+        # Version 0 means "no stamp", which is two very different databases:
+        # a genuinely fresh file, or a legacy one that has tables but predates
+        # (or lost) the schema_version stamp. Running schema.sql on the latter
+        # is the trap — CREATE TABLE IF NOT EXISTS skips every existing table,
+        # then the stamp claims the CURRENT version for a schema that was
+        # never brought forward, and the missing columns never arrive because
+        # the version now says there is nothing to migrate (review finding).
+        # A table-bearing unstamped database is therefore treated as v1 — the
+        # oldest shape that ever existed — and walked forward through the
+        # ALTER-based migrations like any other old database.
         if current_version == 0:
-            schema_path = Path(__file__).parent / "schema.sql"
-            schema_sql = schema_path.read_text()
-            self.conn.executescript(schema_sql)
-            self.commit()
-            # Re-read version after applying schema (schema.sql sets current version)
+            has_tables = self.execute(
+                "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'models'"
+            ).fetchone()
+            if has_tables:
+                self.conn.executescript(
+                    "CREATE TABLE IF NOT EXISTS schema_version ("
+                    "  version INTEGER PRIMARY KEY,"
+                    "  applied_at TEXT DEFAULT (datetime('now'))"
+                    ");"
+                    "INSERT OR IGNORE INTO schema_version (version) VALUES (1);"
+                )
+                self.commit()
+            else:
+                schema_path = Path(__file__).parent / "schema.sql"
+                schema_sql = schema_path.read_text()
+                self.conn.executescript(schema_sql)
+                self.commit()
+            # Re-read: schema.sql stamps the current version, the legacy
+            # branch stamps 1 and falls through to the migration walk.
             current_version = self.get_version()
 
         # Run pending migrations (only if database is behind SCHEMA_VERSION)

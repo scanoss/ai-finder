@@ -148,6 +148,14 @@ def identify(file: Path, output_format: str, no_enrich: bool, kb_path: Path | No
                     if model_data:
                         info["kb_match"] = True
                         info["known_model"] = model_data.purl
+                        # Byte-identical weights under several purls: the asserted
+                        # purl above is the earliest-registered candidate (the
+                        # presumed original); disclose the full list, oldest
+                        # first, so the answer's basis is visible. Exact
+                        # identification through quantization/conversion needs
+                        # fingerprinting, which a hash lookup cannot do.
+                        if model_data.candidate_purls:
+                            info["candidate_models"] = model_data.candidate_purls
                         if model_data.license:
                             info["license"] = model_data.license
                         if model_data.organization:
@@ -212,6 +220,13 @@ def _print_text(info: dict[str, Any]) -> None:
         click.echo("--- KB Match ---")
         if info.get("known_model"):
             click.echo(f"Known Model: {info['known_model']}")
+        if info.get("candidate_models"):
+            others = len(info["candidate_models"]) - 1
+            click.echo(
+                f"Note:        identical weights are published by {others} other "
+                f"repo{'s' if others != 1 else ''}; the earliest-registered one is "
+                f"shown (see candidate_models in --format json)"
+            )
         if info.get("organization"):
             click.echo(f"Organization: {info['organization']}")
         if info.get("license"):

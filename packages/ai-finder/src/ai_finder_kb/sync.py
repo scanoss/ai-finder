@@ -382,8 +382,8 @@ class KBSync:
                     INSERT INTO models
                     (purl, name, organization, architecture, architecture_family,
                      parameter_count, license, format, quantization, task,
-                     base_model_purl, source_url, source)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'seed')
+                     base_model_purl, source_url, repo_created_at, source)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'seed')
                     ON CONFLICT(purl) DO UPDATE SET
                         name = excluded.name,
                         organization = excluded.organization,
@@ -396,6 +396,7 @@ class KBSync:
                         task = excluded.task,
                         base_model_purl = excluded.base_model_purl,
                         source_url = excluded.source_url,
+                        repo_created_at = excluded.repo_created_at,
                         updated_at = datetime('now')
                     WHERE source = 'seed'
                     """,
@@ -412,6 +413,11 @@ class KBSync:
                         model.get("task"),
                         model.get("base_model_purl"),
                         model.get("source_url"),
+                        # models.json field is created_at (corpus vocabulary:
+                        # HF repo registration date); the column is
+                        # repo_created_at because models.created_at is the
+                        # row-insertion audit stamp.
+                        model.get("created_at"),
                     ),
                 )
                 count += 1

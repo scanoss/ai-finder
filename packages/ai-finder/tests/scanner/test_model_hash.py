@@ -263,3 +263,105 @@ class TestSameBasenameInDifferentDirectories:
         assert [p["name"] for p in spdx["packages"] if p.get("checksums")] == [
             "modelA/model.safetensors"
         ]
+
+
+class TestOldestCandidatePick:
+    """A hash claimed by several models asserts the earliest-registered repo.
+
+    Content alone cannot decide these — a base model and its quantization
+    legitimately share the shards quantization left untouched — so the policy
+    is: the oldest registration is the presumed original, assert it, disclose
+    the rest. Exact identification through transformation is fingerprint
+    territory. Before this, ORDER BY purl picked alphabetically, which made
+    the answer an accident of naming.
+    """
+
+    @pytest.fixture
+    def ambiguous_kb(self, tmp_path, shard_digest):
+        """Three purls claim one hash. Alphabetical and chronological order
+        deliberately DISAGREE, so this fails if the pick regresses to purl
+        order: aaa/copy is alphabetically first but registered last."""
+        path = tmp_path / "amb.db"
+        rows = [
+            ("pkg:huggingface/aaa/copy", "copy", "2025-01-01T00:00:00Z"),
+            ("pkg:huggingface/zzz/original", "original", "2023-01-01T00:00:00Z"),
+            ("pkg:huggingface/mmm/undated", "undated", None),
+        ]
+        with Database(path) as db:
+            db.initialize()
+            for purl, name, created in rows:
+                db.execute(
+                    "INSERT INTO models (purl, name, repo_created_at, source) "
+                    "VALUES (?, ?, ?, 'seed')",
+                    (purl, name, created),
+                )
+                model_id = db.execute("SELECT id FROM models WHERE purl = ?", (purl,)).fetchone()[0]
+                db.execute(
+                    "INSERT INTO model_files (h, model_id, path, size_bytes) VALUES (?, ?, ?, ?)",
+                    (bytes.fromhex(shard_digest), model_id, SHARD_NAME, 4096),
+                )
+            db.commit()
+        return path
+
+    def test_earliest_registered_wins_over_alphabetical(self, ambiguous_kb, shard_digest):
+        with KBEnricher(db_path=ambiguous_kb, enable_live_fallback=False) as enricher:
+            result = enricher.lookup_model_by_hash(shard_digest)
+        assert result is not None
+        assert result.purl == "pkg:huggingface/zzz/original"
+
+    def test_candidates_are_disclosed_oldest_first_undated_last(self, ambiguous_kb, shard_digest):
+        with KBEnricher(db_path=ambiguous_kb, enable_live_fallback=False) as enricher:
+            result = enricher.lookup_model_by_hash(shard_digest)
+        assert result.candidate_purls == [
+            "pkg:huggingface/zzz/original",
+            "pkg:huggingface/aaa/copy",
+            "pkg:huggingface/mmm/undated",
+        ]
+
+    def test_single_candidate_stays_undisclosed(self, kb_path, shard_digest):
+        """The unambiguous case is unchanged: purl asserted, no candidate list."""
+        with KBEnricher(db_path=kb_path, enable_live_fallback=False) as enricher:
+            result = enricher.lookup_model_by_hash(shard_digest)
+        assert result.purl == PURL
+        assert result.candidate_purls is None
+
+    def test_date_tie_falls_back_to_purl_order(self, tmp_path, shard_digest):
+        path = tmp_path / "tie.db"
+        with Database(path) as db:
+            db.initialize()
+            for purl in ("pkg:huggingface/bbb/m", "pkg:huggingface/aaa/m"):
+                db.execute(
+                    "INSERT INTO models (purl, name, repo_created_at, source) "
+                    "VALUES (?, 'm', '2024-01-01T00:00:00Z', 'seed')",
+                    (purl,),
+                )
+                model_id = db.execute("SELECT id FROM models WHERE purl = ?", (purl,)).fetchone()[0]
+                db.execute(
+                    "INSERT INTO model_files (h, model_id, path, size_bytes) VALUES (?, ?, ?, ?)",
+                    (bytes.fromhex(shard_digest), model_id, SHARD_NAME, 4096),
+                )
+            db.commit()
+        with KBEnricher(db_path=path, enable_live_fallback=False) as enricher:
+            result = enricher.lookup_model_by_hash(shard_digest)
+        assert result.purl == "pkg:huggingface/aaa/m"
+
+    def test_all_undated_falls_back_to_purl_order(self, tmp_path, shard_digest):
+        """A pre-backfill seed (no dates anywhere) behaves exactly as before."""
+        path = tmp_path / "undated.db"
+        with Database(path) as db:
+            db.initialize()
+            for purl in ("pkg:huggingface/zzz/m", "pkg:huggingface/aaa/m"):
+                db.execute(
+                    "INSERT INTO models (purl, name, source) VALUES (?, 'm', 'seed')",
+                    (purl,),
+                )
+                model_id = db.execute("SELECT id FROM models WHERE purl = ?", (purl,)).fetchone()[0]
+                db.execute(
+                    "INSERT INTO model_files (h, model_id, path, size_bytes) VALUES (?, ?, ?, ?)",
+                    (bytes.fromhex(shard_digest), model_id, SHARD_NAME, 4096),
+                )
+            db.commit()
+        with KBEnricher(db_path=path, enable_live_fallback=False) as enricher:
+            result = enricher.lookup_model_by_hash(shard_digest)
+        assert result.purl == "pkg:huggingface/aaa/m"
+        assert result.candidate_purls == ["pkg:huggingface/aaa/m", "pkg:huggingface/zzz/m"]

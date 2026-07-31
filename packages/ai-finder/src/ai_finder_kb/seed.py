@@ -76,8 +76,8 @@ def seed_models(db: Database) -> int:
                 INSERT OR REPLACE INTO models
                 (purl, name, organization, architecture, architecture_family,
                  parameter_count, license, format, quantization, task,
-                 base_model_purl, source_url, source)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'seed')
+                 base_model_purl, source_url, repo_created_at, source)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'seed')
                 """,
                 (
                     model["purl"],
@@ -92,6 +92,11 @@ def seed_models(db: Database) -> int:
                     model.get("task"),
                     model.get("base_model_purl"),
                     model.get("source_url"),
+                    # models.json calls it created_at (the corpus vocabulary:
+                    # the HF repo registration date). The column is named
+                    # repo_created_at because models.created_at is this row's
+                    # insertion audit stamp — same name, different meaning.
+                    model.get("created_at"),
                 ),
             )
             count += 1

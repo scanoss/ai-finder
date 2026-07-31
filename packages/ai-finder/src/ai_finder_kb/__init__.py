@@ -133,6 +133,16 @@ class KnowledgeBase:
                 self._db.close()
                 shutil.copy(seed_path, self._db_path)
                 self._db.connect()
+                # The copied seed carries whatever schema version it was BUILT
+                # at, and an existing user kb.db carries whatever version it
+                # was last opened by. Neither path ran migrations before this
+                # call existed, so a pre-v4 database kept its old schema
+                # forever under new code — the enricher's SELECT then failed
+                # on the missing column and hash lookups silently degraded to
+                # filename matching. initialize() is idempotent: at the
+                # current version it is a no-op, behind it it runs exactly
+                # the pending migrations.
+                self._db.initialize()
             else:
                 # No seed.db and no JSONs to build one from. Initialise an empty
                 # schema so the KB is still usable for crawled and user data, but
@@ -146,6 +156,11 @@ class KnowledgeBase:
                     "the knowledge base is empty. A released wheel always bundles "
                     "one; from a source checkout run scripts/create_seed_db.py."
                 )
+        else:
+            # An existing database: run any migrations this build is ahead of.
+            # Without this, a returning user's kb.db never upgrades — the only
+            # migration path was the fresh-database branch above.
+            self._db.initialize()
 
         self._matcher = Matcher(self._db)
 

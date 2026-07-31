@@ -176,7 +176,12 @@ class Matcher:
                 "SELECT m.purl, m.name, m.organization, m.architecture, m.format, "
                 "m.parameter_count, m.license "
                 "FROM model_files f JOIN models m ON m.id = f.model_id "
-                "WHERE f.h = ? GROUP BY m.purl ORDER BY m.purl",
+                "WHERE f.h = ? GROUP BY m.purl "
+                # Same pick rule as KBEnricher.lookup_model_by_hash: earliest
+                # registration wins, dated beats undated, purl breaks ties.
+                # Two implementations of one lookup must not disagree on
+                # which purl a hash resolves to.
+                "ORDER BY (m.repo_created_at IS NULL), m.repo_created_at, m.purl",
                 (blob,),
             )
             rows = cursor.fetchall()
