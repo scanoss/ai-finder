@@ -86,3 +86,29 @@ class TestIdentifyCommand:
 
         # Should show SHA-256 hash even for unrecognized files
         assert "SHA-256:" in result.output
+
+
+class TestIdentifyTextDisclosure:
+    def test_text_output_lists_every_candidate(self, capsys) -> None:
+        """The text format is self-contained: an ambiguous pick prints the full
+        ordered candidate list rather than deferring to --format json."""
+        from ai_finder_cli.commands.identify import _print_text
+
+        info = {
+            "file": "model.safetensors",
+            "sha256": "ab" * 32,
+            "recognized": True,
+            "kb_match": True,
+            "known_model": "pkg:huggingface/original/llama-3-8b",
+            "candidate_models": [
+                "pkg:huggingface/original/llama-3-8b",
+                "pkg:huggingface/mirror/llama-3-8b-reupload",
+            ],
+        }
+        _print_text(info)
+        out = capsys.readouterr().out
+
+        assert "Known Model: pkg:huggingface/original/llama-3-8b" in out
+        assert "Candidate:   pkg:huggingface/original/llama-3-8b" in out
+        assert "Candidate:   pkg:huggingface/mirror/llama-3-8b-reupload" in out
+        assert "--format json" not in out

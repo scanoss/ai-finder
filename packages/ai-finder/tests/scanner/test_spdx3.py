@@ -186,3 +186,52 @@ class TestSPDX3Formatter:
         # Version should be normalized in spdxId (^1.0.0 → 1.0.0)
         assert "1.0.0" in pkg["spdxId"]
         assert "^" not in pkg["spdxId"]
+
+
+class _AmbiguousHashEnricher:
+    """Stub for a multi-candidate hash hit, oldest registration first."""
+
+    def __init__(self, candidate_purls: list[str] | None) -> None:
+        from ai_finder_scanner.enrichment.kb_enricher import ModelEnrichment
+
+        self._enrichment = ModelEnrichment(
+            purl="pkg:huggingface/original/llama-3-8b",
+            name="llama-3-8b",
+            candidate_purls=candidate_purls,
+        )
+
+    def lookup_model(self, name: str, sha256: str | None = None) -> object:
+        return self._enrichment
+
+    def lookup_sdk(self, name: str) -> None:
+        return None
+
+
+class TestSPDX3CandidateDisclosure:
+    """An asserted pick from a multi-candidate hash must carry the candidates."""
+
+    def test_ambiguous_hash_discloses_candidates_in_comment(
+        self, model_file_result: ScanResult
+    ) -> None:
+        candidates = [
+            "pkg:huggingface/original/llama-3-8b",
+            "pkg:huggingface/mirror/llama-3-8b-reupload",
+        ]
+        formatter = SPDX3Formatter()
+        output = formatter.format(model_file_result, enricher=_AmbiguousHashEnricher(candidates))
+        pkg = next(e for e in json.loads(output)["@graph"] if e.get("type") == "ai_AIPackage")
+
+        # The pick stays asserted; the ordered set rides machine-readably in the
+        # comment, space-joined, mirroring the ai-finder:mcp:role convention.
+        assert pkg["software_packageUrl"] == "pkg:huggingface/original/llama-3-8b"
+        assert pkg["comment"] == "ai-finder:model:candidate_purls=" + " ".join(candidates)
+
+    def test_unambiguous_hash_emits_no_candidate_comment(
+        self, model_file_result: ScanResult
+    ) -> None:
+        formatter = SPDX3Formatter()
+        output = formatter.format(model_file_result, enricher=_AmbiguousHashEnricher(None))
+        pkg = next(e for e in json.loads(output)["@graph"] if e.get("type") == "ai_AIPackage")
+
+        assert pkg["software_packageUrl"] == "pkg:huggingface/original/llama-3-8b"
+        assert "candidate_purls" not in pkg.get("comment", "")

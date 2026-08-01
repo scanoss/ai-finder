@@ -225,8 +225,12 @@ def _print_text(info: dict[str, Any]) -> None:
             click.echo(
                 f"Note:        identical weights are published by {others} other "
                 f"repo{'s' if others != 1 else ''}; the earliest-registered one is "
-                f"shown (see candidate_models in --format json)"
+                f"shown"
             )
+            # Self-contained disclosure: the text consumer must not need the
+            # JSON output to see what the asserted pick was chosen from.
+            for candidate in info["candidate_models"]:
+                click.echo(f"Candidate:   {candidate}")
         if info.get("organization"):
             click.echo(f"Organization: {info['organization']}")
         if info.get("license"):

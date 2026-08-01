@@ -451,6 +451,17 @@ class CycloneDXFormatter:
                                 "value": model_data.base_model_purl,
                             }
                         )
+                    # The purl asserted above is a pick when several models claim
+                    # this hash; disclose the ordered candidate list so the
+                    # assertion's basis is visible. Space-joined — a purl cannot
+                    # contain an unencoded space.
+                    if model_data.candidate_purls:
+                        properties.append(
+                            {
+                                "name": "ai-finder:model:candidate_purls",
+                                "value": " ".join(model_data.candidate_purls),
+                            }
+                        )
                     if properties:
                         component["properties"] = properties
 

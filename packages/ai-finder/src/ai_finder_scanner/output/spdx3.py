@@ -502,6 +502,15 @@ class SPDX3Formatter:
                 # which ai_AIPackage inherits.
                 if model_data.purl:
                     element["software_packageUrl"] = model_data.purl
+                # The packageUrl asserted above is a pick when several models
+                # claim this hash — disclose the ordered candidate list. Carried
+                # machine-readably in the comment, same as ai-finder:mcp:role:
+                # SPDX 3.0 externalIdentifier requires vocabulary compliance.
+                # Space-joined — a purl cannot contain an unencoded space.
+                if model_data.candidate_purls:
+                    element["comment"] = "ai-finder:model:candidate_purls=" + " ".join(
+                        model_data.candidate_purls
+                    )
                 if model_data.license:
                     element["software_declaredLicense"] = model_data.license
                 if model_data.source_url:

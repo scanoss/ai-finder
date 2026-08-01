@@ -493,3 +493,76 @@ class TestSPDX23Deduplication:
         # Should have version from manifest
         openai_pkg = next(p for p in data["packages"] if p["name"] == "openai")
         assert openai_pkg.get("versionInfo") == "1.0.0"
+
+
+class _AmbiguousHashEnricher:
+    """Stub for a multi-candidate hash hit, oldest registration first."""
+
+    def __init__(self, candidate_purls: list[str] | None) -> None:
+        from ai_finder_scanner.enrichment.kb_enricher import ModelEnrichment
+
+        self._enrichment = ModelEnrichment(
+            purl="pkg:huggingface/original/llama-3-8b",
+            name="llama-3-8b",
+            candidate_purls=candidate_purls,
+        )
+
+    def lookup_model(self, name: str, sha256: str | None = None) -> object:
+        return self._enrichment
+
+    def lookup_sdk(self, name: str) -> None:
+        return None
+
+
+def _model_scan_result() -> ScanResult:
+    return ScanResult(
+        root_path="/test/project",
+        findings=[
+            Finding(
+                type=FindingType.MODEL_FILE,
+                file_path="models/model-00001-of-00002.safetensors",
+                confidence=1.0,
+                model_info=ModelInfo(format="safetensors", sha256="ab" * 32),
+            ),
+        ],
+        files_scanned=1,
+        duration_ms=10,
+    )
+
+
+class TestSPDX23CandidateDisclosure:
+    """An asserted pick from a multi-candidate hash must carry the candidates."""
+
+    def test_ambiguous_hash_discloses_candidates_in_comment(self) -> None:
+        candidates = [
+            "pkg:huggingface/original/llama-3-8b",
+            "pkg:huggingface/mirror/llama-3-8b-reupload",
+        ]
+        formatter = SPDX23Formatter()
+        output = formatter.format(_model_scan_result(), enricher=_AmbiguousHashEnricher(candidates))
+        pkg = next(
+            p
+            for p in json.loads(output)["packages"]
+            if p["name"] == "models/model-00001-of-00002.safetensors"
+        )
+
+        # The pick stays asserted as the purl externalRef; the ordered set rides
+        # in the comment, space-joined within its part.
+        purl_refs = [
+            r["referenceLocator"]
+            for r in pkg.get("externalRefs", [])
+            if r.get("referenceType") == "purl"
+        ]
+        assert purl_refs == ["pkg:huggingface/original/llama-3-8b"]
+        assert "candidate_purls: " + " ".join(candidates) in pkg["comment"]
+
+    def test_unambiguous_hash_emits_no_candidate_comment(self) -> None:
+        formatter = SPDX23Formatter()
+        output = formatter.format(_model_scan_result(), enricher=_AmbiguousHashEnricher(None))
+        pkg = next(
+            p
+            for p in json.loads(output)["packages"]
+            if p["name"] == "models/model-00001-of-00002.safetensors"
+        )
+
+        assert "candidate_purls" not in pkg.get("comment", "")

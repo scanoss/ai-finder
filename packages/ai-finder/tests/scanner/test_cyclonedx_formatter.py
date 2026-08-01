@@ -529,3 +529,65 @@ class TestCycloneDXLicenseHandling:
         comp = data["components"][0]
         assert "licenses" in comp
         assert comp["licenses"][0]["expression"] == "NOASSERTION"
+
+
+class _AmbiguousHashEnricher:
+    """Stub for a multi-candidate hash hit, oldest registration first."""
+
+    def __init__(self, candidate_purls: list[str] | None) -> None:
+        from ai_finder_scanner.enrichment.kb_enricher import ModelEnrichment
+
+        self._enrichment = ModelEnrichment(
+            purl="pkg:huggingface/original/llama-3-8b",
+            name="llama-3-8b",
+            candidate_purls=candidate_purls,
+        )
+
+    def lookup_model(self, name: str, sha256: str | None = None) -> object:
+        return self._enrichment
+
+    def lookup_sdk(self, name: str) -> None:
+        return None
+
+
+def _model_scan_result() -> ScanResult:
+    return ScanResult(
+        root_path="/test/project",
+        findings=[
+            Finding(
+                type=FindingType.MODEL_FILE,
+                file_path="models/model-00001-of-00002.safetensors",
+                confidence=1.0,
+                model_info=ModelInfo(format="safetensors", sha256="ab" * 32),
+            ),
+        ],
+        files_scanned=1,
+        duration_ms=10,
+    )
+
+
+class TestCycloneDXCandidateDisclosure:
+    """An asserted pick from a multi-candidate hash must carry the candidates."""
+
+    def test_ambiguous_hash_discloses_candidates_as_property(self) -> None:
+        candidates = [
+            "pkg:huggingface/original/llama-3-8b",
+            "pkg:huggingface/mirror/llama-3-8b-reupload",
+        ]
+        formatter = CycloneDXFormatter()
+        output = formatter.format(_model_scan_result(), enricher=_AmbiguousHashEnricher(candidates))
+        comp = json.loads(output)["components"][0]
+
+        # The pick stays asserted; the ordered set rides alongside, space-joined.
+        assert comp["purl"] == "pkg:huggingface/original/llama-3-8b"
+        props = {p["name"]: p["value"] for p in comp["properties"]}
+        assert props["ai-finder:model:candidate_purls"] == " ".join(candidates)
+
+    def test_unambiguous_hash_emits_no_candidate_property(self) -> None:
+        formatter = CycloneDXFormatter()
+        output = formatter.format(_model_scan_result(), enricher=_AmbiguousHashEnricher(None))
+        comp = json.loads(output)["components"][0]
+
+        assert comp["purl"] == "pkg:huggingface/original/llama-3-8b"
+        prop_names = [p["name"] for p in comp.get("properties", [])]
+        assert "ai-finder:model:candidate_purls" not in prop_names

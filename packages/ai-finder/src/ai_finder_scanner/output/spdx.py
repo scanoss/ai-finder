@@ -349,6 +349,14 @@ class SPDX23Formatter:
                         comment_parts.append(f"parameters: {model_data.parameter_count:,}")
                     if model_data.task:
                         comment_parts.append(f"task: {model_data.task}")
+                    # The purl asserted below is a pick when several models claim
+                    # this hash — disclose the ordered candidate list alongside.
+                    # Space-joined within the part (a purl cannot contain an
+                    # unencoded space); ", " stays the part separator.
+                    if model_data.candidate_purls:
+                        comment_parts.append(
+                            "candidate_purls: " + " ".join(model_data.candidate_purls)
+                        )
                     package["comment"] = ", ".join(filter(None, comment_parts))
 
                     # The resolved purl is the whole point of the lookup: on a hash
