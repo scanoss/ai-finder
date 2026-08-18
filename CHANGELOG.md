@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-## [0.4.0] - 2026-07-25
+## [0.4.0] - 2026-08-17
 
 ### Added
 - Model weight files are identified by content hash. A file's SHA-256 is looked up
@@ -33,8 +33,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `quantization`, `task`, `base_model_purl`, `source_url` and
   `architecture_family` already existed as columns and were silently dropped on
   seeding.
+- A file hash claimed by more than one model is disclosed rather than resolved
+  silently. A base model and its quantization legitimately share the shards
+  quantization left untouched, so one digest can belong to several repos, and no
+  amount of hashing can tell them apart. `ModelEnrichment` gains
+  `candidate_purls`, the full candidate list ordered oldest registration first
+  (`None` when the hash is unambiguous).
+- The candidate set is carried in every output format. `identify --format json`
+  reports it as `candidate_models` and the text output prints the ordered list;
+  CycloneDX 1.6 uses an `ai-finder:model:candidate_purls` property, SPDX 2.3 a
+  `candidate_purls` part in the package comment, and SPDX 3.0 an
+  `ai-finder:model:candidate_purls=` comment. Disclosure is additive — the
+  asserted purl is unchanged and an unambiguous hit emits nothing new.
+- `models.repo_created_at` records the repository registration date from the
+  seed (migration `v004`). Named separately from `models.created_at`, which is
+  the row-insertion audit stamp.
 
 ### Changed
+- On a multi-candidate hash the asserted purl is now the earliest-registered
+  repository — the presumed original that was later forked or re-uploaded —
+  rather than the alphabetically lowest, which made the answer an accident of
+  naming. Ordering is deterministic: dated candidates before undated, oldest
+  first, purl to break ties. The pick is a selection rule, not a confidence
+  claim. A seed carrying no registration dates behaves exactly as before.
+- Opening an existing knowledge base runs any pending migrations. Previously
+  only a freshly created database was migrated, so a KB from an earlier release
+  kept its old schema indefinitely and newer lookups silently fell back to
+  filename matching.
 - `seed.db` is no longer committed. It is built during the release from the seed
   JSONs, verified against them, and shipped in the wheel; the JSONs are not
   shipped. A source checkout builds it on demand. This removes the drift risk
@@ -43,6 +68,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `ai-finder kb update` no longer fails against a remote that does not publish
   file hashes. Previously a missing `model_files.json` aborted the sync.
+- Migrations are now crash-atomic. `schema.sql` and the `v002` migration each
+  ran as a series of autocommitted statements, so an interrupted run could leave
+  a database with columns applied but the version unchanged. `ALTER TABLE ADD
+  COLUMN` has no `IF NOT EXISTS` form, so the retry then failed with `duplicate
+  column name` on every subsequent open. Both now run as a single transaction
+  and roll back cleanly.
+- A database with tables but no version stamp is now identified by the schema it
+  actually has, rather than assumed to be the oldest shape and walked forward
+  through migrations whose columns may already exist.
+- Enrichment no longer writes to a database that is not a knowledge base. Since
+  opening a KB now migrates it, `--kb-path` pointed at an unrelated SQLite file
+  would have created the full KB schema in it. The path is probed first and left
+  untouched unless it really is a KB.
+- Registration dates are validated on the way in, from both the bundled seed and
+  a remote sync. `repo_created_at` is compared as a string, which is only
+  chronological while every value shares one format; a timezone offset, an epoch
+  integer or an empty string would each have sorted wrongly and changed which
+  repository was asserted. Non-canonical values are normalised where they denote
+  the same instant and dropped to NULL otherwise, which sorts last and never
+  wins the pick.
 
 ### Upgrading
 - If you ran `ai-finder kb update` against a remote already advertising seed
