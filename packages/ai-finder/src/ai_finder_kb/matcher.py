@@ -164,8 +164,9 @@ class Matcher:
         Returns:
             ModelMatch if found, None otherwise. Confidence is 1.0 for an
             unambiguous hit and 0.95 when the same bytes are published under more
-            than one purl, in which case the lowest purl is chosen so repeated
-            scans of the same file agree.
+            than one purl, in which case the earliest-registered purl is chosen —
+            the presumed original that was later forked or re-uploaded — with the
+            purl itself breaking ties so repeated scans of the same file agree.
         """
         blob = _as_digest(digest)
         if blob is None:

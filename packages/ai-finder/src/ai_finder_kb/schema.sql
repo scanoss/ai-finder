@@ -1,5 +1,15 @@
 -- SCANOSS AI Knowledge Base Schema v1
 
+-- One transaction, deliberately. executescript() runs each statement in its own
+-- implicit transaction, so a crash partway through this file used to leave a
+-- database with some tables and no schema_version stamp. That shape is
+-- indistinguishable from a legacy pre-stamp install, and guessing wrong about
+-- it means replaying ALTER-based migrations against columns this file already
+-- created — which fails with "duplicate column name" on every subsequent open.
+-- Wrapped, a fresh initialize is all-or-nothing: either a complete stamped
+-- schema or an untouched file the next open initializes cleanly.
+BEGIN;
+
 -- Schema version tracking
 CREATE TABLE IF NOT EXISTS schema_version (
     version INTEGER PRIMARY KEY,
@@ -146,3 +156,5 @@ INSERT OR IGNORE INTO schema_version (version) VALUES (4);
 -- Initialize KB sync state
 INSERT OR IGNORE INTO sync_state (key, value) VALUES ('kb_version', '0');
 INSERT OR IGNORE INTO sync_state (key, value) VALUES ('kb_last_sync', NULL);
+
+COMMIT;

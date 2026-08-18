@@ -1,12 +1,52 @@
 """Seed data for AI Finder Knowledge Base."""
 
+from __future__ import annotations
+
 import json
+import logging
+import re
 from pathlib import Path
 
 from .database import Database
 
 # Seed data directory
 SEED_DIR = Path(__file__).parent / "seed"
+
+
+logger = logging.getLogger(__name__)
+
+# The one shape the oldest-candidate pick can compare as a string.
+_CANONICAL_UTC = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+
+
+def canonical_repo_created_at(value: object) -> str | None:
+    """Return ``value`` if it is a canonical whole-second UTC stamp, else None.
+
+    ``repo_created_at`` is ordered lexicographically, which is only
+    chronological while every value shares one format. The exporter that
+    builds models.json promises that shape, but it lives in another repo and
+    the sync path fetches models.json from a remote with only a checksum to
+    vouch for it — a checksum proves the bytes arrived intact, not that the
+    field is well formed. So the invariant is enforced here, where it is used.
+
+    Anything else becomes NULL rather than a value that sorts wrong. That is
+    the safe direction: NULL sorts last under the pick's ``IS NULL`` key, so a
+    malformed date makes its model undated and lets a well-formed candidate
+    win, where keeping it could put it first. Offsets ('...+05:00'), epoch
+    integers and empty strings all compare as later-or-earlier than real
+    stamps in ways that silently invert which repo gets asserted.
+
+    '+00:00' is normalised rather than dropped: it denotes the same instant as
+    'Z' and differs only in spelling.
+    """
+    if value is None:
+        return None
+    if isinstance(value, str):
+        candidate = value[:-6] + "Z" if value.endswith("+00:00") else value
+        if _CANONICAL_UTC.match(candidate):
+            return candidate
+    logger.debug("Dropping non-canonical repo_created_at %r; treating as undated", value)
+    return None
 
 
 def load_seed_data(filename: str) -> list[dict]:
@@ -96,7 +136,7 @@ def seed_models(db: Database) -> int:
                     # the HF repo registration date). The column is named
                     # repo_created_at because models.created_at is this row's
                     # insertion audit stamp — same name, different meaning.
-                    model.get("created_at"),
+                    canonical_repo_created_at(model.get("created_at")),
                 ),
             )
             count += 1

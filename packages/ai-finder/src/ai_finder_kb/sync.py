@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 
 import requests
 
+from .seed import canonical_repo_created_at
+
 if TYPE_CHECKING:
     from .database import Database
 
@@ -416,8 +418,11 @@ class KBSync:
                         # models.json field is created_at (corpus vocabulary:
                         # HF repo registration date); the column is
                         # repo_created_at because models.created_at is the
-                        # row-insertion audit stamp.
-                        model.get("created_at"),
+                        # row-insertion audit stamp. Normalised here because
+                        # this payload is fetched from a remote and a checksum
+                        # only proves the bytes arrived intact, not that the
+                        # field carries the one shape the pick can order.
+                        canonical_repo_created_at(model.get("created_at")),
                     ),
                 )
                 count += 1

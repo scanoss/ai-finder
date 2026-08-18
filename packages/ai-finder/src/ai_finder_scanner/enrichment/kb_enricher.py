@@ -173,16 +173,50 @@ class KBEnricher:
         logged, not raised.
         """
         if self.db_path and self.db_path.exists():
-            try:
-                from ai_finder_kb.database import Database
+            # Migrate before opening the connection this class reads through,
+            # so every later query sees the finished schema on one connection
+            # rather than depending on cross-connection visibility.
+            if self._looks_like_knowledge_base():
+                try:
+                    from ai_finder_kb.database import Database
 
-                with Database(self.db_path) as kb_db:
-                    kb_db.initialize()
-            except Exception as e:
-                logger.warning("KB schema migration failed; continuing as-is: %s", e)
+                    with Database(self.db_path) as kb_db:
+                        kb_db.initialize()
+                except Exception as e:
+                    logger.warning("KB schema migration failed; continuing as-is: %s", e)
             self._conn = sqlite3.connect(self.db_path)
             self._conn.row_factory = sqlite3.Row
         return self
+
+    def _looks_like_knowledge_base(self) -> bool:
+        """True when ``db_path`` is actually a KB, not some other database.
+
+        The migration writes — it creates tables and stamps a version — so it
+        must never run against a file that merely happens to sit at the given
+        path. ``--kb-path`` aimed at the wrong database used to be a read-only
+        mistake; unguarded, migration-on-open silently rewrites that file with
+        the full KB schema (review finding). Enrichment only ever reads
+        ``models`` and ``model_files``, so the presence of ``models`` is both
+        what makes migrating meaningful and what makes it safe.
+
+        Uses its own short-lived connection: probing through ``self._conn``
+        would mean opening it before the migration runs.
+        """
+        if not self.db_path:
+            return False
+        try:
+            with contextlib.closing(sqlite3.connect(self.db_path)) as probe:
+                return (
+                    probe.execute(
+                        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'models'"
+                    ).fetchone()
+                    is not None
+                )
+        except sqlite3.Error as e:
+            # Not a readable sqlite database at all. Enrichment's own queries
+            # fail the same way and are already handled as a lookup miss.
+            logger.debug("KB probe failed: %s", e)
+            return False
 
     def __exit__(self, *args) -> None:
         """Close database connection."""

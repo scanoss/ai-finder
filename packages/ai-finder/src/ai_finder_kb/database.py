@@ -68,20 +68,24 @@ class Database:
         # then the stamp claims the CURRENT version for a schema that was
         # never brought forward, and the missing columns never arrive because
         # the version now says there is nothing to migrate (review finding).
-        # A table-bearing unstamped database is therefore treated as v1 — the
-        # oldest shape that ever existed — and walked forward through the
-        # ALTER-based migrations like any other old database.
+        #
+        # A table-bearing unstamped database is therefore stamped at the
+        # version its own shape says it is, then walked forward from there.
+        # Detecting the shape rather than assuming the oldest one matters:
+        # assuming v1 replays v002's ALTERs against columns that may already
+        # exist, which has no IF NOT EXISTS form and fails permanently.
         if current_version == 0:
             has_tables = self.execute(
                 "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'models'"
             ).fetchone()
             if has_tables:
+                detected = self._detect_version()
                 self.conn.executescript(
                     "CREATE TABLE IF NOT EXISTS schema_version ("
                     "  version INTEGER PRIMARY KEY,"
                     "  applied_at TEXT DEFAULT (datetime('now'))"
                     ");"
-                    "INSERT OR IGNORE INTO schema_version (version) VALUES (1);"
+                    f"INSERT OR IGNORE INTO schema_version (version) VALUES ({detected});"
                 )
                 self.commit()
             else:
@@ -90,12 +94,37 @@ class Database:
                 self.conn.executescript(schema_sql)
                 self.commit()
             # Re-read: schema.sql stamps the current version, the legacy
-            # branch stamps 1 and falls through to the migration walk.
+            # branch stamps what the shape showed and falls through to the walk.
             current_version = self.get_version()
 
         # Run pending migrations (only if database is behind SCHEMA_VERSION)
         if current_version < SCHEMA_VERSION:
             self._run_migrations(current_version)
+
+    def _detect_version(self) -> int:
+        """Infer a schema version from the tables and columns actually present.
+
+        Only for an unstamped database that already has tables. Each migration
+        left one observable trace, so the newest trace present names the
+        version: v004 adds ``models.repo_created_at``, v003 adds the
+        ``model_files`` table, v002 adds ``models.source``. Nothing older than
+        v1 ever shipped, so v1 is the floor.
+
+        Returning too low is the dangerous direction — it replays ALTERs
+        against columns that already exist, and ``ADD COLUMN`` has no
+        IF NOT EXISTS form — so the checks run newest-first.
+        """
+        columns = {row[1] for row in self.execute("PRAGMA table_info(models)").fetchall()}
+        if "repo_created_at" in columns:
+            return 4
+        has_model_files = self.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'model_files'"
+        ).fetchone()
+        if has_model_files:
+            return 3
+        if "source" in columns:
+            return 2
+        return 1
 
     def _run_migrations(self, current_version: int) -> None:
         """Run all pending migrations from current version to SCHEMA_VERSION.
