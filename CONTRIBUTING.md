@@ -11,6 +11,7 @@ Thank you for your interest in contributing to AI Finder! We welcome contributio
 - [Coding Standards](#coding-standards)
 - [Commit Guidelines](#commit-guidelines)
 - [Pull Request Process](#pull-request-process)
+- [Proprietary artifacts](#proprietary-artifacts)
 - [Contributor License Agreement](#contributor-license-agreement)
 
 ## Code of Conduct
@@ -195,6 +196,21 @@ Fixes #456
 - [ ] Commits follow commit guidelines
 - [ ] No breaking changes (or documented if necessary)
 - [ ] CHANGELOG.md updated
+
+## Proprietary artifacts
+
+This repository is public. Model signature and calibration data must never be committed. The `Artifact guard` workflow (`.github/workflows/artifact-guard.yml`) runs `scripts/check_proprietary_artifacts.sh` on every push and pull request to `main`, and fails if any tracked file:
+
+- has a name ending in `.signature.json`, or is named `calibration.json`
+- contains the markers `std_curve` or `lep_curve` (binary files included)
+
+To run the same check locally before pushing:
+
+```bash
+bash scripts/check_proprietary_artifacts.sh
+```
+
+If the check flags a file that is legitimately public, rename or restructure it rather than weakening the patterns, and raise the change with the maintainers.
 
 ## Contributor License Agreement
 

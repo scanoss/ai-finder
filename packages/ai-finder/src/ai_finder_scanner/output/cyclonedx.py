@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
+from ai_finder_kb.matcher import purl_ecosystem, purl_name
+
 from .. import __version__
 from ..models import Finding, FindingType, ScanResult
 
@@ -169,6 +171,46 @@ class CycloneDXFormatter:
 
         return purl
 
+    def _purl_for(self, purl_type: str, name: str, purl: str | None, version: str | None) -> str:
+        """One purl convention per component, whichever path found it.
+
+        npm is rebuilt with `_build_purl` so a KB purl (`pkg:npm/@scope/x`) and a
+        manifest purl for the same package come out identical. Other types keep
+        the KB's purl, whose name may legitimately contain `/` (Maven, Go).
+        """
+        if purl_type == "npm" or not purl:
+            return self._build_purl(purl_type, name, version)
+        base, sep, qualifiers = purl.partition("?")
+        last = base.rsplit("/", 1)[-1]
+        if version and "@" not in last:
+            base = f"{base}@{quote(re.sub(r'^[>=<~^]+', '', version), safe='')}"
+        return base + sep + qualifiers
+
+    @staticmethod
+    def _package_key(purl_type: str, name: str) -> str:
+        """One identity per registry package, whichever detector found it."""
+        key_name = name.lower()
+        if purl_type == "pypi":
+            key_name = re.sub(r"[-_.]+", "-", key_name)  # PEP 503
+        return f"{purl_type}:{key_name}"
+
+    @staticmethod
+    def _occurrence(finding: Finding) -> dict[str, Any]:
+        """Where a component was found and, when known, the line that shows how."""
+        occurrence: dict[str, Any] = {"location": finding.file_path.replace("\\", "/")}
+        if finding.line:
+            occurrence["line"] = finding.line
+        how = None
+        if finding.sdk_usage:
+            how = finding.sdk_usage.import_statement
+        elif finding.mcp_info:
+            how = finding.mcp_info.how
+        elif finding.manifest_dep:
+            how = f"{finding.manifest_dep.name} {finding.manifest_dep.version}".strip()
+        if how:
+            occurrence["additionalContext"] = " ".join(how.split())
+        return occurrence
+
     def _infer_learning_type(self, architecture: str | None) -> str:
         """Infer learning type from model architecture."""
         if not architecture:
@@ -219,15 +261,24 @@ class CycloneDXFormatter:
         """
         if finding.type == FindingType.SDK_USAGE and finding.sdk_usage:
             sdk = finding.sdk_usage
+            if sdk.purl:
+                # Resolved by the KB: the purl names the package, which is not
+                # the import name (`import strands` is `strands-agents`).
+                purl_type = purl_ecosystem(sdk.purl) or "generic"
+                name = purl_name(sdk.purl)
+                purl = self._purl_for(purl_type, name, sdk.purl, sdk.version)
+            else:
+                name = sdk.sdk
+                purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
+                purl = self._build_purl(purl_type, sdk.sdk, sdk.version)
             component: dict[str, Any] = {
                 "type": "library",
-                "name": sdk.sdk,
+                "name": name,
+                "purl": purl,
+                "_key": self._package_key(purl_type, name),
             }
             if sdk.version:
                 component["version"] = sdk.version
-            # Generate PURL with proper encoding
-            purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
-            component["purl"] = self._build_purl(purl_type, sdk.sdk, sdk.version)
             return component
 
         if finding.type == FindingType.MANIFEST_DEP and finding.manifest_dep:
@@ -244,6 +295,7 @@ class CycloneDXFormatter:
             # Generate PURL with proper encoding
             purl_type = self._infer_purl_type_from_manifest(dep.manifest_file)
             component["purl"] = self._build_purl(purl_type, dep.name, dep.version)
+            component["_key"] = self._package_key(purl_type, dep.name)
             return component
 
         if finding.type == FindingType.MODEL_FILE and finding.model_info:
@@ -331,19 +383,46 @@ class CycloneDXFormatter:
 
         # Handle MCP types
         if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):
-            if finding.ai_component:
-                name = finding.ai_component.name
-            else:
-                name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
             mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
-            return {
-                "type": "library",
-                "name": name,
-                "bom-ref": self._generate_bom_ref(name),
-                "properties": [
-                    {"name": "ai-finder:mcp:role", "value": mcp_role},
-                ],
+            mcp = finding.mcp_info
+            if mcp is None:
+                name = finding.ai_component.name if finding.ai_component else f"mcp-{mcp_role}"
+                return {
+                    "type": "library",
+                    "name": name,
+                    "bom-ref": self._generate_bom_ref(name),
+                    "properties": [{"name": "ai-finder:mcp:role", "value": mcp_role}],
+                }
+            mcp_component: dict[str, Any] = {
+                # A server is a separately running program; a client is a use
+                # of the SDK inside this project.
+                "type": "application" if mcp_role == "server" else "library",
+                "name": mcp.name,
             }
+            properties = [
+                {"name": "ai-finder:mcp:role", "value": mcp_role},
+                {"name": "ai-finder:mcp:source", "value": mcp.source},
+            ]
+            if mcp.transport:
+                properties.append({"name": "ai-finder:mcp:transport", "value": mcp.transport})
+            if mcp.kb_id:
+                properties.append({"name": "ai-finder:kb:id", "value": mcp.kb_id})
+            mcp_component["properties"] = properties
+            if mcp.purl:
+                purl_type = purl_ecosystem(mcp.purl) or "generic"
+                pkg = mcp.package or purl_name(mcp.purl)
+                mcp_component["purl"] = self._purl_for(purl_type, pkg, mcp.purl, mcp.version)
+                if mcp.version:
+                    mcp_component["version"] = mcp.version
+                # Same key as the package found any other way (import,
+                # manifest), so one package is one component.
+                mcp_component["_key"] = self._package_key(purl_type, pkg)
+            else:
+                # Unpackaged: a server this project defines, a remote endpoint,
+                # or a local command. Keyed by role and name so two servers
+                # with one name in different roles stay apart.
+                mcp_component["_key"] = f"mcp:{mcp_role}:{mcp.name}"
+            return mcp_component
 
         # Handle Phase 2 types as libraries
         if finding.type in (
@@ -384,7 +463,8 @@ class CycloneDXFormatter:
             components: Dict of component name to component dict (modified in place).
             enricher: KB enricher instance.
         """
-        for name, component in components.items():
+        for key, component in components.items():
+            name = component.get("name", key)
             comp_type = component.get("type")
 
             if comp_type == "machine-learning-model":
@@ -465,9 +545,22 @@ class CycloneDXFormatter:
                     if properties:
                         component["properties"] = properties
 
-            elif comp_type == "library":
-                # Enrich SDK/package from KB
-                pkg_data = enricher.lookup_sdk(name)
+            elif comp_type in ("library", "application") and component.get("purl"):
+                # Enrich a package from the KB/registry by its own ecosystem and
+                # name. A component with no purl (an agent, a tool, an MCP client)
+                # is not a registry package, and looking its name up returns
+                # whatever unrelated package happens to have that name.
+                purl = component["purl"]
+                eco = purl_ecosystem(purl)
+                pkg_name = component.get("name", name)
+                if eco in ("pypi", "npm"):
+                    pkg_data = enricher.lookup_package(pkg_name, eco)
+                elif comp_type == "library":
+                    pkg_data = enricher.lookup_sdk(pkg_name)
+                else:
+                    # A container image is not a registry package the enricher
+                    # knows how to look up.
+                    pkg_data = None
                 if pkg_data:
                     # Add license if not present
                     if pkg_data.license and "licenses" not in component:
@@ -510,8 +603,12 @@ class CycloneDXFormatter:
         """
         # Build components from findings
         # Use dict to allow updating with better info (e.g., version)
+        # Keyed by ecosystem and package name where there is one, so the same
+        # package found by import and by manifest is one component, and npm
+        # `openai` and PyPI `openai` are two.
         components_by_name: dict[str, dict[str, Any]] = {}
         name_to_ref: dict[str, str] = {}
+        used_refs: set[str] = set()
 
         for finding in result.findings:
             component = self._finding_to_component(finding)
@@ -519,21 +616,48 @@ class CycloneDXFormatter:
                 continue
 
             name = component["name"]
-            existing = components_by_name.get(name)
+            key = component.pop("_key", None) or f"name:{name}"
+            existing = components_by_name.get(key)
+            occurrence = self._occurrence(finding)
 
             # Add or update component - prefer one with version
             if existing is None:
                 # First time seeing this component
                 bom_ref = self._generate_bom_ref(name)
+                if bom_ref in used_refs:
+                    # Same name, different package (npm vs PyPI): bom-refs must
+                    # be unique within the BOM.
+                    suffix = 2
+                    while f"{bom_ref}-{suffix}" in used_refs:
+                        suffix += 1
+                    bom_ref = f"{bom_ref}-{suffix}"
+                used_refs.add(bom_ref)
                 component["bom-ref"] = bom_ref
-                name_to_ref[name] = bom_ref
-                components_by_name[name] = component
-            elif "version" not in existing and "version" in component:
+                name_to_ref.setdefault(name, bom_ref)
+                component["evidence"] = {"occurrences": [occurrence]}
+                components_by_name[key] = component
+                continue
+
+            occurrences = existing.setdefault("evidence", {}).setdefault("occurrences", [])
+            if occurrence not in occurrences:
+                occurrences.append(occurrence)
+            # A package that is also an MCP server keeps what the MCP finding
+            # knows about it.
+            if component.get("properties"):
+                known = {p["name"] for p in existing.get("properties", [])}
+                extra = [p for p in component["properties"] if p["name"] not in known]
+                if extra:
+                    existing.setdefault("properties", []).extend(extra)
+            if component.get("type") == "application":
+                existing["type"] = "application"
+            if "version" not in existing and "version" in component:
                 # Existing has no version but new one does - update
                 existing["version"] = component["version"]
                 # Also update PURL if new component has better type
                 if "purl" in component:
                     existing["purl"] = component["purl"]
+            elif "purl" not in existing and "purl" in component:
+                existing["purl"] = component["purl"]
 
         # Enrich components from KB if available
         if enricher:

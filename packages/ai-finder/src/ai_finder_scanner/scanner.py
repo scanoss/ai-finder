@@ -5,8 +5,9 @@ from __future__ import annotations
 import hashlib
 import logging
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from .detectors import (
     AgentDetector,
@@ -43,6 +44,7 @@ from .manifests import (
     SwiftPMManifestParser,
 )
 from .manifests.base import BaseManifestParser
+from .mcp import MCPDetector, parse_mcp_config
 from .models import Finding, LicenseInfo, ScanResult
 from .parsers import (
     CoreMLParser,
@@ -59,6 +61,7 @@ from .parsers import (
     TFLiteParser,
 )
 from .parsers.base import BaseModelParser
+from .registries import EXT_ECOSYSTEMS
 
 if TYPE_CHECKING:
     from .analyzers.graph import ComponentGraph, RelationshipAnalyzer
@@ -71,6 +74,25 @@ ProgressCallback = Callable[[int, int, str], None]
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
 
 logger = logging.getLogger(__name__)
+
+_MANIFEST_ECOSYSTEMS: dict[str, frozenset[str]] = {
+    "PythonManifestParser": frozenset({"pypi"}),
+    "NpmManifestParser": frozenset({"npm"}),
+}
+
+
+def _kb_matcher(kb: object | None) -> Any | None:
+    """Accept a KnowledgeBase or a bare Matcher; return the Matcher or None."""
+    if kb is None:
+        return None
+    if hasattr(kb, "match_sdk_identifier"):
+        return kb
+    try:
+        matcher = kb.matcher  # type: ignore[attr-defined]
+    except (AttributeError, RuntimeError):
+        return None
+    return matcher if hasattr(matcher, "match_sdk_identifier") else None
+
 
 # Read size for the streaming model-file hash. Model files run to tens of GB, so
 # they are never read whole.
@@ -138,6 +160,7 @@ class Scanner:
             ToolsDetector(),
             RAGDetector(),
             DatasetDetector(),
+            MCPDetector(),
         ]
 
         # Manifest parsers by filename (11 formats)
@@ -223,7 +246,11 @@ class Scanner:
 
         Args:
             path: Root directory to scan.
-            kb: Optional KnowledgeBase for enrichment.
+            kb: Optional KnowledgeBase (or its Matcher). When given, imports,
+                manifest entries and MCP launch commands are resolved against
+                the KB's SDK and MCP identifier lists, so the finding carries
+                the package's purl; the built-in lists still apply to anything
+                the KB does not know.
             progress_callback: Optional callback for progress updates.
                 Called with (current_file, total_files, phase_name).
             telemetry_callback: Optional callback for telemetry events.
@@ -240,6 +267,16 @@ class Scanner:
             raise FileNotFoundError(f"Path not found: {path}")
 
         start_time = time.monotonic()
+        matcher = _kb_matcher(kb)
+        scoped: dict[frozenset[str], Any] = {}
+
+        def scoped_for(ecosystems: frozenset[str] | None) -> Any | None:
+            if matcher is None or ecosystems is None:
+                return None
+            if ecosystems not in scoped:
+                scoped[ecosystems] = matcher.scoped(ecosystems)
+            return scoped[ecosystems]
+
         findings: list[Finding] = []
         files_scanned = 0
 
@@ -298,15 +335,16 @@ class Scanner:
             except OSError as e:
                 logger.warning("Failed to read %s: %s", file_path, e)
                 continue
+            file_matcher = scoped_for(EXT_ECOSYSTEMS.get(ext))
             if sdk_detector:
-                for finding in sdk_detector.detect(content, file_path):
+                for finding in sdk_detector.detect(content, file_path, file_matcher):
                     findings.append(finding)
                     sdk_findings += 1
                     if finding.sdk_usage:
                         sdk_name = finding.sdk_usage.sdk
                         sdk_by_name[sdk_name] = sdk_by_name.get(sdk_name, 0) + 1
             for detector in semantic:
-                for finding in detector.detect(content, file_path):
+                for finding in detector.detect(content, file_path, file_matcher):
                     findings.append(finding)
         track(
             "scan.detection.completed",
@@ -334,7 +372,8 @@ class Scanner:
             if parser:
                 try:
                     content = full_path.read_text(encoding="utf-8", errors="ignore")
-                    for finding in parser.parse(content, file_path):
+                    parser_matcher = scoped_for(_MANIFEST_ECOSYSTEMS.get(type(parser).__name__))
+                    for finding in parser.parse(content, file_path, parser_matcher):
                         findings.append(finding)
                         manifest_findings += 1
                         if finding.manifest_dep:
@@ -354,10 +393,25 @@ class Scanner:
         for dep_name in manifest_by_name:
             track("scan.manifest_dep.found", {"name": dep_name})
 
-        # Scan config files (count only for now)
-        for _file_path in file_cache["config"]:
+        # Scan MCP client configs: each declared server, and the package that
+        # launches it.
+        track("scan.detection.started", {"phase": "mcp_config"})
+        mcp_config_findings = 0
+        for file_path in file_cache["config"]:
             files_scanned += 1
             report_progress("config")
+            try:
+                content = (path / file_path).read_text(encoding="utf-8", errors="ignore")
+            except OSError as e:
+                logger.warning("Failed to read %s: %s", file_path, e)
+                continue
+            for finding in parse_mcp_config(content, file_path, matcher):
+                findings.append(finding)
+                mcp_config_findings += 1
+        track(
+            "scan.detection.completed",
+            {"phase": "mcp_config", "findings": mcp_config_findings},
+        )
 
         # Scan model files
         track("scan.detection.started", {"phase": "model"})

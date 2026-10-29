@@ -4,14 +4,14 @@ import logging
 import os
 from contextlib import suppress
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .database import Database
 from .matcher import Matcher
 from .models import AncestryEdge, MCPMatch, ModelMatch, SDKMatch
 from .sync import KBSync, SyncResult, SyncStatus
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __all__ = [
     "KnowledgeBase",
     "Database",
@@ -36,7 +36,7 @@ def get_default_db_path() -> Path:
     return Path.home() / ".config" / "scanoss" / "kb.db"
 
 
-def get_seed_db_path() -> Optional[Path]:
+def get_seed_db_path() -> Path | None:
     """Get path to bundled seed database."""
     try:
         import importlib.resources as resources
@@ -67,7 +67,7 @@ def seed_json_available() -> bool:
     return (SEED_DIR / "models.json").is_file()
 
 
-def build_seed_db() -> Optional[Path]:
+def build_seed_db() -> Path | None:
     """Build the bundled seed database from the seed JSONs.
 
     Only possible in a source checkout: `seed.db` is generated rather than
@@ -101,7 +101,7 @@ def build_seed_db() -> Optional[Path]:
 class KnowledgeBase:
     """High-level facade for KB operations."""
 
-    def __init__(self, db_path: Optional[Path] = None, use_seed: bool = True) -> None:
+    def __init__(self, db_path: Path | None = None, use_seed: bool = True) -> None:
         """Initialize knowledge base.
 
         Args:
@@ -110,8 +110,8 @@ class KnowledgeBase:
         """
         self._db_path = db_path or get_default_db_path()
         self._use_seed = use_seed
-        self._db: Optional[Database] = None
-        self._matcher: Optional[Matcher] = None
+        self._db: Database | None = None
+        self._matcher: Matcher | None = None
 
         # Auto-connect
         self._connect()
@@ -193,7 +193,7 @@ class KnowledgeBase:
             raise RuntimeError("Matcher not initialized")
         return self._matcher
 
-    def check_for_updates(self, remote_url: Optional[str] = None) -> SyncStatus:
+    def check_for_updates(self, remote_url: str | None = None) -> SyncStatus:
         """Check if KB updates are available.
 
         Args:
@@ -205,7 +205,7 @@ class KnowledgeBase:
         sync = KBSync(self.db, remote_url) if remote_url else KBSync(self.db)
         return sync.check_for_updates()
 
-    def sync(self, remote_url: Optional[str] = None, force: bool = False) -> SyncResult:
+    def sync(self, remote_url: str | None = None, force: bool = False) -> SyncResult:
         """Sync the KB with remote seed data.
 
         Args:

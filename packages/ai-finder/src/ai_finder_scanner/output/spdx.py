@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 
+from ai_finder_kb.matcher import purl_ecosystem, purl_name
+
 from .. import __version__
 from ..models import Finding, FindingType, ScanResult
 
@@ -120,6 +122,53 @@ class SPDX23Formatter:
 
         return purl
 
+    def _purl_for(self, purl_type: str, name: str, purl: str | None, version: str | None) -> str:
+        """Same purl convention as the CycloneDX formatter (see its `_purl_for`)."""
+        if purl_type == "npm" or not purl:
+            return self._build_purl(purl_type, name, version)
+        base, sep, qualifiers = purl.partition("?")
+        last = base.rsplit("/", 1)[-1]
+        if version and "@" not in last:
+            base = f"{base}@{quote(re.sub(r'^[>=<~^]+', '', version), safe='')}"
+        return base + sep + qualifiers
+
+    @staticmethod
+    def _identity(package: dict[str, Any]) -> str:
+        """Registry and name for a package with a purl, so npm `openai` and PyPI
+        `openai` stay two packages and an import merges with its manifest entry;
+        the bare name otherwise."""
+        name = package["name"]
+        purl = next(
+            (
+                ref["referenceLocator"]
+                for ref in package.get("externalRefs", [])
+                if ref.get("referenceType") == "purl"
+            ),
+            None,
+        )
+        eco = purl_ecosystem(purl)
+        if not eco:
+            return f"name:{name}"
+        key_name = name.lower()
+        if eco == "pypi":
+            key_name = re.sub(r"[-_.]+", "-", key_name)
+        return f"{eco}:{key_name}"
+
+    @staticmethod
+    def _seen_at(finding: Finding) -> str:
+        """`path:line (how)` for one finding; SPDX 2.3 has no occurrence field."""
+        where = finding.file_path.replace("\\", "/")
+        if finding.line:
+            where += f":{finding.line}"
+        how = None
+        if finding.sdk_usage:
+            how = finding.sdk_usage.import_statement
+        elif finding.mcp_info:
+            how = finding.mcp_info.how
+        if how:
+            where += f" ({' '.join(how.split())[:120]})"
+        return where
+
     def _finding_to_package(self, finding: Finding, idx: int) -> dict[str, Any] | None:
         """Convert a finding to an SPDX package.
 
@@ -132,21 +181,28 @@ class SPDX23Formatter:
         """
         if finding.type == FindingType.SDK_USAGE and finding.sdk_usage:
             sdk = finding.sdk_usage
+            if sdk.purl:
+                # Resolved by the KB: name the package, not the import.
+                purl_type = purl_ecosystem(sdk.purl) or "generic"
+                sdk_name = purl_name(sdk.purl)
+                locator = self._purl_for(purl_type, sdk_name, sdk.purl, sdk.version)
+            else:
+                sdk_name = sdk.sdk
+                purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
+                locator = self._build_purl(purl_type, sdk.sdk, sdk.version)
             package: dict[str, Any] = {
                 "SPDXID": f"SPDXRef-Package-{idx}",
-                "name": sdk.sdk,
+                "name": sdk_name,
                 "downloadLocation": "NOASSERTION",
                 "filesAnalyzed": False,
             }
             if sdk.version:
                 package["versionInfo"] = sdk.version
-            # Add external ref for PURL with proper encoding
-            purl_type = self._infer_purl_type_from_sdk(sdk.sdk)
             package["externalRefs"] = [
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": self._build_purl(purl_type, sdk.sdk, sdk.version),
+                    "referenceLocator": locator,
                 }
             ]
             return package
@@ -233,17 +289,25 @@ class SPDX23Formatter:
 
         # Handle MCP types
         if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):
-            if finding.ai_component:
+            mcp = finding.mcp_info
+            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
+            if mcp is not None:
+                name = mcp.name
+            elif finding.ai_component:
                 name = finding.ai_component.name
             else:
-                name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
-            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
+                name = f"mcp-{mcp_role}"
+            comment = f"MCP {mcp_role}"
+            if mcp is not None:
+                comment += f", found in {mcp.source}"
+                if mcp.transport:
+                    comment += f", {mcp.transport} transport"
             package = {
                 "SPDXID": f"SPDXRef-Package-{idx}",
                 "name": name,
                 "downloadLocation": "NOASSERTION",
                 "filesAnalyzed": False,
-                "comment": f"MCP {mcp_role}",
+                "comment": comment,
                 "externalRefs": [
                     {
                         "referenceCategory": "OTHER",
@@ -252,6 +316,18 @@ class SPDX23Formatter:
                     }
                 ],
             }
+            if mcp is not None and mcp.purl:
+                purl_type = purl_ecosystem(mcp.purl) or "generic"
+                pkg = mcp.package or purl_name(mcp.purl)
+                package["externalRefs"].append(
+                    {
+                        "referenceCategory": "PACKAGE-MANAGER",
+                        "referenceType": "purl",
+                        "referenceLocator": self._purl_for(purl_type, pkg, mcp.purl, mcp.version),
+                    }
+                )
+                if mcp.version:
+                    package["versionInfo"] = mcp.version
             return package
 
         # Handle Phase 2 types as packages
@@ -316,7 +392,8 @@ class SPDX23Formatter:
             packages: Dict of package name to package dict (modified in place).
             enricher: KB enricher instance.
         """
-        for name, package in packages.items():
+        for key, package in packages.items():
+            name = package.get("name", key)
             purpose = package.get("primaryPackagePurpose")
 
             if purpose == "APPLICATION":
@@ -385,8 +462,28 @@ class SPDX23Formatter:
                         )
                         package["externalRefs"] = ext_refs
             else:
-                # SDK/package - enrich from KB
-                pkg_data = enricher.lookup_sdk(name)
+                # A registry package - enrich by its own ecosystem and name. A
+                # package with no purl (an agent, a tool, an MCP client) is not a
+                # registry package: looking its name up returns whatever
+                # unrelated package shares the name.
+                purl = next(
+                    (
+                        ref["referenceLocator"]
+                        for ref in package.get("externalRefs", [])
+                        if ref.get("referenceType") == "purl"
+                    ),
+                    None,
+                )
+                if not purl:
+                    continue
+                eco = purl_ecosystem(purl)
+                pkg_name = package.get("name", name)
+                if eco in ("pypi", "npm"):
+                    pkg_data = enricher.lookup_package(pkg_name, eco)
+                elif eco == "docker":
+                    pkg_data = None
+                else:
+                    pkg_data = enricher.lookup_sdk(pkg_name)
                 if pkg_data:
                     # Add license
                     if pkg_data.license and "licenseConcluded" not in package:
@@ -441,12 +538,16 @@ class SPDX23Formatter:
                 continue
 
             name = package["name"]
-            existing = packages_by_name.get(name)
+            key = self._identity(package)
+            existing = packages_by_name.get(key)
+            seen_at = self._seen_at(finding)
 
             if existing is None:
+                if seen_at:
+                    package["sourceInfo"] = f"found at: {seen_at}"
                 # First time seeing this package
                 name_to_spdxid[name] = package["SPDXID"]
-                packages_by_name[name] = package
+                packages_by_name[key] = package
                 # Add DESCRIBES relationship
                 relationships.append(
                     {
@@ -456,7 +557,11 @@ class SPDX23Formatter:
                     }
                 )
                 idx += 1
-            elif "versionInfo" not in existing and "versionInfo" in package:
+                continue
+            if seen_at and seen_at not in existing.get("sourceInfo", ""):
+                prior = existing.get("sourceInfo")
+                existing["sourceInfo"] = f"{prior}; {seen_at}" if prior else f"found at: {seen_at}"
+            if "versionInfo" not in existing and "versionInfo" in package:
                 # Existing has no version but new one does - update
                 existing["versionInfo"] = package["versionInfo"]
                 # Also update PURL in externalRefs if present

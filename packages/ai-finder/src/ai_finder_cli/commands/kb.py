@@ -667,6 +667,11 @@ def update(
                     click.echo(f"  Models updated: {result.models_updated}")
                     click.echo(f"  Model file hashes updated: {result.model_files_updated}")
                     click.echo(f"  MCP servers updated: {result.mcp_servers_updated}")
+                    if result.sdks_removed or result.mcp_servers_removed:
+                        click.echo(
+                            f"  Removed (no longer listed): {result.sdks_removed} SDKs, "
+                            f"{result.mcp_servers_removed} MCP servers"
+                        )
                     telemetry.track_feature("kb.update", "result", "success")
                 else:
                     click.echo(f"Sync failed: {result.error}", err=True)

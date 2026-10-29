@@ -2,7 +2,7 @@
 
 import sqlite3
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 SCHEMA_VERSION = 4
 
@@ -17,7 +17,7 @@ class Database:
             db_path: Path to SQLite database file.
         """
         self.db_path = Path(db_path)
-        self._conn: Optional[sqlite3.Connection] = None
+        self._conn: sqlite3.Connection | None = None
 
     def __enter__(self) -> "Database":
         """Context manager entry."""

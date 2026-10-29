@@ -29,18 +29,27 @@ AI_SDK_PACKAGES_FALLBACK = frozenset(
         "ollama-js",
         "@google/generative-ai",
         "@xenova/transformers",
+        "@modelcontextprotocol/sdk",
+        # SDK v2 is split into packages.
+        "@modelcontextprotocol/server",
+        "@modelcontextprotocol/client",
+        "@modelcontextprotocol/node",
+        "@modelcontextprotocol/core",
+        "fastmcp",
     }
 )
 
-# Regex for ES6 import statements
+# Regex for ES6 import statements. The specifier may contain dots (the MCP SDK
+# is only importable by subpath: "@modelcontextprotocol/sdk/server/mcp.js"), and
+# the import list may span lines.
 ES_IMPORT_RE = re.compile(
-    r'^(?P<statement>import\s+.+?\s+from\s+["\'](?P<package>[@\w/-]+)["\'])\s*;?',
+    r'^(?P<statement>import\s+[^;"\'`]+?\s+from\s+["\'](?P<package>[@\w./-]+)["\'])\s*;?',
     re.MULTILINE,
 )
 
 # Regex for CommonJS require statements
 REQUIRE_RE = re.compile(
-    r'^(?P<statement>(?:const|let|var)\s+\w+\s*=\s*require\(["\'](?P<package>[@\w/-]+)["\']\))\s*;?',
+    r'^(?P<statement>(?:const|let|var)\s+\w+\s*=\s*require\(["\'](?P<package>[@\w./-]+)["\']\))\s*;?',
     re.MULTILINE,
 )
 
@@ -100,20 +109,20 @@ class JavaScriptDetector(BaseDetector):
                 continue
 
             # Try KB matcher first, fallback to hardcoded patterns
-            if matcher:
-                sdk_match = matcher.match_sdk(package)
-                if sdk_match:
-                    seen_packages.add(base_package)
-                    yield Finding(
-                        type=FindingType.SDK_USAGE,
-                        file_path=str(path),
-                        line=self._find_line_number(content, match.start()),
-                        confidence=sdk_match.confidence,
-                        sdk_usage=SDKUsage(
-                            sdk=sdk_match.id,
-                            import_statement=match.group("statement").strip(),
-                        ),
-                    )
+            sdk_match = matcher.match_sdk(package) if matcher else None
+            if sdk_match:
+                seen_packages.add(base_package)
+                yield Finding(
+                    type=FindingType.SDK_USAGE,
+                    file_path=str(path),
+                    line=self._find_line_number(content, match.start()),
+                    confidence=sdk_match.confidence,
+                    sdk_usage=SDKUsage(
+                        sdk=sdk_match.id,
+                        import_statement=match.group("statement").strip(),
+                        purl=sdk_match.purl,
+                    ),
+                )
             elif self._is_ai_sdk_fallback(package):
                 seen_packages.add(base_package)
                 yield Finding(
@@ -136,20 +145,20 @@ class JavaScriptDetector(BaseDetector):
                 continue
 
             # Try KB matcher first, fallback to hardcoded patterns
-            if matcher:
-                sdk_match = matcher.match_sdk(package)
-                if sdk_match:
-                    seen_packages.add(base_package)
-                    yield Finding(
-                        type=FindingType.SDK_USAGE,
-                        file_path=str(path),
-                        line=self._find_line_number(content, match.start()),
-                        confidence=sdk_match.confidence,
-                        sdk_usage=SDKUsage(
-                            sdk=sdk_match.id,
-                            import_statement=match.group("statement").strip(),
-                        ),
-                    )
+            sdk_match = matcher.match_sdk(package) if matcher else None
+            if sdk_match:
+                seen_packages.add(base_package)
+                yield Finding(
+                    type=FindingType.SDK_USAGE,
+                    file_path=str(path),
+                    line=self._find_line_number(content, match.start()),
+                    confidence=sdk_match.confidence,
+                    sdk_usage=SDKUsage(
+                        sdk=sdk_match.id,
+                        import_statement=match.group("statement").strip(),
+                        purl=sdk_match.purl,
+                    ),
+                )
             elif self._is_ai_sdk_fallback(package):
                 seen_packages.add(base_package)
                 yield Finding(

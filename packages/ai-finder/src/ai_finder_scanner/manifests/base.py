@@ -5,6 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from ..models import Finding
 
@@ -22,7 +23,7 @@ class BaseManifestParser(ABC):
         """
 
     @abstractmethod
-    def parse(self, content: str, path: Path) -> Iterator[Finding]:
+    def parse(self, content: str, path: Path, matcher: Any | None = None) -> Iterator[Finding]:
         """Parse manifest content for AI dependencies.
 
         Args:

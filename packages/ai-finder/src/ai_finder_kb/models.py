@@ -1,7 +1,6 @@
 """KB data models."""
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -11,7 +10,7 @@ class SDKMatch:
     id: str
     purl: str
     category: str
-    license: Optional[str] = None
+    license: str | None = None
     confidence: float = 1.0
 
 
@@ -21,11 +20,11 @@ class ModelMatch:
 
     purl: str
     name: str
-    organization: Optional[str] = None
-    architecture: Optional[str] = None
-    format: Optional[str] = None
-    parameter_count: Optional[int] = None
-    license: Optional[str] = None
+    organization: str | None = None
+    architecture: str | None = None
+    format: str | None = None
+    parameter_count: int | None = None
+    license: str | None = None
     confidence: float = 1.0
 
 

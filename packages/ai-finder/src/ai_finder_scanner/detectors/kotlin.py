@@ -80,20 +80,20 @@ class KotlinDetector(BaseDetector):
                 continue
 
             # Try KB matcher first, fallback to hardcoded patterns
-            if matcher:
-                sdk_match = matcher.match_sdk(package)
-                if sdk_match:
-                    seen_packages.add(base_package)
-                    yield Finding(
-                        type=FindingType.SDK_USAGE,
-                        file_path=str(path),
-                        line=self._find_line_number(content, match.start()),
-                        confidence=sdk_match.confidence,
-                        sdk_usage=SDKUsage(
-                            sdk=sdk_match.id,
-                            import_statement=match.group("statement").strip(),
-                        ),
-                    )
+            sdk_match = matcher.match_sdk(package) if matcher else None
+            if sdk_match:
+                seen_packages.add(base_package)
+                yield Finding(
+                    type=FindingType.SDK_USAGE,
+                    file_path=str(path),
+                    line=self._find_line_number(content, match.start()),
+                    confidence=sdk_match.confidence,
+                    sdk_usage=SDKUsage(
+                        sdk=sdk_match.id,
+                        import_statement=match.group("statement").strip(),
+                        purl=sdk_match.purl,
+                    ),
+                )
             elif self._is_ai_sdk_fallback(package):
                 seen_packages.add(base_package)
                 # Extract a friendly SDK name from the package

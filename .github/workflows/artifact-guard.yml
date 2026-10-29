@@ -1,0 +1,15 @@
+name: Artifact guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  proprietary-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Fail on proprietary signature or calibration files
+        run: bash scripts/check_proprietary_artifacts.sh

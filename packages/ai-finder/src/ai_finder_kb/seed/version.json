@@ -1,11 +1,11 @@
 {
-  "version": 7,
-  "updated_at": "2026-09-01T14:36:47Z",
+  "version": 12,
+  "updated_at": "2026-10-29T04:40:27Z",
   "description": "Add checksum verification for integrity",
   "checksums": {
-    "sdks.json": "9c9de1efcb3475e6a0f3d17e62d496a910bb5e563e79d780344831f584f8a129",
+    "sdks.json": "2f93fb985986fc14f12dd979656653a7ad7bdce7fbad5f95628e200857403e9b",
     "models.json": "4f07c42bc7b22fc5ca8a872d261d8ef7806101bacc46aa9fa55d820d407fd073",
     "model_files.json": "c73365e983894dc033cf496de5443f94a38cb05d95e93bc4497a6bea43a2d94f",
-    "mcp_servers.json": "8479b152d6e859686a17e2b0597b02707fb292e1dd5179710cefaadd5f464d7b"
+    "mcp_servers.json": "00dde539b6095e46a8d7d10d8717c3834a833316bb2039f3adae7abfdbb9c673"
   }
 }

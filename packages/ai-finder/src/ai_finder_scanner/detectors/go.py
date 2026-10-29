@@ -77,20 +77,20 @@ class GoDetector(BaseDetector):
                 continue
 
             # Try KB matcher first, fallback to hardcoded patterns
-            if matcher:
-                sdk_match = matcher.match_sdk(import_path)
-                if sdk_match:
-                    seen_imports.add(import_path)
-                    yield Finding(
-                        type=FindingType.SDK_USAGE,
-                        file_path=str(path),
-                        line=self._find_line_number(content, match.start()),
-                        confidence=sdk_match.confidence,
-                        sdk_usage=SDKUsage(
-                            sdk=sdk_match.id,
-                            import_statement=match.group(0).strip(),
-                        ),
-                    )
+            sdk_match = matcher.match_sdk(import_path) if matcher else None
+            if sdk_match:
+                seen_imports.add(import_path)
+                yield Finding(
+                    type=FindingType.SDK_USAGE,
+                    file_path=str(path),
+                    line=self._find_line_number(content, match.start()),
+                    confidence=sdk_match.confidence,
+                    sdk_usage=SDKUsage(
+                        sdk=sdk_match.id,
+                        import_statement=match.group(0).strip(),
+                        purl=sdk_match.purl,
+                    ),
+                )
             elif self._is_ai_sdk_fallback(import_path):
                 seen_imports.add(import_path)
                 yield Finding(
@@ -119,20 +119,20 @@ class GoDetector(BaseDetector):
                 line = self._find_line_number(content, block_start + import_match.start())
 
                 # Try KB matcher first, fallback to hardcoded patterns
-                if matcher:
-                    sdk_match = matcher.match_sdk(import_path)
-                    if sdk_match:
-                        seen_imports.add(import_path)
-                        yield Finding(
-                            type=FindingType.SDK_USAGE,
-                            file_path=str(path),
-                            line=line,
-                            confidence=sdk_match.confidence,
-                            sdk_usage=SDKUsage(
-                                sdk=sdk_match.id,
-                                import_statement=f'import "{import_path}"',
-                            ),
-                        )
+                sdk_match = matcher.match_sdk(import_path) if matcher else None
+                if sdk_match:
+                    seen_imports.add(import_path)
+                    yield Finding(
+                        type=FindingType.SDK_USAGE,
+                        file_path=str(path),
+                        line=line,
+                        confidence=sdk_match.confidence,
+                        sdk_usage=SDKUsage(
+                            sdk=sdk_match.id,
+                            import_statement=f'import "{import_path}"',
+                            purl=sdk_match.purl,
+                        ),
+                    )
                 elif self._is_ai_sdk_fallback(import_path):
                     seen_imports.add(import_path)
                     yield Finding(

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from ..models import Finding, FindingType, ManifestDep
 from .base import BaseManifestParser
@@ -41,7 +42,7 @@ class ComposerManifestParser(BaseManifestParser):
         """Check if package is an AI package."""
         return name in AI_PACKAGES
 
-    def parse(self, content: str, path: Path) -> Iterator[Finding]:
+    def parse(self, content: str, path: Path, matcher: Any | None = None) -> Iterator[Finding]:
         """Parse composer.json for AI dependencies.
 
         Args:

@@ -3,12 +3,22 @@
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
+from ai_finder_kb.matcher import purl_ecosystem, purl_name
 
 from .. import __version__
 from ..models import Finding, FindingType, ScanResult
+from ..registries import EXT_ECOSYSTEMS
+from .cyclonedx import CycloneDXFormatter
+
+# An unresolved import's registry, for identity, only where its language
+# imports from exactly one registry.
+_SOURCE_REGISTRY = {ext: next(iter(ecos)) for ext, ecos in EXT_ECOSYSTEMS.items() if len(ecos) == 1}
 
 if TYPE_CHECKING:
     from ..analyzers.graph import ComponentGraph
@@ -136,28 +146,77 @@ class SPDX3Formatter:
         tool_id = tool_agent["spdxId"]
         elements.append(tool_agent)
 
-        # Build elements with deduplication by (type, name, version) to avoid
-        # incorrectly merging different versions or element types
-        elements_by_key: dict[tuple[str, str, str], dict[str, Any]] = {}
+        # Deduplicate by (type, registry, name, version). The registry keeps npm
+        # `openai` and PyPI `openai` apart; an unversioned finding (an import)
+        # joins a versioned one (its manifest entry) rather than standing
+        # beside it; two different versions stay two elements.
+        elements_by_key: dict[tuple[str, str, str, str], dict[str, Any]] = {}
+        keys_by_base: dict[tuple[str, str, str], list[tuple[str, str, str, str]]] = {}
 
         for finding in result.findings:
             element = self._finding_to_element(finding, enricher)
             if not element:
                 continue
 
-            # Key by (type, name, version) to keep different versions separate
             elem_type = element["type"]
-            name = element["name"]
+            eco = self._registry(finding)
+            norm = element["name"].lower()
+            if eco == "pypi":
+                norm = re.sub(r"[-_.]+", "-", norm)
             version = element.get("software_packageVersion", "")
-            key = (elem_type, name, version)
+            base = (elem_type, eco, norm)
+            key = next(
+                (
+                    k
+                    for k in keys_by_base.get(base, [])
+                    if k[3] == version or not version or not k[3]
+                ),
+                (elem_type, eco, norm, version),
+            )
             existing = elements_by_key.get(key)
+            if existing is None:
+                keys_by_base.setdefault(base, []).append(key)
 
+            seen_at = self._seen_at(finding)
             if existing is None:
                 # First time seeing this element
+                if seen_at and element["type"] == "software_Package":
+                    element["software_sourceInfo"] = f"found at: {seen_at}"
                 elements_by_key[key] = element
             else:
                 # Merge metadata from new element into existing
                 self._merge_element_metadata(existing, element)
+                merged_version = existing.get("software_packageVersion", "")
+                if not key[3] and merged_version:
+                    # It has a version now: re-key it, so a later, different
+                    # version does not also land here as if unversioned.
+                    new_key = (*key[:3], merged_version)
+                    elements_by_key[new_key] = elements_by_key.pop(key)
+                    siblings = keys_by_base[base]
+                    siblings[siblings.index(key)] = new_key
+                prior = existing.get("software_sourceInfo")
+                if (
+                    seen_at
+                    and existing["type"] == "software_Package"
+                    and seen_at not in (prior or "")
+                ):
+                    existing["software_sourceInfo"] = (
+                        f"{prior}; {seen_at}" if prior else f"found at: {seen_at}"
+                    )
+
+        # Two elements, one generated id (same name in two registries, or a
+        # package and a local MCP server sharing a name): every id stays unique.
+        used_ids: set[str] = set()
+        for (_, eco, _, _), element in elements_by_key.items():
+            spdx_id = element["spdxId"]
+            if spdx_id in used_ids:
+                stem = f"{spdx_id}-{eco}" if eco else spdx_id
+                spdx_id, n = stem, 2
+                while spdx_id in used_ids:
+                    spdx_id = f"{stem}-{n}"
+                    n += 1
+                element["spdxId"] = spdx_id
+            used_ids.add(spdx_id)
 
         # Convert dict to list and collect root elements
         for element in elements_by_key.values():
@@ -201,6 +260,39 @@ class SPDX3Formatter:
     def _is_sentinel_value(self, value: Any) -> bool:
         """Check if a value is a sentinel/placeholder that should be replaced."""
         return value in ("NOASSERTION", "", None)
+
+    @staticmethod
+    def _registry(finding: Finding) -> str:
+        """The registry a finding's package lives in, or "" when unknown."""
+        if finding.sdk_usage:
+            if finding.sdk_usage.purl:
+                return purl_ecosystem(finding.sdk_usage.purl) or ""
+            # Unresolved import: the registry its language imports from, so it
+            # still meets its manifest entry. Identity only; it is not enriched.
+            return _SOURCE_REGISTRY.get(Path(finding.file_path).suffix.lower(), "")
+        if finding.mcp_info and finding.mcp_info.purl:
+            return purl_ecosystem(finding.mcp_info.purl) or ""
+        if finding.manifest_dep:
+            filename = finding.manifest_dep.manifest_file.replace("\\", "/").split("/")[-1]
+            if filename.endswith(".csproj"):
+                return "nuget"
+            return CycloneDXFormatter.MANIFEST_PURL_TYPES.get(filename, "")
+        return ""
+
+    @staticmethod
+    def _seen_at(finding: Finding) -> str:
+        """`path:line (how)` for one finding."""
+        where = finding.file_path.replace("\\", "/")
+        if finding.line:
+            where += f":{finding.line}"
+        how = None
+        if finding.sdk_usage:
+            how = finding.sdk_usage.import_statement
+        elif finding.mcp_info:
+            how = finding.mcp_info.how
+        if how:
+            where += f" ({' '.join(how.split())[:120]})"
+        return where
 
     def _merge_element_metadata(self, existing: dict[str, Any], new: dict[str, Any]) -> None:
         """Merge metadata from new element into existing element.
@@ -332,18 +424,24 @@ class SPDX3Formatter:
         if finding.type == FindingType.SDK_USAGE and finding.sdk_usage:
             sdk = finding.sdk_usage
             version = sdk.version or ""
+            # Resolved by the KB: name the package, not the import.
+            sdk_name = purl_name(sdk.purl) if sdk.purl else sdk.sdk
             element: dict[str, Any] = {
                 "type": "software_Package",
-                "spdxId": self._generate_stable_spdx_id("package", sdk.sdk, version),
-                "name": sdk.sdk,
+                "spdxId": self._generate_stable_spdx_id("package", sdk_name, version),
+                "name": sdk_name,
                 "software_downloadLocation": "NOASSERTION",
             }
+            if sdk.purl:
+                element["software_packageUrl"] = self._versioned_purl(sdk.purl, sdk.version)
             # Only include version if present (null is invalid in SPDX 3.0)
             if sdk.version:
                 element["software_packageVersion"] = sdk.version
-            # Enrich from KB if available
-            if enricher:
-                self._enrich_package(element, sdk.sdk, enricher)
+            # Enrich only a package the KB resolved: a fallback import name is
+            # not a registry name, and looking it up returns whatever unrelated
+            # package shares it.
+            if enricher and sdk.purl:
+                self._enrich_package(element, sdk_name, enricher, purl_ecosystem(sdk.purl))
             return element
 
         if finding.type == FindingType.MANIFEST_DEP and finding.manifest_dep:
@@ -382,22 +480,44 @@ class SPDX3Formatter:
 
         # Handle MCP types as software_Package
         if finding.type in (FindingType.MCP_SERVER, FindingType.MCP_CLIENT):
-            if finding.ai_component:
+            mcp = finding.mcp_info
+            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
+            if mcp is not None:
+                name = mcp.name
+            elif finding.ai_component:
                 name = finding.ai_component.name
             else:
-                name = "mcp-server" if finding.type == FindingType.MCP_SERVER else "mcp-client"
-            mcp_role = "server" if finding.type == FindingType.MCP_SERVER else "client"
-            return {
+                name = f"mcp-{mcp_role}"
+            comment = f"ai-finder:mcp:role={mcp_role}"
+            if mcp is not None:
+                comment += f" ai-finder:mcp:source={mcp.source}"
+                if mcp.transport:
+                    comment += f" ai-finder:mcp:transport={mcp.transport}"
+            mcp_element: dict[str, Any] = {
                 "type": "software_Package",
-                "spdxId": self._generate_stable_spdx_id("package", name),
+                "spdxId": self._generate_stable_spdx_id(
+                    "package", name, (mcp.version or "") if mcp else ""
+                ),
                 "name": name,
                 "software_downloadLocation": "NOASSERTION",
                 # Human-readable description
                 "summary": f"Model Context Protocol (MCP) {mcp_role}",
                 # Machine-readable: use comment with structured format
                 # (SPDX 3.0 externalIdentifier requires vocabulary compliance)
-                "comment": f"ai-finder:mcp:role={mcp_role}",
+                "comment": comment,
             }
+            if mcp is not None and mcp.purl:
+                mcp_element["software_packageUrl"] = self._versioned_purl(mcp.purl, mcp.version)
+                if mcp.version:
+                    mcp_element["software_packageVersion"] = mcp.version
+                if enricher and purl_ecosystem(mcp.purl) in ("pypi", "npm"):
+                    self._enrich_package(
+                        mcp_element,
+                        mcp.package or purl_name(mcp.purl),
+                        enricher,
+                        purl_ecosystem(mcp.purl),
+                    )
+            return mcp_element
 
         # Handle other Phase 2 types as software_Package
         if finding.type in (
@@ -418,11 +538,19 @@ class SPDX3Formatter:
 
         return None
 
+    @staticmethod
+    def _versioned_purl(purl: str, version: str | None) -> str:
+        base, sep, qualifiers = purl.partition("?")
+        if version and "@" not in base.rsplit("/", 1)[-1]:
+            base = f"{base}@{version.lstrip('>=<~^')}"
+        return base + sep + qualifiers
+
     def _enrich_package(
         self,
         element: dict[str, Any],
         name: str,
         enricher: KBEnricher,
+        ecosystem: str | None = None,
     ) -> None:
         """Enrich a software_Package element with KB metadata.
 
@@ -430,8 +558,13 @@ class SPDX3Formatter:
             element: Element dict to enrich (modified in place).
             name: Package name for KB lookup.
             enricher: KB enricher instance.
+            ecosystem: The package's registry when known, so the lookup does not
+                guess one (`openai` is a different package on PyPI and npm).
         """
-        pkg_data = enricher.lookup_sdk(name)
+        if ecosystem in ("pypi", "npm"):
+            pkg_data = enricher.lookup_package(name, ecosystem)
+        else:
+            pkg_data = enricher.lookup_sdk(name)
         if pkg_data:
             # Add license as declared license (SPDX 3.0 style)
             if pkg_data.license:

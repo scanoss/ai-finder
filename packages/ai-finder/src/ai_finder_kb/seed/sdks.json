@@ -1,163 +1,38 @@
 [
   {
-    "id": "autogen-agentchat",
-    "purl": "pkg:pypi/autogen-agentchat",
+    "id": "accelerate",
+    "purl": "pkg:pypi/accelerate",
     "patterns": [
-      "autogen_agentchat"
+      "accelerate"
     ],
-    "category": "agent-framework",
-    "license": "MIT"
+    "category": "ml-framework",
+    "license": "Apache-2.0"
   },
   {
-    "id": "crewai",
-    "purl": "pkg:pypi/crewai",
+    "id": "agno",
+    "purl": "pkg:pypi/agno",
     "patterns": [
-      "crewai"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "langchain",
-    "purl": "pkg:pypi/langchain",
-    "patterns": [
-      "langchain",
-      "langchain_core",
-      "langchain_openai"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "langchain-dotnet",
-    "purl": "pkg:nuget/LangChain",
-    "patterns": [
-      "LangChain"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "langchain-js",
-    "purl": "pkg:npm/langchain",
-    "patterns": [
-      "langchain",
-      "@langchain/core",
-      "@langchain/openai"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "langchain-php",
-    "purl": "pkg:composer/langchain/langchain",
-    "patterns": [
-      "LangChain"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "langchain-swift",
-    "purl": "pkg:swift/langchain-ai/langchain-swift",
-    "patterns": [
-      "LangChain"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "langchain4j",
-    "purl": "pkg:maven/dev.langchain4j/langchain4j",
-    "patterns": [
-      "dev.langchain4j"
+      "agno"
     ],
     "category": "agent-framework",
     "license": "Apache-2.0"
   },
   {
-    "id": "langchain4j-kotlin",
-    "purl": "pkg:maven/dev.langchain4j/langchain4j",
+    "id": "ai-sdk-anthropic",
+    "purl": "pkg:npm/@ai-sdk/anthropic",
     "patterns": [
-      "dev.langchain4j"
+      "@ai-sdk/anthropic"
     ],
-    "category": "agent-framework",
+    "category": "llm-client",
     "license": "Apache-2.0"
   },
   {
-    "id": "langchaingo",
-    "purl": "pkg:golang/github.com/tmc/langchaingo",
+    "id": "ai-sdk-openai",
+    "purl": "pkg:npm/@ai-sdk/openai",
     "patterns": [
-      "github.com/tmc/langchaingo"
+      "@ai-sdk/openai"
     ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "langchainrb",
-    "purl": "pkg:gem/langchainrb",
-    "patterns": [
-      "langchain",
-      "langchainrb"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "llama-index",
-    "purl": "pkg:pypi/llama-index",
-    "patterns": [
-      "llama_index"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "pyautogen",
-    "purl": "pkg:pypi/pyautogen",
-    "patterns": [
-      "pyautogen",
-      "autogen"
-    ],
-    "category": "agent-framework",
-    "license": "CC-BY-4.0"
-  },
-  {
-    "id": "semantic-kernel",
-    "purl": "pkg:nuget/Microsoft.SemanticKernel",
-    "patterns": [
-      "Microsoft.SemanticKernel"
-    ],
-    "category": "agent-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "strands-agents",
-    "purl": "pkg:pypi/strands-agents",
-    "patterns": [
-      "strands_agents",
-      "strands"
-    ],
-    "category": "agent-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "strands-agents-tools",
-    "purl": "pkg:pypi/strands-agents-tools",
-    "patterns": [
-      "strands_agents_tools"
-    ],
-    "category": "agent-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "vercel-ai",
-    "purl": "pkg:npm/ai",
-    "patterns": [
-      "ai",
-      "@vercel/ai"
-    ],
-    "category": "agent-framework",
+    "category": "llm-client",
     "license": "Apache-2.0"
   },
   {
@@ -170,37 +45,19 @@
     "license": "Apache-2.0"
   },
   {
-    "id": "guardrails-ai",
-    "purl": "pkg:pypi/guardrails-ai",
-    "patterns": [
-      "guardrails"
-    ],
-    "category": "ai-safety",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "llm-guard",
-    "purl": "pkg:pypi/llm-guard",
-    "patterns": [
-      "llm_guard"
-    ],
-    "category": "ai-safety",
-    "license": "MIT"
-  },
-  {
-    "id": "nemoguardrails",
-    "purl": "pkg:pypi/nemoguardrails",
-    "patterns": [
-      "nemoguardrails"
-    ],
-    "category": "ai-safety",
-    "license": "Apache-2.0"
-  },
-  {
     "id": "anthropic",
     "purl": "pkg:pypi/anthropic",
     "patterns": [
       "anthropic"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "anthropic-bedrock",
+    "purl": "pkg:pypi/anthropic-bedrock",
+    "patterns": [
+      "anthropic_bedrock"
     ],
     "category": "llm-client",
     "license": "MIT"
@@ -215,31 +72,13 @@
     "license": "MIT"
   },
   {
-    "id": "anthropic-kotlin",
-    "purl": "pkg:maven/com.anthropic/anthropic-sdk",
-    "patterns": [
-      "com.anthropic"
-    ],
-    "category": "llm-client",
-    "license": "MIT"
-  },
-  {
-    "id": "anthropic-php",
-    "purl": "pkg:composer/anthropic/sdk",
-    "patterns": [
-      "Anthropic"
-    ],
-    "category": "llm-client",
-    "license": "MIT"
-  },
-  {
     "id": "anthropic-ruby",
     "purl": "pkg:gem/anthropic",
     "patterns": [
       "anthropic"
     ],
     "category": "llm-client",
-    "license": "MIT"
+    "license": "Apache-2.0"
   },
   {
     "id": "anthropic-sdk",
@@ -248,7 +87,7 @@
       "@anthropic-ai/sdk"
     ],
     "category": "llm-client",
-    "license": "MIT"
+    "license": "Apache-2.0"
   },
   {
     "id": "anthropic-sdk-go",
@@ -269,13 +108,67 @@
     "license": "MIT"
   },
   {
+    "id": "arize-phoenix",
+    "purl": "pkg:pypi/arize-phoenix",
+    "patterns": [
+      "phoenix"
+    ],
+    "category": "observability",
+    "license": "Elastic-2.0"
+  },
+  {
+    "id": "assemblyai",
+    "purl": "pkg:pypi/assemblyai",
+    "patterns": [
+      "assemblyai"
+    ],
+    "category": "speech-audio",
+    "license": "MIT"
+  },
+  {
     "id": "async-openai",
     "purl": "pkg:cargo/async-openai",
     "patterns": [
       "async_openai"
     ],
     "category": "llm-client",
-    "license": "Apache-2.0"
+    "license": "MIT"
+  },
+  {
+    "id": "autogen-agentchat",
+    "purl": "pkg:pypi/autogen-agentchat",
+    "patterns": [
+      "autogen_agentchat"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "autogen-core",
+    "purl": "pkg:pypi/autogen-core",
+    "patterns": [
+      "autogen_core"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "autogen-ext",
+    "purl": "pkg:pypi/autogen-ext",
+    "patterns": [
+      "autogen_ext"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "azure-ai-inference",
+    "purl": "pkg:pypi/azure-ai-inference",
+    "patterns": [
+      "azure.ai.inference"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
   },
   {
     "id": "azure-ai-openai",
@@ -286,6 +179,90 @@
     ],
     "category": "llm-client",
     "license": "MIT"
+  },
+  {
+    "id": "azure-ai-projects",
+    "purl": "pkg:pypi/azure-ai-projects",
+    "patterns": [
+      "azure.ai.projects"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "bigdl",
+    "purl": "pkg:maven/com.intel.analytics.bigdl/bigdl",
+    "patterns": [
+      "com.intel.analytics.bigdl"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "bitsandbytes",
+    "purl": "pkg:pypi/bitsandbytes",
+    "patterns": [
+      "bitsandbytes"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "browser-use",
+    "purl": "pkg:pypi/browser-use",
+    "patterns": [
+      "browser_use"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "caffe",
+    "purl": "pkg:conan/caffe",
+    "patterns": [
+      "caffe",
+      "caffe2"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-2-Clause"
+  },
+  {
+    "id": "candle",
+    "purl": "pkg:cargo/candle-core",
+    "patterns": [
+      "candle_core",
+      "candle_nn",
+      "candle_transformers"
+    ],
+    "category": "ml-framework",
+    "license": "MIT OR Apache-2.0"
+  },
+  {
+    "id": "cartesia",
+    "purl": "pkg:pypi/cartesia",
+    "patterns": [
+      "cartesia"
+    ],
+    "category": "speech-audio",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "chromadb",
+    "purl": "pkg:pypi/chromadb",
+    "patterns": [
+      "chromadb"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "chromadb-js",
+    "purl": "pkg:npm/chromadb",
+    "patterns": [
+      "chromadb"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
   },
   {
     "id": "cohere",
@@ -324,30 +301,219 @@
     "license": "MIT"
   },
   {
-    "id": "cohere-kotlin",
-    "purl": "pkg:maven/io.cohere/cohere-kotlin",
-    "patterns": [
-      "io.cohere"
-    ],
-    "category": "llm-client",
-    "license": "MIT"
-  },
-  {
-    "id": "cohere-php",
-    "purl": "pkg:composer/cohere/cohere-php",
-    "patterns": [
-      "Cohere"
-    ],
-    "category": "llm-client",
-    "license": "MIT"
-  },
-  {
     "id": "cohere-ruby",
     "purl": "pkg:gem/cohere-ruby",
     "patterns": [
       "cohere-ruby"
     ],
     "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "coreml",
+    "purl": "pkg:swift/apple/coreml",
+    "patterns": [
+      "CoreML"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "createml",
+    "purl": "pkg:swift/apple/createml",
+    "patterns": [
+      "CreateML"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "crewai",
+    "purl": "pkg:pypi/crewai",
+    "patterns": [
+      "crewai"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "crewai-tools",
+    "purl": "pkg:pypi/crewai-tools",
+    "patterns": [
+      "crewai_tools"
+    ],
+    "category": "agent-framework",
+    "license": null
+  },
+  {
+    "id": "ctransformers",
+    "purl": "pkg:pypi/ctransformers",
+    "patterns": [
+      "ctransformers"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "datasets",
+    "purl": "pkg:pypi/datasets",
+    "patterns": [
+      "datasets"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "deepeval",
+    "purl": "pkg:pypi/deepeval",
+    "patterns": [
+      "deepeval"
+    ],
+    "category": "observability",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "deepgram-sdk",
+    "purl": "pkg:pypi/deepgram-sdk",
+    "patterns": [
+      "deepgram"
+    ],
+    "category": "speech-audio",
+    "license": "MIT"
+  },
+  {
+    "id": "deeplearning4j",
+    "purl": "pkg:maven/org.deeplearning4j/deeplearning4j-core",
+    "patterns": [
+      "org.deeplearning4j"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "diffusers",
+    "purl": "pkg:pypi/diffusers",
+    "patterns": [
+      "diffusers"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "djl",
+    "purl": "pkg:maven/ai.djl/api",
+    "patterns": [
+      "ai.djl"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "dlib",
+    "purl": "pkg:conan/dlib",
+    "patterns": [
+      "dlib"
+    ],
+    "category": "ml-framework",
+    "license": "BSL-1.0"
+  },
+  {
+    "id": "dspy",
+    "purl": "pkg:pypi/dspy",
+    "patterns": [
+      "dspy"
+    ],
+    "category": "agent-framework",
+    "license": null
+  },
+  {
+    "id": "e2b",
+    "purl": "pkg:pypi/e2b",
+    "patterns": [
+      "e2b"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "e2b-code-interpreter",
+    "purl": "pkg:pypi/e2b-code-interpreter",
+    "patterns": [
+      "e2b_code_interpreter"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "elevenlabs",
+    "purl": "pkg:pypi/elevenlabs",
+    "patterns": [
+      "elevenlabs"
+    ],
+    "category": "speech-audio",
+    "license": "MIT"
+  },
+  {
+    "id": "faiss-cpu",
+    "purl": "pkg:pypi/faiss-cpu",
+    "patterns": [
+      "faiss"
+    ],
+    "category": "vector-database",
+    "license": "MIT"
+  },
+  {
+    "id": "faiss-gpu",
+    "purl": "pkg:pypi/faiss-gpu",
+    "patterns": [
+      "faiss"
+    ],
+    "category": "vector-database",
+    "license": "MIT"
+  },
+  {
+    "id": "fastapi-mcp",
+    "purl": "pkg:pypi/fastapi-mcp",
+    "patterns": [
+      "fastapi_mcp"
+    ],
+    "category": "mcp",
+    "license": "MIT"
+  },
+  {
+    "id": "faster-whisper",
+    "purl": "pkg:pypi/faster-whisper",
+    "patterns": [
+      "faster_whisper"
+    ],
+    "category": "speech-audio",
+    "license": "MIT"
+  },
+  {
+    "id": "fastmcp",
+    "purl": "pkg:pypi/fastmcp",
+    "patterns": [
+      "fastmcp"
+    ],
+    "category": "mcp",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "flax",
+    "purl": "pkg:pypi/flax",
+    "patterns": [
+      "flax"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "ggml",
+    "purl": "pkg:github/ggerganov/ggml",
+    "patterns": [
+      "ggml"
+    ],
+    "category": "ml-runtime",
     "license": "MIT"
   },
   {
@@ -360,30 +526,19 @@
     "license": "Apache-2.0"
   },
   {
-    "id": "google-ai-generativelanguage-dotnet",
-    "purl": "pkg:nuget/Google.Ai.Generativelanguage",
-    "patterns": [
-      "Google.Ai.Generativelanguage",
-      "Google.Cloud.AIPlatform"
-    ],
-    "category": "llm-client",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "google-ai-kotlin",
-    "purl": "pkg:maven/com.google.ai/generativeai",
-    "patterns": [
-      "com.google.ai",
-      "com.google.mlkit"
-    ],
-    "category": "llm-client",
-    "license": "Apache-2.0"
-  },
-  {
     "id": "google-cloud-aiplatform-java",
     "purl": "pkg:maven/com.google.cloud/google-cloud-aiplatform",
     "patterns": [
       "com.google.cloud.aiplatform"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "google-genai",
+    "purl": "pkg:pypi/google-genai",
+    "patterns": [
+      "google.genai"
     ],
     "category": "llm-client",
     "license": "Apache-2.0"
@@ -417,29 +572,10 @@
     "license": "Apache-2.0"
   },
   {
-    "id": "google-generativeai-php",
-    "purl": "pkg:composer/google/generative-ai",
-    "patterns": [
-      "Google\\GenerativeAI",
-      "Google\\Cloud\\AIPlatform"
-    ],
-    "category": "llm-client",
-    "license": "Apache-2.0"
-  },
-  {
     "id": "groq",
     "purl": "pkg:pypi/groq",
     "patterns": [
       "groq"
-    ],
-    "category": "llm-client",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "groq-kotlin",
-    "purl": "pkg:maven/com.groq/groq-kotlin",
-    "patterns": [
-      "com.groq"
     ],
     "category": "llm-client",
     "license": "Apache-2.0"
@@ -451,6 +587,514 @@
       "groq-sdk"
     ],
     "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "guardrails-ai",
+    "purl": "pkg:pypi/guardrails-ai",
+    "patterns": [
+      "guardrails"
+    ],
+    "category": "ai-safety",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "guidance",
+    "purl": "pkg:pypi/guidance",
+    "patterns": [
+      "guidance"
+    ],
+    "category": "llm-client",
+    "license": null
+  },
+  {
+    "id": "haystack-ai",
+    "purl": "pkg:pypi/haystack-ai",
+    "patterns": [
+      "haystack"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "hugging-face-rb",
+    "purl": "pkg:gem/hugging-face",
+    "patterns": [
+      "hugging-face"
+    ],
+    "category": "ml-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "huggingface-dotnet",
+    "purl": "pkg:nuget/HuggingFace",
+    "patterns": [
+      "HuggingFace"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "huggingface-hub",
+    "purl": "pkg:pypi/huggingface-hub",
+    "patterns": [
+      "huggingface_hub"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "huggingface-hub-js",
+    "purl": "pkg:npm/@huggingface/hub",
+    "patterns": [
+      "@huggingface/hub"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "huggingface-inference",
+    "purl": "pkg:npm/@huggingface/inference",
+    "patterns": [
+      "@huggingface/inference"
+    ],
+    "category": "ml-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "instructor",
+    "purl": "pkg:pypi/instructor",
+    "patterns": [
+      "instructor"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "jax",
+    "purl": "pkg:pypi/jax",
+    "patterns": [
+      "jax"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "keras",
+    "purl": "pkg:pypi/keras",
+    "patterns": [
+      "keras"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "lancedb",
+    "purl": "pkg:pypi/lancedb",
+    "patterns": [
+      "lancedb"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "langchain",
+    "purl": "pkg:pypi/langchain",
+    "patterns": [
+      "langchain"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-anthropic",
+    "purl": "pkg:pypi/langchain-anthropic",
+    "patterns": [
+      "langchain_anthropic"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-anthropic-js",
+    "purl": "pkg:npm/@langchain/anthropic",
+    "patterns": [
+      "@langchain/anthropic"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-aws",
+    "purl": "pkg:pypi/langchain-aws",
+    "patterns": [
+      "langchain_aws"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-community",
+    "purl": "pkg:pypi/langchain-community",
+    "patterns": [
+      "langchain_community"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-core",
+    "purl": "pkg:pypi/langchain-core",
+    "patterns": [
+      "langchain_core"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-core-js",
+    "purl": "pkg:npm/@langchain/core",
+    "patterns": [
+      "@langchain/core"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-dotnet",
+    "purl": "pkg:nuget/LangChain",
+    "patterns": [
+      "LangChain"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-google-genai",
+    "purl": "pkg:pypi/langchain-google-genai",
+    "patterns": [
+      "langchain_google_genai"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-js",
+    "purl": "pkg:npm/langchain",
+    "patterns": [
+      "langchain"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-mcp-adapters",
+    "purl": "pkg:pypi/langchain-mcp-adapters",
+    "patterns": [
+      "langchain_mcp_adapters"
+    ],
+    "category": "mcp",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-openai",
+    "purl": "pkg:pypi/langchain-openai",
+    "patterns": [
+      "langchain_openai"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-openai-js",
+    "purl": "pkg:npm/@langchain/openai",
+    "patterns": [
+      "@langchain/openai"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain-swift",
+    "purl": "pkg:swift/langchain-ai/langchain-swift",
+    "patterns": [
+      "LangChain"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchain4j",
+    "purl": "pkg:maven/dev.langchain4j/langchain4j",
+    "patterns": [
+      "dev.langchain4j"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "langchaingo",
+    "purl": "pkg:golang/github.com/tmc/langchaingo",
+    "patterns": [
+      "github.com/tmc/langchaingo"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langchainrb",
+    "purl": "pkg:gem/langchainrb",
+    "patterns": [
+      "langchain",
+      "langchainrb"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langfuse",
+    "purl": "pkg:pypi/langfuse",
+    "patterns": [
+      "langfuse"
+    ],
+    "category": "observability",
+    "license": "MIT"
+  },
+  {
+    "id": "langgraph",
+    "purl": "pkg:pypi/langgraph",
+    "patterns": [
+      "langgraph"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "langsmith",
+    "purl": "pkg:pypi/langsmith",
+    "patterns": [
+      "langsmith"
+    ],
+    "category": "observability",
+    "license": "MIT"
+  },
+  {
+    "id": "letta",
+    "purl": "pkg:pypi/letta",
+    "patterns": [
+      "letta"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "libtorch",
+    "purl": "pkg:conan/libtorch",
+    "patterns": [
+      "torch",
+      "libtorch",
+      "ATen"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "id": "lightgbm",
+    "purl": "pkg:pypi/lightgbm",
+    "patterns": [
+      "lightgbm"
+    ],
+    "category": "ml-framework",
+    "license": null
+  },
+  {
+    "id": "litellm",
+    "purl": "pkg:pypi/litellm",
+    "patterns": [
+      "litellm"
+    ],
+    "category": "llm-client",
+    "license": "MIT"
+  },
+  {
+    "id": "llama-cpp",
+    "purl": "pkg:github/ggerganov/llama.cpp",
+    "patterns": [
+      "llama"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "llama-cpp-python",
+    "purl": "pkg:pypi/llama-cpp-python",
+    "patterns": [
+      "llama_cpp"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "llama-index",
+    "purl": "pkg:pypi/llama-index",
+    "patterns": [
+      "llama_index"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "llama-index-core",
+    "purl": "pkg:pypi/llama-index-core",
+    "patterns": [
+      "llama_index"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "llama-index-llms-openai",
+    "purl": "pkg:pypi/llama-index-llms-openai",
+    "patterns": [
+      "llama_index.llms.openai"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "llamaindex-js",
+    "purl": "pkg:npm/llamaindex",
+    "patterns": [
+      "llamaindex"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "llm-guard",
+    "purl": "pkg:pypi/llm-guard",
+    "patterns": [
+      "llm_guard"
+    ],
+    "category": "ai-safety",
+    "license": "MIT"
+  },
+  {
+    "id": "llm-rs",
+    "purl": "pkg:cargo/llm",
+    "patterns": [
+      "llm",
+      "llm_chain"
+    ],
+    "category": "ml-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "mcp-agent",
+    "purl": "pkg:pypi/mcp-agent",
+    "patterns": [
+      "mcp_agent"
+    ],
+    "category": "mcp",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mcp-client-typescript",
+    "purl": "pkg:npm/@modelcontextprotocol/client",
+    "patterns": [
+      "@modelcontextprotocol/client"
+    ],
+    "category": "mcp",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mcp-core-typescript",
+    "purl": "pkg:npm/@modelcontextprotocol/core",
+    "patterns": [
+      "@modelcontextprotocol/core"
+    ],
+    "category": "mcp",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mcp-node-typescript",
+    "purl": "pkg:npm/@modelcontextprotocol/node",
+    "patterns": [
+      "@modelcontextprotocol/node"
+    ],
+    "category": "mcp",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mcp-proxy",
+    "purl": "pkg:pypi/mcp-proxy",
+    "patterns": [
+      "mcp_proxy"
+    ],
+    "category": "mcp",
+    "license": "MIT"
+  },
+  {
+    "id": "mcp-python",
+    "purl": "pkg:pypi/mcp",
+    "patterns": [
+      "mcp"
+    ],
+    "category": "mcp",
+    "license": "MIT"
+  },
+  {
+    "id": "mcp-sdk-typescript",
+    "purl": "pkg:npm/@modelcontextprotocol/sdk",
+    "patterns": [
+      "@modelcontextprotocol/sdk"
+    ],
+    "category": "mcp",
+    "license": "MIT"
+  },
+  {
+    "id": "mcp-server-typescript",
+    "purl": "pkg:npm/@modelcontextprotocol/server",
+    "patterns": [
+      "@modelcontextprotocol/server"
+    ],
+    "category": "mcp",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mcp-use",
+    "purl": "pkg:pypi/mcp-use",
+    "patterns": [
+      "mcp_use"
+    ],
+    "category": "mcp",
+    "license": "MIT"
+  },
+  {
+    "id": "mem0ai",
+    "purl": "pkg:pypi/mem0ai",
+    "patterns": [
+      "mem0"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "microsoft-ml",
+    "purl": "pkg:nuget/Microsoft.ML",
+    "patterns": [
+      "Microsoft.ML"
+    ],
+    "category": "ml-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "milvus-lite",
+    "purl": "pkg:pypi/milvus-lite",
+    "patterns": [
+      "milvus_lite"
+    ],
+    "category": "vector-database",
     "license": "Apache-2.0"
   },
   {
@@ -472,6 +1116,51 @@
     "license": "Apache-2.0"
   },
   {
+    "id": "mlflow",
+    "purl": "pkg:pypi/mlflow",
+    "patterns": [
+      "mlflow"
+    ],
+    "category": "observability",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mlkit-swift",
+    "purl": "pkg:swift/google/mlkit",
+    "patterns": [
+      "MLKit"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mxnet-cpp",
+    "purl": "pkg:conan/mxnet",
+    "patterns": [
+      "mxnet"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "naturallanguage",
+    "purl": "pkg:swift/apple/naturallanguage",
+    "patterns": [
+      "NaturalLanguage"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "nemoguardrails",
+    "purl": "pkg:pypi/nemoguardrails",
+    "patterns": [
+      "nemoguardrails"
+    ],
+    "category": "ai-safety",
+    "license": "Apache-2.0"
+  },
+  {
     "id": "ollama",
     "purl": "pkg:pypi/ollama",
     "patterns": [
@@ -481,12 +1170,75 @@
     "license": "MIT"
   },
   {
-    "id": "ollama-js",
-    "purl": "pkg:npm/ollama-js",
+    "id": "onnx",
+    "purl": "pkg:pypi/onnx",
     "patterns": [
-      "ollama-js"
+      "onnx"
     ],
-    "category": "llm-client",
+    "category": "ml-runtime",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "onnx-dotnet",
+    "purl": "pkg:nuget/Microsoft.ML.OnnxRuntime",
+    "patterns": [
+      "ONNX"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "onnx-swift",
+    "purl": "pkg:swift/onnx/onnx-swift",
+    "patterns": [
+      "ONNX"
+    ],
+    "category": "ml-runtime",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "onnxruntime",
+    "purl": "pkg:pypi/onnxruntime",
+    "patterns": [
+      "onnxruntime"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "onnxruntime-cpp",
+    "purl": "pkg:conan/onnxruntime",
+    "patterns": [
+      "onnxruntime"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "onnxruntime-node",
+    "purl": "pkg:npm/onnxruntime-node",
+    "patterns": [
+      "onnxruntime-node"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "onnxruntime-scala",
+    "purl": "pkg:maven/com.microsoft.onnxruntime/onnxruntime",
+    "patterns": [
+      "com.microsoft.onnxruntime"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "onnxruntime-web",
+    "purl": "pkg:npm/onnxruntime-web",
+    "patterns": [
+      "onnxruntime-web"
+    ],
+    "category": "ml-runtime",
     "license": "MIT"
   },
   {
@@ -497,6 +1249,15 @@
     ],
     "category": "llm-client",
     "license": "Apache-2.0"
+  },
+  {
+    "id": "openai-agents",
+    "purl": "pkg:pypi/openai-agents",
+    "patterns": [
+      "agents"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
   },
   {
     "id": "openai-api-rs",
@@ -564,6 +1325,179 @@
     "license": "MIT"
   },
   {
+    "id": "openai-whisper",
+    "purl": "pkg:pypi/openai-whisper",
+    "patterns": [
+      "whisper"
+    ],
+    "category": "speech-audio",
+    "license": "MIT"
+  },
+  {
+    "id": "opencv",
+    "purl": "pkg:conan/opencv",
+    "patterns": [
+      "opencv"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "opik",
+    "purl": "pkg:pypi/opik",
+    "patterns": [
+      "opik"
+    ],
+    "category": "observability",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "ort",
+    "purl": "pkg:cargo/ort",
+    "patterns": [
+      "ort"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT OR Apache-2.0"
+  },
+  {
+    "id": "outlines",
+    "purl": "pkg:pypi/outlines",
+    "patterns": [
+      "outlines"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "peft",
+    "purl": "pkg:pypi/peft",
+    "patterns": [
+      "peft"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "pgvector",
+    "purl": "pkg:pypi/pgvector",
+    "patterns": [
+      "pgvector"
+    ],
+    "category": "vector-database",
+    "license": "MIT"
+  },
+  {
+    "id": "pinecone",
+    "purl": "pkg:pypi/pinecone",
+    "patterns": [
+      "pinecone"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "pinecone-client",
+    "purl": "pkg:pypi/pinecone-client",
+    "patterns": [
+      "pinecone"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "pinecone-database-js",
+    "purl": "pkg:npm/@pinecone-database/pinecone",
+    "patterns": [
+      "@pinecone-database/pinecone"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "presidio-analyzer",
+    "purl": "pkg:pypi/presidio-analyzer",
+    "patterns": [
+      "presidio_analyzer"
+    ],
+    "category": "ai-safety",
+    "license": "MIT"
+  },
+  {
+    "id": "pyautogen",
+    "purl": "pkg:pypi/pyautogen",
+    "patterns": [
+      "pyautogen",
+      "autogen"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "pydantic-ai",
+    "purl": "pkg:pypi/pydantic-ai",
+    "patterns": [
+      "pydantic_ai"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "pymilvus",
+    "purl": "pkg:pypi/pymilvus",
+    "patterns": [
+      "pymilvus"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "pytorch-kotlin",
+    "purl": "pkg:maven/org.pytorch/pytorch_android",
+    "patterns": [
+      "org.pytorch"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "id": "pytorch-scala",
+    "purl": "pkg:maven/org.bytedeco/pytorch",
+    "patterns": [
+      "org.bytedeco.pytorch"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "id": "qdrant-client",
+    "purl": "pkg:pypi/qdrant-client",
+    "patterns": [
+      "qdrant_client"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "qdrant-js",
+    "purl": "pkg:npm/@qdrant/js-client-rest",
+    "patterns": [
+      "@qdrant/js-client-rest",
+      "qdrant"
+    ],
+    "category": "vector-database",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "ragas",
+    "purl": "pkg:pypi/ragas",
+    "patterns": [
+      "ragas"
+    ],
+    "category": "observability",
+    "license": null
+  },
+  {
     "id": "replicate",
     "purl": "pkg:pypi/replicate",
     "patterns": [
@@ -600,24 +1534,6 @@
     "license": "Apache-2.0"
   },
   {
-    "id": "replicate-kotlin",
-    "purl": "pkg:maven/io.replicate/replicate-kotlin",
-    "patterns": [
-      "io.replicate"
-    ],
-    "category": "llm-client",
-    "license": "MIT"
-  },
-  {
-    "id": "replicate-php",
-    "purl": "pkg:composer/replicate/replicate-php",
-    "patterns": [
-      "Replicate"
-    ],
-    "category": "llm-client",
-    "license": "MIT"
-  },
-  {
     "id": "replicate-ruby",
     "purl": "pkg:gem/replicate-ruby",
     "patterns": [
@@ -633,7 +1549,7 @@
       "Replicate"
     ],
     "category": "llm-client",
-    "license": "MIT"
+    "license": "Apache-2.0"
   },
   {
     "id": "ruby-openai",
@@ -646,300 +1562,6 @@
     "license": "MIT"
   },
   {
-    "id": "together",
-    "purl": "pkg:pypi/together",
-    "patterns": [
-      "together"
-    ],
-    "category": "llm-client",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "together-ai-js",
-    "purl": "pkg:npm/together-ai",
-    "patterns": [
-      "together-ai"
-    ],
-    "category": "llm-client",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "vertexai",
-    "purl": "pkg:pypi/google-cloud-aiplatform",
-    "patterns": [
-      "vertexai"
-    ],
-    "category": "llm-client",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "accelerate",
-    "purl": "pkg:pypi/accelerate",
-    "patterns": [
-      "accelerate"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "bigdl",
-    "purl": "pkg:maven/com.intel.analytics.bigdl/bigdl",
-    "patterns": [
-      "com.intel.analytics.bigdl"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "caffe",
-    "purl": "pkg:conan/caffe",
-    "patterns": [
-      "caffe",
-      "caffe2"
-    ],
-    "category": "ml-framework",
-    "license": "BSD-2-Clause"
-  },
-  {
-    "id": "candle",
-    "purl": "pkg:cargo/candle-core",
-    "patterns": [
-      "candle_core",
-      "candle_nn",
-      "candle_transformers"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "catboost-scala",
-    "purl": "pkg:maven/ai.catboost/catboost-spark",
-    "patterns": [
-      "ai.catboost"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "coreml",
-    "purl": "pkg:swift/apple/coreml",
-    "patterns": [
-      "CoreML"
-    ],
-    "category": "ml-framework",
-    "license": "Apple"
-  },
-  {
-    "id": "createml",
-    "purl": "pkg:swift/apple/createml",
-    "patterns": [
-      "CreateML"
-    ],
-    "category": "ml-framework",
-    "license": "Apple"
-  },
-  {
-    "id": "datasets",
-    "purl": "pkg:pypi/datasets",
-    "patterns": [
-      "datasets"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "deeplearning4j",
-    "purl": "pkg:maven/org.deeplearning4j/deeplearning4j-core",
-    "patterns": [
-      "org.deeplearning4j"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "djl",
-    "purl": "pkg:maven/ai.djl/api",
-    "patterns": [
-      "ai.djl"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "djl-scala",
-    "purl": "pkg:maven/ai.djl/api",
-    "patterns": [
-      "ai.djl"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "dlib",
-    "purl": "pkg:conan/dlib",
-    "patterns": [
-      "dlib"
-    ],
-    "category": "ml-framework",
-    "license": "BSL-1.0"
-  },
-  {
-    "id": "hugging-face-rb",
-    "purl": "pkg:gem/hugging-face",
-    "patterns": [
-      "hugging-face"
-    ],
-    "category": "ml-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "huggingface-dotnet",
-    "purl": "pkg:nuget/HuggingFace",
-    "patterns": [
-      "HuggingFace"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "huggingface-hub",
-    "purl": "pkg:pypi/huggingface-hub",
-    "patterns": [
-      "huggingface_hub"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "huggingface-inference",
-    "purl": "pkg:npm/@huggingface/inference",
-    "patterns": [
-      "@huggingface/inference"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "huggingface-kotlin",
-    "purl": "pkg:maven/com.huggingface/transformers",
-    "patterns": [
-      "com.huggingface"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "huggingface-php",
-    "purl": "pkg:composer/huggingface/transformers",
-    "patterns": [
-      "HuggingFace"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "keras",
-    "purl": "pkg:pypi/keras",
-    "patterns": [
-      "keras"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "libtorch",
-    "purl": "pkg:conan/libtorch",
-    "patterns": [
-      "torch",
-      "libtorch",
-      "ATen"
-    ],
-    "category": "ml-framework",
-    "license": "BSD-3-Clause"
-  },
-  {
-    "id": "llm-rs",
-    "purl": "pkg:cargo/llm",
-    "patterns": [
-      "llm",
-      "llm_chain"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "microsoft-ml",
-    "purl": "pkg:nuget/Microsoft.ML",
-    "patterns": [
-      "Microsoft.ML"
-    ],
-    "category": "ml-framework",
-    "license": "MIT"
-  },
-  {
-    "id": "mleap",
-    "purl": "pkg:maven/ml.combust.mleap/mleap-runtime",
-    "patterns": [
-      "ml.combust.mleap"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "mlkit-swift",
-    "purl": "pkg:swift/google/mlkit",
-    "patterns": [
-      "MLKit"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "mxnet-cpp",
-    "purl": "pkg:conan/mxnet",
-    "patterns": [
-      "mxnet"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "naturallanguage",
-    "purl": "pkg:swift/apple/naturallanguage",
-    "patterns": [
-      "NaturalLanguage"
-    ],
-    "category": "ml-framework",
-    "license": "Apple"
-  },
-  {
-    "id": "opencv",
-    "purl": "pkg:conan/opencv",
-    "patterns": [
-      "opencv"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "pytorch-kotlin",
-    "purl": "pkg:maven/org.pytorch/pytorch_android",
-    "patterns": [
-      "org.pytorch"
-    ],
-    "category": "ml-framework",
-    "license": "BSD-3-Clause"
-  },
-  {
-    "id": "pytorch-scala",
-    "purl": "pkg:maven/org.bytedeco/pytorch",
-    "patterns": [
-      "org.bytedeco.pytorch"
-    ],
-    "category": "ml-framework",
-    "license": "BSD-3-Clause"
-  },
-  {
     "id": "rust-bert",
     "purl": "pkg:cargo/rust-bert",
     "patterns": [
@@ -947,6 +1569,51 @@
     ],
     "category": "ml-framework",
     "license": "Apache-2.0"
+  },
+  {
+    "id": "safetensors",
+    "purl": "pkg:pypi/safetensors",
+    "patterns": [
+      "safetensors"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "scikit-learn",
+    "purl": "pkg:pypi/scikit-learn",
+    "patterns": [
+      "sklearn"
+    ],
+    "category": "ml-framework",
+    "license": "BSD-3-Clause"
+  },
+  {
+    "id": "semantic-kernel",
+    "purl": "pkg:nuget/Microsoft.SemanticKernel",
+    "patterns": [
+      "Microsoft.SemanticKernel"
+    ],
+    "category": "agent-framework",
+    "license": "MIT"
+  },
+  {
+    "id": "sentence-transformers",
+    "purl": "pkg:pypi/sentence-transformers",
+    "patterns": [
+      "sentence_transformers"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "smolagents",
+    "purl": "pkg:pypi/smolagents",
+    "patterns": [
+      "smolagents"
+    ],
+    "category": "agent-framework",
+    "license": null
   },
   {
     "id": "soundanalysis",
@@ -958,25 +1625,6 @@
     "license": "Apple"
   },
   {
-    "id": "spark-ml",
-    "purl": "pkg:maven/org.apache.spark/spark-mllib",
-    "patterns": [
-      "org.apache.spark.ml",
-      "org.apache.spark.mllib"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "spark-nlp",
-    "purl": "pkg:maven/com.johnsnowlabs.nlp/spark-nlp",
-    "patterns": [
-      "com.johnsnowlabs.nlp"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
     "id": "speech",
     "purl": "pkg:swift/apple/speech",
     "patterns": [
@@ -986,13 +1634,50 @@
     "license": "Apple"
   },
   {
+    "id": "strands-agents",
+    "purl": "pkg:pypi/strands-agents",
+    "patterns": [
+      "strands_agents",
+      "strands"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "strands-agents-tools",
+    "purl": "pkg:pypi/strands-agents-tools",
+    "patterns": [
+      "strands_agents_tools"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "suno-bark",
+    "purl": "pkg:pypi/suno-bark",
+    "patterns": [
+      "bark"
+    ],
+    "category": "speech-audio",
+    "license": "MIT"
+  },
+  {
+    "id": "tavily-python",
+    "purl": "pkg:pypi/tavily-python",
+    "patterns": [
+      "tavily"
+    ],
+    "category": "observability",
+    "license": "MIT"
+  },
+  {
     "id": "tch-rs",
     "purl": "pkg:cargo/tch",
     "patterns": [
       "tch"
     ],
     "category": "ml-framework",
-    "license": "Apache-2.0"
+    "license": "MIT OR Apache-2.0"
   },
   {
     "id": "tensorflow",
@@ -1031,139 +1716,12 @@
     "license": "Apache-2.0"
   },
   {
-    "id": "tensorflow-kotlin",
-    "purl": "pkg:maven/org.tensorflow/tensorflow",
+    "id": "tensorflow-js",
+    "purl": "pkg:npm/@tensorflow/tfjs",
     "patterns": [
-      "org.tensorflow"
+      "@tensorflow/tfjs"
     ],
     "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "tensorflow-scala",
-    "purl": "pkg:maven/org.platanios/tensorflow",
-    "patterns": [
-      "org.tensorflow",
-      "org.platanios.tensorflow"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "torch",
-    "purl": "pkg:pypi/torch",
-    "patterns": [
-      "torch"
-    ],
-    "category": "ml-framework",
-    "license": "BSD-3-Clause"
-  },
-  {
-    "id": "transformers",
-    "purl": "pkg:pypi/transformers",
-    "patterns": [
-      "transformers"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "vision",
-    "purl": "pkg:swift/apple/vision",
-    "patterns": [
-      "Vision"
-    ],
-    "category": "ml-framework",
-    "license": "Apple"
-  },
-  {
-    "id": "xenova-transformers",
-    "purl": "pkg:npm/@xenova/transformers",
-    "patterns": [
-      "@xenova/transformers"
-    ],
-    "category": "ml-framework",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "ggml",
-    "purl": "pkg:github/ggerganov/ggml",
-    "patterns": [
-      "ggml"
-    ],
-    "category": "ml-runtime",
-    "license": "MIT"
-  },
-  {
-    "id": "llama-cpp",
-    "purl": "pkg:github/ggerganov/llama.cpp",
-    "patterns": [
-      "llama"
-    ],
-    "category": "ml-runtime",
-    "license": "MIT"
-  },
-  {
-    "id": "onnx-dotnet",
-    "purl": "pkg:nuget/Microsoft.ML.OnnxRuntime",
-    "patterns": [
-      "ONNX"
-    ],
-    "category": "ml-runtime",
-    "license": "MIT"
-  },
-  {
-    "id": "onnx-swift",
-    "purl": "pkg:swift/onnx/onnx-swift",
-    "patterns": [
-      "ONNX"
-    ],
-    "category": "ml-runtime",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "onnxruntime-cpp",
-    "purl": "pkg:conan/onnxruntime",
-    "patterns": [
-      "onnxruntime"
-    ],
-    "category": "ml-runtime",
-    "license": "MIT"
-  },
-  {
-    "id": "onnxruntime-java",
-    "purl": "pkg:maven/ai.onnxruntime/onnxruntime",
-    "patterns": [
-      "ai.onnxruntime"
-    ],
-    "category": "ml-runtime",
-    "license": "MIT"
-  },
-  {
-    "id": "onnxruntime-kotlin",
-    "purl": "pkg:maven/ai.onnxruntime/onnxruntime",
-    "patterns": [
-      "ai.onnxruntime"
-    ],
-    "category": "ml-runtime",
-    "license": "MIT"
-  },
-  {
-    "id": "onnxruntime-scala",
-    "purl": "pkg:maven/com.microsoft.onnxruntime/onnxruntime",
-    "patterns": [
-      "com.microsoft.onnxruntime"
-    ],
-    "category": "ml-runtime",
-    "license": "MIT"
-  },
-  {
-    "id": "ort",
-    "purl": "pkg:cargo/ort",
-    "patterns": [
-      "ort"
-    ],
-    "category": "ml-runtime",
     "license": "Apache-2.0"
   },
   {
@@ -1177,48 +1735,130 @@
     "license": "Apache-2.0"
   },
   {
+    "id": "tiktoken",
+    "purl": "pkg:pypi/tiktoken",
+    "patterns": [
+      "tiktoken"
+    ],
+    "category": "llm-client",
+    "license": null
+  },
+  {
+    "id": "together",
+    "purl": "pkg:pypi/together",
+    "patterns": [
+      "together"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "together-ai-js",
+    "purl": "pkg:npm/together-ai",
+    "patterns": [
+      "together-ai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "tokenizers",
+    "purl": "pkg:pypi/tokenizers",
+    "patterns": [
+      "tokenizers"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "torch",
+    "purl": "pkg:pypi/torch",
+    "patterns": [
+      "torch"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND ISC AND MIT AND Zlib"
+  },
+  {
     "id": "tract",
     "purl": "pkg:cargo/tract",
     "patterns": [
       "tract"
     ],
     "category": "ml-runtime",
+    "license": "MIT OR Apache-2.0"
+  },
+  {
+    "id": "transformers",
+    "purl": "pkg:pypi/transformers",
+    "patterns": [
+      "transformers"
+    ],
+    "category": "ml-framework",
     "license": "Apache-2.0"
   },
   {
-    "id": "whisper-cpp",
-    "purl": "pkg:github/ggerganov/whisper.cpp",
+    "id": "trl",
+    "purl": "pkg:pypi/trl",
     "patterns": [
-      "whisper"
+      "trl"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "vercel-ai",
+    "purl": "pkg:npm/ai",
+    "patterns": [
+      "ai",
+      "@vercel/ai"
+    ],
+    "category": "agent-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "vertexai",
+    "purl": "pkg:pypi/google-cloud-aiplatform",
+    "patterns": [
+      "vertexai"
+    ],
+    "category": "llm-client",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "vertexai-sdk",
+    "purl": "pkg:pypi/vertexai",
+    "patterns": [
+      "vertexai"
+    ],
+    "category": "llm-client",
+    "license": "Apache 2.0"
+  },
+  {
+    "id": "vision",
+    "purl": "pkg:swift/apple/vision",
+    "patterns": [
+      "Vision"
+    ],
+    "category": "ml-framework",
+    "license": "Apple"
+  },
+  {
+    "id": "vllm",
+    "purl": "pkg:pypi/vllm",
+    "patterns": [
+      "vllm"
     ],
     "category": "ml-runtime",
-    "license": "MIT"
-  },
-  {
-    "id": "langsmith",
-    "purl": "pkg:pypi/langsmith",
-    "patterns": [
-      "langsmith"
-    ],
-    "category": "observability",
-    "license": "MIT"
-  },
-  {
-    "id": "mlflow",
-    "purl": "pkg:pypi/mlflow",
-    "patterns": [
-      "mlflow"
-    ],
-    "category": "observability",
     "license": "Apache-2.0"
   },
   {
-    "id": "tavily-python",
-    "purl": "pkg:pypi/tavily-python",
+    "id": "voyageai",
+    "purl": "pkg:pypi/voyageai",
     "patterns": [
-      "tavily"
+      "voyageai"
     ],
-    "category": "observability",
+    "category": "llm-client",
     "license": "MIT"
   },
   {
@@ -1231,130 +1871,12 @@
     "license": "MIT"
   },
   {
-    "id": "elevenlabs",
-    "purl": "pkg:pypi/elevenlabs",
+    "id": "weave",
+    "purl": "pkg:pypi/weave",
     "patterns": [
-      "elevenlabs"
+      "weave"
     ],
-    "category": "speech-audio",
-    "license": "MIT"
-  },
-  {
-    "id": "faster-whisper",
-    "purl": "pkg:pypi/faster-whisper",
-    "patterns": [
-      "faster_whisper"
-    ],
-    "category": "speech-audio",
-    "license": "MIT"
-  },
-  {
-    "id": "openai-whisper",
-    "purl": "pkg:pypi/openai-whisper",
-    "patterns": [
-      "whisper"
-    ],
-    "category": "speech-audio",
-    "license": "MIT"
-  },
-  {
-    "id": "suno-bark",
-    "purl": "pkg:pypi/suno-bark",
-    "patterns": [
-      "bark"
-    ],
-    "category": "speech-audio",
-    "license": "MIT"
-  },
-  {
-    "id": "chromadb",
-    "purl": "pkg:pypi/chromadb",
-    "patterns": [
-      "chromadb"
-    ],
-    "category": "vector-database",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "faiss-cpu",
-    "purl": "pkg:pypi/faiss-cpu",
-    "patterns": [
-      "faiss"
-    ],
-    "category": "vector-database",
-    "license": "MIT"
-  },
-  {
-    "id": "faiss-gpu",
-    "purl": "pkg:pypi/faiss-gpu",
-    "patterns": [
-      "faiss"
-    ],
-    "category": "vector-database",
-    "license": "MIT"
-  },
-  {
-    "id": "lancedb",
-    "purl": "pkg:pypi/lancedb",
-    "patterns": [
-      "lancedb"
-    ],
-    "category": "vector-database",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "pinecone",
-    "purl": "pkg:pypi/pinecone",
-    "patterns": [
-      "pinecone"
-    ],
-    "category": "vector-database",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "pinecone-client",
-    "purl": "pkg:pypi/pinecone-client",
-    "patterns": [
-      "pinecone"
-    ],
-    "category": "vector-database",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "pinecone-database-js",
-    "purl": "pkg:npm/%40pinecone-database/pinecone",
-    "patterns": [
-      "@pinecone-database/pinecone"
-    ],
-    "category": "vector-database",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "pymilvus",
-    "purl": "pkg:pypi/pymilvus",
-    "patterns": [
-      "pymilvus"
-    ],
-    "category": "vector-database",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "qdrant-client",
-    "purl": "pkg:pypi/qdrant-client",
-    "patterns": [
-      "qdrant_client"
-    ],
-    "category": "vector-database",
-    "license": "Apache-2.0"
-  },
-  {
-    "id": "qdrant-js",
-    "purl": "pkg:npm/%40qdrant/js-client-rest",
-    "patterns": [
-      "@qdrant/js-client-rest",
-      "qdrant"
-    ],
-    "category": "vector-database",
+    "category": "observability",
     "license": "Apache-2.0"
   },
   {
@@ -1374,5 +1896,32 @@
     ],
     "category": "vector-database",
     "license": "BSD-3-Clause"
+  },
+  {
+    "id": "whisper-cpp",
+    "purl": "pkg:github/ggerganov/whisper.cpp",
+    "patterns": [
+      "whisper"
+    ],
+    "category": "ml-runtime",
+    "license": "MIT"
+  },
+  {
+    "id": "xenova-transformers",
+    "purl": "pkg:npm/@xenova/transformers",
+    "patterns": [
+      "@xenova/transformers"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "xgboost",
+    "purl": "pkg:pypi/xgboost",
+    "patterns": [
+      "xgboost"
+    ],
+    "category": "ml-framework",
+    "license": "Apache-2.0"
   }
 ]

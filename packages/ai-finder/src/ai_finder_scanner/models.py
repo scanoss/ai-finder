@@ -34,6 +34,10 @@ class SDKUsage:
     sdk: str
     import_statement: str
     version: str | None = None
+    # Package URL from the KB entry that matched the import. The import name is
+    # not the package name (`import strands` ships as `strands-agents`), so
+    # without this the SBOM has to guess, and guessing named the wrong package.
+    purl: str | None = None
 
 
 @dataclass
@@ -126,6 +130,26 @@ class DatasetInfo:
 
 
 @dataclass
+class MCPInfo:
+    """MCP server or client finding details.
+
+    `source` says how it was found: "code" (an SDK construct in source),
+    "config" (an entry in an MCP client config such as .mcp.json). `how` is the
+    evidence itself: the import or constructor line, or the launch command.
+    """
+
+    name: str
+    role: str  # server, client
+    source: str  # code, config
+    package: str | None = None  # registry package that provides it, when known
+    purl: str | None = None
+    version: str | None = None
+    transport: str | None = None  # stdio, http, sse
+    kb_id: str | None = None  # KB mcp_servers / sdks id it matched
+    how: str | None = None
+
+
+@dataclass
 class LicenseInfo:
     """Detected license information."""
 
@@ -157,6 +181,7 @@ class Finding:
     prompt_info: PromptInfo | None = None
     guardrail_info: GuardrailInfo | None = None
     dataset_info: DatasetInfo | None = None
+    mcp_info: MCPInfo | None = None
 
 
 @dataclass

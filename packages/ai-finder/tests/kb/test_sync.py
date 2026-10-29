@@ -555,3 +555,96 @@ class TestSyncResult:
         assert result.models_updated == 5
         assert result.mcp_servers_updated == 3
         assert result.error is None
+
+
+# --- removals reach clients --------------------------------------------------
+
+
+def _remote(files: dict, fail: tuple[str, ...] = ()):
+    """A requests.Session stand-in serving `files` by name; names in `fail` 500."""
+    import requests as _requests
+
+    def get(url, timeout=None):
+        name = url.rsplit("/", 1)[-1]
+        response = MagicMock()
+        if name in fail or name not in files:
+            response.raise_for_status.side_effect = _requests.HTTPError(f"{name} failed")
+        else:
+            response.raise_for_status = MagicMock()
+            response.json.return_value = files[name]
+            response.content = json.dumps(files[name]).encode()
+        return response
+
+    session = MagicMock()
+    session.get.side_effect = get
+    return session
+
+
+def _seed_rows(db) -> None:
+    for sid, source in (("kept-sdk", "seed"), ("dropped-sdk", "seed"), ("users-sdk", "user")):
+        db.execute(
+            "INSERT INTO sdks (id, purl, patterns, category, source) VALUES (?, ?, ?, ?, ?)",
+            (sid, f"pkg:pypi/{sid}", json.dumps([sid]), "llm-client", source),
+        )
+    for mid in ("kept-mcp", "dropped-mcp"):
+        db.execute(
+            "INSERT INTO mcp_servers (id, purl, patterns, source) VALUES (?, ?, ?, 'seed')",
+            (mid, f"pkg:npm/{mid}", json.dumps([mid])),
+        )
+    db.commit()
+
+
+_SDK = {"id": "kept-sdk", "purl": "pkg:pypi/kept-sdk", "patterns": ["kept-sdk"]}
+_MCP = {"id": "kept-mcp", "purl": "pkg:npm/kept-mcp", "patterns": ["kept-mcp"]}
+
+
+def _ids(db, table: str) -> set[str]:
+    return {r[0] for r in db.execute(f"SELECT id FROM {table}").fetchall()}
+
+
+@patch("ai_finder_kb.sync.requests.Session")
+def test_rows_the_remote_dropped_are_removed(mock_session_class, temp_db_path) -> None:
+    mock_session_class.return_value = _remote(
+        {
+            "version.json": {"version": 2},
+            "sdks.json": [_SDK],
+            "models.json": [],
+            "mcp_servers.json": [_MCP],
+        }
+    )
+    with Database(temp_db_path) as db:
+        db.initialize()
+        _seed_rows(db)
+        result = KBSync(db).sync()
+        assert result.success is True
+        assert (result.sdks_removed, result.mcp_servers_removed) == (1, 1)
+        # The user's own row is not the catalogue's to remove.
+        assert _ids(db, "sdks") == {"kept-sdk", "users-sdk"}
+        assert _ids(db, "mcp_servers") == {"kept-mcp"}
+
+
+@patch("ai_finder_kb.sync.requests.Session")
+def test_an_empty_remote_list_removes_nothing(mock_session_class, temp_db_path) -> None:
+    mock_session_class.return_value = _remote(
+        {"version.json": {"version": 2}, "sdks.json": [], "models.json": [], "mcp_servers.json": []}
+    )
+    with Database(temp_db_path) as db:
+        db.initialize()
+        _seed_rows(db)
+        assert KBSync(db).sync().success is True
+        assert _ids(db, "sdks") == {"kept-sdk", "dropped-sdk", "users-sdk"}
+        assert _ids(db, "mcp_servers") == {"kept-mcp", "dropped-mcp"}
+
+
+@patch("ai_finder_kb.sync.requests.Session")
+def test_a_failed_sync_rolls_removals_back(mock_session_class, temp_db_path) -> None:
+    mock_session_class.return_value = _remote(
+        {"version.json": {"version": 2}, "sdks.json": [_SDK], "models.json": []},
+        fail=("mcp_servers.json",),
+    )
+    with Database(temp_db_path) as db:
+        db.initialize()
+        _seed_rows(db)
+        result = KBSync(db).sync()
+        assert result.success is False
+        assert _ids(db, "sdks") == {"kept-sdk", "dropped-sdk", "users-sdk"}

@@ -6,6 +6,7 @@ import json
 import logging
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from ..models import Finding, FindingType, ManifestDep
 from .base import BaseManifestParser
@@ -43,6 +44,8 @@ AI_PACKAGES = frozenset(
         "onnxruntime-web",
         "@tensorflow/tfjs",
         "@tensorflow/tfjs-node",
+        "@modelcontextprotocol/sdk",
+        "fastmcp",
     }
 )
 
@@ -54,17 +57,21 @@ class NpmManifestParser(BaseManifestParser):
     def manifest_names(self) -> frozenset[str]:
         return frozenset({"package.json"})
 
-    def _is_ai_package(self, name: str) -> bool:
-        """Check if package is an AI package."""
-        # Check exact match or langchain scoped package
-        return name in AI_PACKAGES or name.startswith("@langchain/")
+    def _is_ai_package(self, name: str, matcher: Any | None = None) -> bool:
+        """Check if package is an AI package: the built-in list, then the KB."""
+        if name in AI_PACKAGES or name.startswith(("@langchain/", "@modelcontextprotocol/")):
+            return True
+        if matcher is None:
+            return False
+        return bool(matcher.match_sdk(name) or matcher.match_mcp(name))
 
-    def parse(self, content: str, path: Path) -> Iterator[Finding]:
+    def parse(self, content: str, path: Path, matcher: Any | None = None) -> Iterator[Finding]:
         """Parse package.json for AI dependencies.
 
         Args:
             content: package.json content.
             path: File path (relative to scan root).
+            matcher: Optional KB matcher scoped to npm.
 
         Yields:
             Finding for each AI dependency found.
@@ -82,7 +89,7 @@ class NpmManifestParser(BaseManifestParser):
                 continue
 
             for name, version in deps.items():
-                if self._is_ai_package(name):
+                if self._is_ai_package(name, matcher):
                     yield Finding(
                         type=FindingType.MANIFEST_DEP,
                         file_path=str(path),

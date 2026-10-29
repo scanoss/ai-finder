@@ -11,6 +11,9 @@ from typing import Any
 from ..models import Finding, FindingType, ToolInfo
 from .base import BaseDetector
 
+_TOOL_DECORATOR = re.compile(r"^\s*@tool\b")
+_DEF_RE = re.compile(r"^\s*(?:async\s+)?def\s+(\w+)\s*\(")
+
 
 @dataclass
 class ToolPattern:
@@ -63,10 +66,25 @@ class ToolsDetector(BaseDetector):
         """
         path_str = str(path)
         seen_sources: set[str] = set()
+        lines = content.splitlines()
 
         for match in re.finditer(r"^.*$", content, re.MULTILINE):
             line = match.group()
             line_num = content[: match.start()].count("\n") + 1
+
+            # A decorated tool is named by the function it decorates. Each one
+            # is its own tool, so each gets its own finding.
+            if _TOOL_DECORATOR.match(line):
+                name = self._decorated_function(lines, line_num)
+                if name:
+                    yield Finding(
+                        type=FindingType.TOOL,
+                        file_path=path_str,
+                        confidence=0.85,
+                        line=line_num,
+                        tool_info=ToolInfo(name=name),
+                    )
+                    continue
 
             for tool_pattern in self.PATTERNS:
                 if tool_pattern.pattern.search(line):
@@ -77,6 +95,23 @@ class ToolsDetector(BaseDetector):
                             file_path=path_str,
                             confidence=0.85,
                             line=line_num,
-                            tool_info=ToolInfo(name="detected_tool"),
+                            tool_info=ToolInfo(name=f"{tool_pattern.source}-tool"),
                         )
                     break
+
+    @staticmethod
+    def _decorated_function(lines: list[str], decorator_line: int) -> str | None:
+        """Name of the function a decorator on `decorator_line` (1-based) decorates."""
+        for follow in lines[decorator_line : decorator_line + 6]:
+            m = _DEF_RE.match(follow)
+            if m:
+                return m.group(1)
+            # Decorator arguments may span lines; anything else ends the search.
+            stripped = follow.strip()
+            if (
+                stripped
+                and not stripped.startswith(("@", "#", ")"))
+                and not stripped.endswith((",", "("))
+            ):
+                return None
+        return None

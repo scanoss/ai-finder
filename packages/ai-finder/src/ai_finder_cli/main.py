@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 
 import click
+from ai_finder_kb.database import Database
+from ai_finder_kb.matcher import Matcher
 from ai_finder_scanner.output import (
     CycloneDXFormatter,
     JSONFormatter,
@@ -41,6 +43,31 @@ def main(ctx: click.Context, no_telemetry: bool) -> None:
     else:
         telemetry.track_cli_started()
         atexit.register(telemetry.shutdown)
+
+
+def _open_detection_kb(kb_path: Path | None) -> Database | None:
+    """Open the KB whose identifier lists the scan resolves names against.
+
+    The user's KB when there is one (it may have been synced past the seed),
+    otherwise the seed bundled with this release. None when neither exists: the
+    detectors then fall back to their built-in lists.
+    """
+    from ai_finder_kb import get_seed_db_path
+
+    candidates = [kb_path or Path("~/.ai-finder/kb/ai-finder.db").expanduser()]
+    seed = get_seed_db_path()
+    if seed:
+        candidates.append(seed)
+    for candidate in candidates:
+        if candidate.is_file():
+            try:
+                db = Database(candidate)
+                db.connect()
+                db.execute("SELECT 1 FROM sdks LIMIT 1")
+                return db
+            except Exception as e:  # unreadable or pre-schema file: try the next
+                click.echo(f"Warning: cannot use KB {candidate} for detection: {e}", err=True)
+    return None
 
 
 @main.command()
@@ -182,13 +209,19 @@ def scan(
                 if progress_bar is not None:
                     progress_bar.update(1)
 
+            # The KB's SDK and MCP identifier lists drive detection, not only
+            # enrichment, so open it for the scan even under --no-enrich.
+            detection_db = _open_detection_kb(kb_path)
             try:
                 result = scanner.scan(
                     path,
+                    kb=Matcher(detection_db) if detection_db else None,
                     progress_callback=progress_callback,
                     telemetry_callback=telemetry.track_event,
                 )
             finally:
+                if detection_db is not None:
+                    detection_db.close()
                 # Ensure progress bar is cleaned up even on error
                 if progress_bar is not None:
                     progress_bar.__exit__(None, None, None)
@@ -289,6 +322,11 @@ def scan(
                         elif finding.model_info:
                             lines.append(
                                 f"  Model: {finding.file_path} ({finding.model_info.format})"
+                            )
+                        elif finding.mcp_info:
+                            m = finding.mcp_info
+                            lines.append(
+                                f"  MCP {m.role}: {m.name} ({finding.file_path}:{finding.line})"
                             )
                     return "\n".join(lines)
 

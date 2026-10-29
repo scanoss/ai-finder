@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from ..models import Finding, FindingType, ManifestDep
 from .base import BaseManifestParser
@@ -112,6 +113,8 @@ AI_PACKAGES = frozenset(
         "llm-guard",
         # MCP / Tool Use
         "mcp",
+        "fastmcp",
+        "langchain-mcp-adapters",
         "anthropic-tools",
     }
 )
@@ -149,16 +152,27 @@ class PythonManifestParser(BaseManifestParser):
         """
         return name.lower().replace("_", "-")
 
-    def _is_ai_package(self, name: str) -> bool:
-        """Check if package is an AI package."""
-        return self._normalize_name(name) in AI_PACKAGES
+    def _is_ai_package(self, name: str, matcher: Any | None = None) -> bool:
+        """Check if package is an AI package: the built-in list, then the KB."""
+        normalized = self._normalize_name(name)
+        if normalized in AI_PACKAGES:
+            return True
+        if matcher is None:
+            return False
+        return any(
+            matcher.match_sdk(candidate) or matcher.match_mcp(candidate)
+            for candidate in (normalized, normalized.replace("-", "_"))
+        )
 
-    def parse(self, content: str, path: Path) -> Iterator[Finding]:
+    def parse(self, content: str, path: Path, matcher: Any | None = None) -> Iterator[Finding]:
         """Parse Python manifest for AI dependencies.
 
         Args:
             content: Manifest file content.
             path: File path (relative to scan root).
+            matcher: Optional KB matcher scoped to PyPI; a package the KB lists
+                as an SDK or MCP server counts even when the built-in list does
+                not name it.
 
         Yields:
             Finding for each AI dependency found.
@@ -182,7 +196,7 @@ class PythonManifestParser(BaseManifestParser):
                 name = match.group("name")
                 version = match.group("version") or ""
 
-                if self._is_ai_package(name):
+                if self._is_ai_package(name, matcher):
                     yield Finding(
                         type=FindingType.MANIFEST_DEP,
                         file_path=str(path),

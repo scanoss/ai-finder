@@ -134,6 +134,7 @@ CONFIG_PATTERNS = frozenset(
         "mcp.json",
         ".mcp.json",
         "cline_mcp_settings.json",
+        "mcp_config.json",  # Windsurf
     }
 )
 
@@ -162,6 +163,13 @@ class FileDiscovery:
         This avoids traversing into large ignored directories like node_modules.
         """
         for dirpath, dirnames, filenames in os.walk(self.root):
+            # VS Code keeps its MCP server list in .vscode/mcp.json. The
+            # directory stays pruned; only that one file is taken from it.
+            if ".vscode" in dirnames:
+                vscode_mcp = Path(dirpath) / ".vscode" / "mcp.json"
+                if vscode_mcp.is_file():
+                    yield vscode_mcp.relative_to(self.root)
+
             # Prune ignored directories IN-PLACE (prevents descent)
             dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS]
 

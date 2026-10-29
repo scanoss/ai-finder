@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import sqlite3
 from collections.abc import Iterator
 
@@ -47,6 +48,42 @@ MODEL_EXTENSIONS = (
 )
 
 
+# Characters that end one segment of an import path or package name. A pattern
+# matches an identifier only on a whole segment, so `openai` matches
+# `openai.types` but not `langchain_openai`, and `torch` does not match
+# `torchvision`.
+_SEGMENT_SEPARATORS = "./:\\"
+
+
+def purl_ecosystem(purl: str | None) -> str | None:
+    """Return the purl type (`pypi`, `npm`, ...) or None for a missing purl."""
+    if not purl or not purl.startswith("pkg:"):
+        return None
+    return purl[4:].split("/", 1)[0].lower() or None
+
+
+def purl_name(purl: str) -> str:
+    """Return the package name a purl names, scope included (`@scope/pkg`)."""
+    body = purl[4:].split("/", 1)[1] if "/" in purl[4:] else purl[4:]
+    body = body.split("?", 1)[0].split("#", 1)[0]
+    # Strip a version, but not the leading @ of an npm scope.
+    head, sep, tail = body.rpartition("@")
+    if sep and head and "/" not in tail:
+        body = head
+    return body.replace("%40", "@")
+
+
+def _normalize_package(name: str, ecosystem: str | None) -> str:
+    name = name.lower()
+    return re.sub(r"[-_.]+", "-", name) if ecosystem == "pypi" else name
+
+
+def _segment_match(identifier: str, pattern: str) -> bool:
+    if identifier == pattern:
+        return True
+    return identifier.startswith(pattern) and identifier[len(pattern)] in _SEGMENT_SEPARATORS
+
+
 class Matcher:
     """Match patterns against the knowledge base."""
 
@@ -57,6 +94,125 @@ class Matcher:
             db: Database instance to query.
         """
         self.db = db
+        # (pattern, ecosystem, row) sorted longest pattern first; loaded once.
+        self._sdk_index: list[tuple[str, str | None, SDKMatch]] | None = None
+        self._mcp_index: list[tuple[str, str | None, MCPMatch]] | None = None
+
+    def _load_sdk_index(self) -> list[tuple[str, str | None, SDKMatch]]:
+        if self._sdk_index is None:
+            index: list[tuple[str, str | None, SDKMatch]] = []
+            cursor = self.db.execute("SELECT id, purl, patterns, category, license FROM sdks")
+            for row in cursor:
+                try:
+                    patterns = json.loads(row["patterns"])
+                except (json.JSONDecodeError, TypeError) as e:
+                    logger.warning("Invalid patterns JSON for SDK %s: %s", row["id"], e)
+                    continue
+                match = SDKMatch(
+                    id=row["id"],
+                    purl=row["purl"],
+                    category=row["category"],
+                    license=row["license"],
+                    confidence=1.0,
+                )
+                eco = purl_ecosystem(row["purl"])
+                names = list(patterns)
+                if row["purl"]:
+                    # The package's own registry name is an identifier too: it
+                    # is what a manifest or a launch command names.
+                    names.append(purl_name(row["purl"]))
+                for pattern in names:
+                    if isinstance(pattern, str) and pattern:
+                        index.append((pattern.lower(), eco, match))
+            index.sort(key=lambda item: -len(item[0]))
+            self._sdk_index = index
+        return self._sdk_index
+
+    def _load_mcp_index(self) -> list[tuple[str, str | None, MCPMatch]]:
+        if self._mcp_index is None:
+            index: list[tuple[str, str | None, MCPMatch]] = []
+            cursor = self.db.execute("SELECT id, purl, patterns, description FROM mcp_servers")
+            for row in cursor:
+                try:
+                    patterns = json.loads(row["patterns"])
+                except (json.JSONDecodeError, TypeError) as e:
+                    logger.warning("Invalid patterns JSON for MCP %s: %s", row["id"], e)
+                    continue
+                match = MCPMatch(
+                    id=row["id"],
+                    purl=row["purl"],
+                    description=row["description"],
+                    confidence=1.0,
+                )
+                eco = purl_ecosystem(row["purl"])
+                names = list(patterns)
+                if row["purl"]:
+                    names.append(purl_name(row["purl"]))
+                for pattern in names:
+                    if isinstance(pattern, str) and pattern:
+                        index.append((pattern.lower(), eco, match))
+            index.sort(key=lambda item: -len(item[0]))
+            self._mcp_index = index
+        return self._mcp_index
+
+    def match_sdk_identifier(
+        self, identifier: str, ecosystems: frozenset[str] | None = None
+    ) -> SDKMatch | None:
+        """Match an import path or package name against SDK identifiers.
+
+        Unlike `match_sdk`, which looks for a pattern anywhere in a statement,
+        this matches whole path segments only and prefers the longest pattern,
+        so `langchain_openai` resolves to its own entry rather than to `openai`.
+
+        Args:
+            identifier: Import path or package name, e.g. `strands.agent`.
+            ecosystems: Purl types to consider, e.g. {"pypi"}. The same name is
+                a different package in each registry (`openai` exists on PyPI,
+                npm and RubyGems), so a Python import must not resolve to npm.
+
+        Returns:
+            SDKMatch for the longest matching pattern, or None.
+        """
+        ident = identifier.strip().lower()
+        if not ident:
+            return None
+        for pattern, eco, match in self._load_sdk_index():
+            if ecosystems is not None and eco not in ecosystems:
+                continue
+            if _segment_match(ident, pattern):
+                return match
+        return None
+
+    def match_mcp_identifier(
+        self, identifier: str, ecosystems: frozenset[str] | None = None
+    ) -> MCPMatch | None:
+        """Match a package name or import path against MCP server identifiers.
+
+        Same whole-segment, longest-first rule as `match_sdk_identifier`.
+        """
+        ident = identifier.strip().lower()
+        if not ident:
+            return None
+        for pattern, eco, match in self._load_mcp_index():
+            if ecosystems is not None and eco not in ecosystems:
+                continue
+            if _segment_match(ident, pattern):
+                return match
+        return None
+
+    def match_mcp_package(self, name: str, ecosystem: str) -> MCPMatch | None:
+        """The MCP server whose registry package is exactly `name` in `ecosystem`."""
+        wanted = _normalize_package(name, ecosystem)
+        for row_purl, match in ((m.purl, m) for _, _, m in self._load_mcp_index()):
+            if purl_ecosystem(row_purl) != ecosystem:
+                continue
+            if _normalize_package(purl_name(row_purl), ecosystem) == wanted:
+                return match
+        return None
+
+    def scoped(self, ecosystems: frozenset[str]) -> ScopedMatcher:
+        """Return a view of this matcher restricted to some ecosystems."""
+        return ScopedMatcher(self, ecosystems)
 
     def match_sdk(self, text: str) -> SDKMatch | None:
         """Match text against SDK patterns.
@@ -326,3 +482,32 @@ class Matcher:
                 confidence=1.0,
             )
         return None
+
+
+class ScopedMatcher:
+    """A Matcher restricted to the ecosystems one language can import from.
+
+    Detectors call `match_sdk(name)` with a bare import path; this answers it
+    with whole-segment matching inside the right registries only.
+    """
+
+    def __init__(self, matcher: Matcher, ecosystems: frozenset[str]) -> None:
+        self._matcher = matcher
+        self.ecosystems = ecosystems
+
+    def match_sdk(self, text: str) -> SDKMatch | None:
+        return self._matcher.match_sdk_identifier(text, self.ecosystems)
+
+    def match_mcp(self, text: str) -> MCPMatch | None:
+        return self._matcher.match_mcp_identifier(text, self.ecosystems)
+
+    def match_mcp_package(self, name: str, ecosystem: str) -> MCPMatch | None:
+        """The KB MCP server that IS this registry package, or None.
+
+        Exact package identity: a launched package is a package, not an import
+        path, so `@modelcontextprotocol/server-memory.evil` is not
+        `@modelcontextprotocol/server-memory`. Code in one language routinely
+        launches a server published in another, so the registry comes from the
+        launcher, not from the file.
+        """
+        return self._matcher.match_mcp_package(name, ecosystem)

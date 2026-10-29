@@ -47,6 +47,9 @@ class SyncResult:
     models_updated: int = 0
     model_files_updated: int = 0
     mcp_servers_updated: int = 0
+    # Seed rows the remote no longer lists, removed by this sync.
+    sdks_removed: int = 0
+    mcp_servers_removed: int = 0
     error: str | None = None
     fetch_errors: list[str] = field(default_factory=list)  # Track which fetches failed
 
@@ -77,6 +80,8 @@ class KBSync:
         self.remote_url = remote_url.rstrip("/")
         self.timeout = timeout
         self._session = requests.Session()
+        self._sdks_removed = 0
+        self._mcp_servers_removed = 0
 
     def get_local_version(self) -> int:
         """Get the current local KB version.
@@ -224,6 +229,8 @@ class KBSync:
 
         # Fetch and apply seed data, tracking any errors
         fetch_errors: list[str] = []
+        self._sdks_removed = 0
+        self._mcp_servers_removed = 0
         try:
             sdks_count, sdk_error = self._sync_sdks(checksums.get(self.SDK_FILE))
             if sdk_error:
@@ -297,6 +304,8 @@ class KBSync:
                 models_updated=models_count,
                 model_files_updated=model_files_count,
                 mcp_servers_updated=mcp_count,
+                sdks_removed=self._sdks_removed,
+                mcp_servers_removed=self._mcp_servers_removed,
             )
 
         except Exception as e:
@@ -309,6 +318,26 @@ class KBSync:
                 new_version=local_version,
                 error=str(e),
             )
+
+    def _prune_seed_rows(self, table: str, remote_ids: list[str]) -> int:
+        """Delete seed rows whose id the remote no longer lists; return how many.
+
+        Upserting alone only ever adds: a package the catalogue drops (gone from
+        its registry, or renamed) would stay in every client's KB for good, and a
+        renamed id would leave two rows matching one package. Only rows that came
+        from the seed are touched; anything a user or a crawler added is theirs.
+        Callers return before this on an empty remote file, which is far more
+        likely a bad publish than a catalogue with nothing in it, so an empty list
+        never wipes the table.
+        """
+        if table not in ("sdks", "mcp_servers"):
+            return 0
+        cursor = self.db.execute(
+            f"DELETE FROM {table} WHERE source = 'seed' "
+            "AND id NOT IN (SELECT value FROM json_each(?))",
+            (json.dumps(remote_ids),),
+        )
+        return cursor.rowcount if cursor.rowcount and cursor.rowcount > 0 else 0
 
     def _sync_sdks(self, checksum: str | None = None) -> tuple[int, str | None]:
         """Sync SDKs from remote.
@@ -357,6 +386,7 @@ class KBSync:
 
         if insert_errors:
             return count, f"Failed to insert {len(insert_errors)} SDKs: {insert_errors[0]}"
+        self._sdks_removed = self._prune_seed_rows("sdks", [sdk["id"] for sdk in sdks])
         return count, None
 
     def _sync_models(self, checksum: str | None = None) -> tuple[int, str | None]:
@@ -555,4 +585,7 @@ class KBSync:
 
         if insert_errors:
             return count, f"Failed to insert {len(insert_errors)} MCP servers: {insert_errors[0]}"
+        self._mcp_servers_removed = self._prune_seed_rows(
+            "mcp_servers", [mcp["id"] for mcp in mcp_servers]
+        )
         return count, None

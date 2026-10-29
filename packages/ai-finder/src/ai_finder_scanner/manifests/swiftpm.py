@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 from ..models import Finding, FindingType, ManifestDep
 from .base import BaseManifestParser
@@ -60,7 +61,7 @@ class SwiftPMManifestParser(BaseManifestParser):
         """Find line number for a match position."""
         return content[:match_start].count("\n") + 1
 
-    def parse(self, content: str, path: Path) -> Iterator[Finding]:
+    def parse(self, content: str, path: Path, matcher: Any | None = None) -> Iterator[Finding]:
         """Parse Package.swift for AI dependencies.
 
         Args:

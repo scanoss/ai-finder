@@ -7,11 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-28
+
+### Removed
+- **Python 3.9 is no longer supported.** It reached end of life in October 2025.
+  AI-Finder now requires Python 3.10 or later.
+
 ### Added
+- MCP servers and clients are detected and identified against the knowledge base:
+  in MCP client configs (Claude Desktop, `.mcp.json`, VS Code, Cursor, Cline,
+  Windsurf), in code built on the MCP SDKs, and in code that launches a server with
+  `npx`, `uvx`, `pipx` or `docker`. Each one is reported with its package URL,
+  transport and the file and line it came from. Environment variables, launch
+  arguments and URL credentials are never copied into the output.
+- SDK imports are resolved through the knowledge base to the package that provides
+  them, so `import strands` is reported as `strands-agents`.
+- CycloneDX, SPDX 2.3 and SPDX 3.0 output records every place a component was found
+  (`evidence.occurrences` in CycloneDX) and carries MCP properties.
+- The bundled knowledge base now lists 212 SDKs, verified against PyPI, npm and the
+  other package registries, and 2,456 MCP servers from the official MCP Registry.
+- `scripts/seed_catalog/` rebuilds the SDK and MCP lists from the registries and
+  reports drift.
+- A CI check fails the build if proprietary model signature or calibration files are
+  committed (see CONTRIBUTING.md).
 
 ### Changed
+- `ai-finder kb update` now removes SDK and MCP server entries that the remote
+  knowledge base no longer lists.
+- README and PyPI page rewritten; they now state the exact-matching limitation.
 
 ### Fixed
+- The scan never passed the knowledge base to the detectors, so SDK and MCP
+  identification ran only against built-in lists; MCP configs were only counted.
+
+### Security
+- `anyio` bumped to 4.14.2 (CVE-2026-63374), `urllib3` to 2.8.0 and `certifi` to
+  2026.10.23, which fixes the advisory about emSign root CAs with compromised
+  intermediate keys.
 
 ## [0.4.0] - 2026-08-17
 
@@ -159,7 +191,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No file paths, scan targets, or PII collected
   - Opt-out via `--no-telemetry` flag, `AI_FINDER_TELEMETRY=0`, `DO_NOT_TRACK=1`, or config file
   - Config file location: `~/.ai-finder/config.json` with `{"telemetry": false}`
-- Customer journey documentation (`docs/CUSTOMER_JOURNEY.md`) for funnel building
+- Customer journey documentation for funnel building
 - Telemetry documentation (`docs/TELEMETRY.md`) explaining what is tracked and why
 
 ## [0.2.0] - 2026-04-08
