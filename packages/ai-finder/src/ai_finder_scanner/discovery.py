@@ -109,7 +109,9 @@ MANIFEST_FILES = frozenset(
     }
 )
 
-# Model file extensions
+# Model file extensions. Every extension a model parser handles must be here, or
+# a project scan never reaches that parser (Core ML's .mlpackage is a directory
+# and is not walked as a file).
 MODEL_EXTENSIONS = frozenset(
     {
         ".gguf",
@@ -124,6 +126,12 @@ MODEL_EXTENSIONS = frozenset(
         ".keras",
         ".pb",
         ".pkl",
+        ".pickle",
+        ".msgpack",  # JAX/Flax
+        ".params",  # MXNet
+        ".pdparams",  # PaddlePaddle
+        ".pdmodel",
+        ".pdopt",
     }
 )
 

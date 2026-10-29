@@ -10,6 +10,8 @@ from .base import BaseModelParser
 
 logger = logging.getLogger(__name__)
 
+_NDARRAY_LIST_HEADER = (0x112).to_bytes(8, "little") + bytes(8)
+
 
 class MXNetParser(BaseModelParser):
     """Parse Apache MXNet model files (.params)."""
@@ -30,14 +32,17 @@ class MXNetParser(BaseModelParser):
         """
         try:
             with open(file_path, "rb") as f:
-                header = f.read(8)
+                header = f.read(16)
 
             if len(header) < 4:
                 return None
 
-            # MXNet .params files use NDArray serialization format
-            # They typically start with specific patterns
-            # Check file size as basic validation
+            # MXNet .params files are an NDArray list: a little-endian uint64
+            # magic (kMXAPINDArrayListMagic = 0x112) then a reserved uint64 of 0.
+            # .params is a common extension, so the magic is what separates a
+            # model from any other file of that name.
+            if header != _NDARRAY_LIST_HEADER:
+                return None
             file_size = file_path.stat().st_size
             if file_size < 100:  # Too small to be a real model
                 return None

@@ -21,6 +21,18 @@ from ai_finder_scanner.parsers.safetensors import SafeTensorsParser
 from ai_finder_scanner.parsers.tensorflow import TensorFlowParser
 from ai_finder_scanner.parsers.tflite import TFLiteParser
 
+# Written by flax.serialization.to_bytes({"params": {"dense": {"kernel":
+# jnp.ones((4, 3)), "bias": jnp.zeros((3,))}}}) with flax installed.
+FLAX_CHECKPOINT = (
+    b"\x81\xa6params\x81\xa5dense\x82\xa6kernel\xc7>\x01\x93\x92\x04\x03\xa7float32\xc40"
+    + b"\x00\x00\x80?" * 12
+    + b"\xa4bias\xc7\x19\x01\x93\x91\x03\xa7float32\xc4\x0c"
+    + b"\x00" * 12
+)
+PLAIN_MSGPACK = b"\x83\xa1a\x01\xa5names\x92\xa1x\xa1y\xa1n\x93\x01\x02\x03"
+# NDArray list header from MXNet's NDArray::Save: uint64 magic 0x112, uint64 reserved 0.
+MXNET_PARAMS_HEADER = (0x112).to_bytes(8, "little") + b"\x00" * 8
+
 
 class TestBaseModelParser:
     def test_is_abstract(self) -> None:
@@ -304,14 +316,20 @@ class TestJAXParser:
         assert ".msgpack" in parser.extensions
 
     def test_parse_msgpack_format(self, parser: JAXParser, tmp_path: Path) -> None:
-        # MessagePack fixmap format
-        msgpack_file = tmp_path / "params.msgpack"
-        msgpack_file.write_bytes(b"\x80" + b"\x00" * 100)
+        msgpack_file = tmp_path / "flax_model.msgpack"
+        msgpack_file.write_bytes(FLAX_CHECKPOINT)
 
-        finding = parser.parse(msgpack_file, Path("params.msgpack"))
+        finding = parser.parse(msgpack_file, Path("flax_model.msgpack"))
 
         assert finding is not None
         assert finding.model_info.format == "jax"
+
+    def test_plain_msgpack_data_is_not_a_model(self, parser: JAXParser, tmp_path: Path) -> None:
+        # msgpack.packb({"a": 1, "names": ["x", "y"], "n": [1, 2, 3]}): a map, no arrays
+        data = tmp_path / "data.msgpack"
+        data.write_bytes(PLAIN_MSGPACK)
+
+        assert parser.parse(data, Path("data.msgpack")) is None
 
     def test_parse_invalid_format(self, parser: JAXParser, tmp_path: Path) -> None:
         bad_file = tmp_path / "bad.msgpack"
@@ -319,6 +337,16 @@ class TestJAXParser:
 
         finding = parser.parse(bad_file, Path("bad.msgpack"))
         assert finding is None
+
+    def test_ext_like_bytes_inside_a_bin_value_are_not_an_array(
+        self, parser: JAXParser, tmp_path: Path
+    ) -> None:
+        # {"x": b"\xd4\x01", "y": 1}: the bytes of a fixext header inside a bin
+        # payload, with a key after it so the walk must skip the payload by length
+        data = tmp_path / "blob.msgpack"
+        data.write_bytes(b"\x82\xa1x\xc4\x02\xd4\x01\xa1y\x01")
+
+        assert parser.parse(data, Path("blob.msgpack")) is None
 
 
 class TestMXNetParser:
@@ -330,18 +358,31 @@ class TestMXNetParser:
         assert ".params" in parser.extensions
 
     def test_parse_params_format(self, parser: MXNetParser, tmp_path: Path) -> None:
-        # MXNet params file (needs to be large enough)
         params_file = tmp_path / "model.params"
-        params_file.write_bytes(b"\x00" * 1000)
+        params_file.write_bytes(MXNET_PARAMS_HEADER + b"\x00" * 1000)
 
         finding = parser.parse(params_file, Path("model.params"))
 
         assert finding is not None
         assert finding.model_info.format == "mxnet"
 
+    def test_params_without_magic_is_not_a_model(self, parser: MXNetParser, tmp_path: Path) -> None:
+        other = tmp_path / "train.params"
+        other.write_bytes(b"lr=0.01\nepochs=10\n" * 100)
+
+        assert parser.parse(other, Path("train.params")) is None
+
+    def test_nonzero_reserved_word_is_not_a_model(
+        self, parser: MXNetParser, tmp_path: Path
+    ) -> None:
+        other = tmp_path / "other.params"
+        other.write_bytes((0x112).to_bytes(8, "little") + (1).to_bytes(8, "little") + b"\x00" * 200)
+
+        assert parser.parse(other, Path("other.params")) is None
+
     def test_parse_file_too_small(self, parser: MXNetParser, tmp_path: Path) -> None:
         small_file = tmp_path / "small.params"
-        small_file.write_bytes(b"\x00" * 10)
+        small_file.write_bytes(MXNET_PARAMS_HEADER + b"\x00" * 10)
 
         finding = parser.parse(small_file, Path("small.params"))
         assert finding is None

@@ -45,6 +45,12 @@ MODEL_EXTENSIONS = (
     ".keras",
     ".pb",
     ".pkl",
+    ".pickle",
+    ".msgpack",
+    ".params",
+    ".pdparams",
+    ".pdmodel",
+    ".pdopt",
 )
 
 

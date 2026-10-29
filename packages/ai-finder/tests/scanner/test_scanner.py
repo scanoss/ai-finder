@@ -110,3 +110,52 @@ class TestScanner:
 
         # Should still find SDK usage even without KB enrichment
         assert any(f.type == FindingType.SDK_USAGE for f in result.findings)
+
+
+class TestModelFormatsReachedByProjectScan:
+    """A parser that discovery never hands a file to is dead in a project scan."""
+
+    def test_every_parser_extension_is_discovered(self) -> None:
+        from ai_finder_scanner.discovery import MODEL_EXTENSIONS
+
+        parser_exts = {ext for p in Scanner()._model_parsers for ext in p.extensions}
+        # .mlpackage is a directory bundle; discovery walks files only.
+        assert parser_exts - {".mlpackage"} <= MODEL_EXTENSIONS
+
+    def test_scan_finds_jax_mxnet_paddle_and_pickle(self, tmp_path: Path) -> None:
+        from test_parsers import FLAX_CHECKPOINT, MXNET_PARAMS_HEADER
+
+        pickle_bytes = b"\x80\x04" + b"\x00" * 2000
+        (tmp_path / "flax_model.msgpack").write_bytes(FLAX_CHECKPOINT)
+        (tmp_path / "model.params").write_bytes(MXNET_PARAMS_HEADER + b"\x00" * 200)
+        (tmp_path / "model.pdparams").write_bytes(pickle_bytes)
+        (tmp_path / "inference.pdmodel").write_bytes(b"\x0a\x04blk0" + b"\x00" * 50)
+        (tmp_path / "optim.pdopt").write_bytes(pickle_bytes)
+        (tmp_path / "weights.pickle").write_bytes(pickle_bytes)
+
+        result = Scanner(hash_model_files=False).scan(tmp_path)
+
+        found = {
+            f.file_path: f.model_info.format
+            for f in result.findings
+            if f.type == FindingType.MODEL_FILE and f.model_info
+        }
+        assert found == {
+            "flax_model.msgpack": "jax",
+            "model.params": "mxnet",
+            "model.pdparams": "paddle",
+            "inference.pdmodel": "paddle",
+            "optim.pdopt": "paddle",
+            "weights.pickle": "pickle",
+        }
+
+    def test_non_model_files_with_shared_extensions_are_not_reported(self, tmp_path: Path) -> None:
+        from test_parsers import PLAIN_MSGPACK
+
+        (tmp_path / "data.msgpack").write_bytes(PLAIN_MSGPACK)
+        (tmp_path / "train.params").write_bytes(b"lr=0.01\nepochs=10\n" * 100)
+
+        result = Scanner(hash_model_files=False).scan(tmp_path)
+
+        assert [f for f in result.findings if f.type == FindingType.MODEL_FILE] == []
+        assert result.files_scanned >= 2  # both were reached, then rejected
