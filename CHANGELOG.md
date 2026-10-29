@@ -39,6 +39,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The scan never passed the knowledge base to the detectors, so SDK and MCP
   identification ran only against built-in lists; MCP configs were only counted.
+- A project scan reached only 9 of the 12 model formats: JAX/Flax (`.msgpack`),
+  MXNet (`.params`), PaddlePaddle (`.pdparams`, `.pdmodel`, `.pdopt`) and `.pickle`
+  files were never discovered. The MXNet and JAX checks now require the real file
+  header and structure, so other files with those extensions are not reported.
 
 ### Security
 - `anyio` bumped to 4.14.2 (CVE-2026-63374), `urllib3` to 2.8.0 and `certifi` to
